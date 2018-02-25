@@ -119,6 +119,10 @@ public final class Constants {
         public static final String USER_PREFS="MyPrefs";
         public static final String NUM_QUERY_DAYS="numQueryDays";
         public static final String DEFAULT_TAB="defaultTab";
+        public static final String NOTIFICATION_RED="notification_red";
+        public static final String NOTIFICATION_GREEN="notification_green";
+        public static final String NOTIFICATION_BLUE="notification_blue";
+        public static final String NOTIFICATION_VIBRATE_PATTERN="notification_vibrate_pattern";
     }
 
     public final class CoursesProfsSql{
