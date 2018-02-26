@@ -1,14 +1,10 @@
 package com.proj.abhi.mytermplanner.activities;
 
 import android.app.AlertDialog;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,17 +19,11 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.adapters.CustomPageAdapter;
-import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
-import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
-import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
-import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
 import com.proj.abhi.mytermplanner.fragments.HomeGenericFragment;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
@@ -42,23 +32,22 @@ import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class HomeActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     private int numQueryDays=7;
     private SharedPreferences sharedpreferences;
-    private String sortOrder="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addLayout(R.layout.home_header_fragment);
-        initViewPager();
-
         //init user prefs
         initPreferences();
+
+        //init tabs
+        initViewPager();
 
         //hide fab from generic view
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -112,6 +101,7 @@ public class HomeActivity extends GenericActivity
             viewPager.setAdapter(adapter);
             viewPager.setOffscreenPageLimit(adapter.getCount());
             initTabs(viewPager);
+            selectDefaultTab();
         }
     }
 
@@ -137,15 +127,14 @@ public class HomeActivity extends GenericActivity
         }
         setTitle();
 
-        /*//init default tab
+        //init default tab
         if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)){
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(defaultTabIndex));
             editor.apply();
         }else{
             setDefaultTabIndex(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB,null)));
-            selectDefaultTab();
-        }*/
+        }
 
     }
 
@@ -281,7 +270,6 @@ public class HomeActivity extends GenericActivity
                 ((HomeGenericFragment) f).restartLoader(b);
             }
         }
-       // selectDefaultTab();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

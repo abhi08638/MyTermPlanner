@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -55,6 +54,7 @@ public class GenericActivity extends AppCompatActivity
     protected int defaultTabIndex=0;
     private TabHost tabHost=null;
     protected ViewPager viewPager;
+    private TabLayout tabLayout = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +95,7 @@ public class GenericActivity extends AppCompatActivity
     }
 
     protected void initTabs(ViewPager viewPager){
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorHeight(5);
@@ -279,11 +279,19 @@ public class GenericActivity extends AppCompatActivity
     }
 
     protected void selectDefaultTab(){
-        TabHost tabHost = (TabHost)findViewById(R.id.tabHost);
-        if(tabHost.getTabWidget().getTabCount()<defaultTabIndex){
-            defaultTabIndex=0;
+        try{
+            TabHost tabHost = (TabHost)findViewById(R.id.tabHost);
+            if(tabHost.getTabWidget().getTabCount()<defaultTabIndex){
+                defaultTabIndex=0;
+            }
+            tabHost.setCurrentTab(defaultTabIndex);
+        }catch(Exception e){
+            if(tabLayout.getTabCount()<defaultTabIndex){
+                defaultTabIndex=0;
+            }
+            tabLayout.getTabAt(defaultTabIndex).select();
         }
-        tabHost.setCurrentTab(defaultTabIndex);
+
     }
 
     protected void setDefaultTabIndex(int index){

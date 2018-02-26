@@ -12,13 +12,13 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 
+import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.AssessmentActivity;
 import com.proj.abhi.mytermplanner.activities.CourseActivity;
 import com.proj.abhi.mytermplanner.activities.TaskActivity;
@@ -27,8 +27,6 @@ import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
-import com.proj.abhi.mytermplanner.providers.AssessmentsProvider;
-import com.proj.abhi.mytermplanner.providers.CoursesProvider;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
@@ -52,18 +50,22 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
             case Constants.CursorLoaderIds.TERM_ID:
                 termCursorAdapter = new HomeTermsCursorAdapter(getActivity(),null,0);
                 setListAdapter(termCursorAdapter);
+                setEmptyText("No "+getString(R.string.terms));
                 break;
             case Constants.CursorLoaderIds.HOME_COURSE_ID:
                 courseCursorAdapter = new HomeCoursesCursorAdapter(getActivity(),null,0);
                 setListAdapter(courseCursorAdapter);
+                setEmptyText("No "+getString(R.string.courses));
                 break;
             case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
                 assessmentCursorAdapter = new HomeAssessmentsCursorAdapter(getActivity(),null,0);
                 setListAdapter(assessmentCursorAdapter);
+                setEmptyText("No "+getString(R.string.assessments));
                 break;
             case Constants.CursorLoaderIds.TASK_ID:
                 taskCursorAdapter = new HomeTasksCursorAdapter(getActivity(),null,0);
                 setListAdapter(taskCursorAdapter);
+                setEmptyText("No "+getString(R.string.tasks));
                 break;
         }
         initLoader();
