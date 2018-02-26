@@ -4,7 +4,6 @@ package com.proj.abhi.mytermplanner.fragments;
  * Created by Abhi on 2/25/2018.
  */
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -69,34 +68,6 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
                 break;
         }
         initLoader();
-    }
-
-    private void sendToTerm(int id){
-        Intent intent = new Intent(getActivity(), TermActivity.class);
-        Uri uri = Uri.parse(TermsProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
-    private void sendToCourse(int id){
-        Intent intent = new Intent(getActivity(), CourseActivity.class);
-        Uri uri = Uri.parse(HomeCoursesProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
-    private void sendToAssessment(int id){
-        Intent intent = new Intent(getActivity(), AssessmentActivity.class);
-        Uri uri = Uri.parse(HomeAssessmentsProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
-    private void sendToTask(int id){
-        Intent intent = new Intent(getActivity(), TaskActivity.class);
-        Uri uri = Uri.parse(TasksProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
     }
 
     private void initLoader(){
@@ -206,16 +177,16 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
             Long l = new Long(id);
             switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
                 case Constants.CursorLoaderIds.TERM_ID:
-                    sendToTerm(l.intValue());
+                    Utils.sendToActivity(l.intValue(),getActivity(),TermActivity.class,TermsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_COURSE_ID:
-                    sendToCourse(l.intValue());
+                    Utils.sendToActivity(l.intValue(),getActivity(),CourseActivity.class,HomeCoursesProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
-                    sendToAssessment(l.intValue());
+                    Utils.sendToActivity(l.intValue(),getActivity(),AssessmentActivity.class,HomeAssessmentsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.TASK_ID:
-                    sendToTask(l.intValue());
+                    Utils.sendToActivity(l.intValue(),getActivity(),TaskActivity.class,TasksProvider.CONTENT_URI);
                     break;
             }
         }

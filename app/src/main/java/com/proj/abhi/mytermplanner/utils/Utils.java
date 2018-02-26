@@ -1,12 +1,11 @@
 package com.proj.abhi.mytermplanner.utils;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -139,6 +138,17 @@ public class Utils {
             return word.substring(0,1).toUpperCase()+word.substring(1);
         }
         return word;
+    }
+
+    public static void sendToActivity(int id, Context context,Class toActivity,Uri contentUri){
+        try{
+            Intent intent = new Intent(context, toActivity);
+            Uri uri = Uri.parse(contentUri + "/" + id);
+            intent.putExtra(Constants.CURRENT_URI, uri);
+            ((Activity)context).startActivityForResult(intent,0);
+        }catch (Exception e){
+            new CustomException("No caller Activity provided");
+        }
     }
 
 }

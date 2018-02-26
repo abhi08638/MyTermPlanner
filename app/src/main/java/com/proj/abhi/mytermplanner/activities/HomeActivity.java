@@ -3,9 +3,7 @@ package com.proj.abhi.mytermplanner.activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -32,6 +30,7 @@ import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
+import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class HomeActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -173,13 +172,13 @@ public class HomeActivity extends GenericActivity
         int id = item.getItemId();
 
         if (id == Constants.ActionBarIds.ADD_TERM ) {
-            sendToTerm(0);
+            Utils.sendToActivity(0,this,TermActivity.class,TermsProvider.CONTENT_URI);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_PROF ) {
-            sendToProf(0);
+            Utils.sendToActivity(0,this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_TASK ) {
-            sendToTask(0);
+            Utils.sendToActivity(0,this,TaskActivity.class,TasksProvider.CONTENT_URI);
             return true;
         }else if(id == Constants.ActionBarIds.USER_PREFS){
             String[] tabList = {getString(R.string.terms),getString(R.string.courses),getString(R.string.assessments),getString(R.string.tasks)};
@@ -240,27 +239,6 @@ public class HomeActivity extends GenericActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void sendToTerm(int id){
-        Intent intent = new Intent(HomeActivity.this, TermActivity.class);
-        Uri uri = Uri.parse(TermsProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
-    private void sendToProf(int id){
-        Intent intent = new Intent(HomeActivity.this, ProfessorActivity.class);
-        Uri uri = Uri.parse(ProfProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
-    private void sendToTask(int id){
-        Intent intent = new Intent(HomeActivity.this, TaskActivity.class);
-        Uri uri = Uri.parse(TasksProvider.CONTENT_URI + "/" + id);
-        intent.putExtra(Constants.CURRENT_URI, uri);
-        startActivityForResult(intent,0);
-    }
-
     protected void refreshPage(int id){
         setTitle();
         Bundle b = new Bundle();
@@ -282,11 +260,11 @@ public class HomeActivity extends GenericActivity
 
         if (groupId == Constants.MenuGroups.MANAGEMENT_GROUP) {
             if(id == Constants.MenuGroups.TERM_GROUP ){
-                sendToTerm(0);
+                Utils.sendToActivity(0,this,TermActivity.class,TermsProvider.CONTENT_URI);
             }else if(id == Constants.MenuGroups.PROF_GROUP){
-                sendToProf(0);
+                Utils.sendToActivity(0,this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
             }else if(id == Constants.MenuGroups.TASK_GROUP){
-                sendToTask(0);
+                Utils.sendToActivity(0,this,TaskActivity.class,TasksProvider.CONTENT_URI);
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
