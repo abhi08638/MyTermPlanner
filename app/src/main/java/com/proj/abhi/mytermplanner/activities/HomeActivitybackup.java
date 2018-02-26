@@ -15,13 +15,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -29,12 +30,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.adapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
-import com.proj.abhi.mytermplanner.fragments.HomeGenericFragment;
+import com.proj.abhi.mytermplanner.providers.AssessmentsProvider;
+import com.proj.abhi.mytermplanner.providers.CoursesProvider;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -44,9 +45,15 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
-public class HomeActivity extends GenericActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class HomeActivitybackup extends GenericActivity
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
 {
+
+    private CursorAdapter termCursorAdapter = new HomeTermsCursorAdapter(this,null,0);
+    private CursorAdapter courseCursorAdapter = new HomeCoursesCursorAdapter(this,null,0);
+    private CursorAdapter assessmentCursorAdapter = new HomeAssessmentsCursorAdapter(this,null,0);
+    private CursorAdapter taskCursorAdapter = new HomeTasksCursorAdapter(this,null,0);
+    private ListView termList,courseList,assessmentList,taskList;
     private int numQueryDays=7;
     private SharedPreferences sharedpreferences;
     private String sortOrder="";
@@ -54,15 +61,88 @@ public class HomeActivity extends GenericActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addLayout(R.layout.home_header_fragment);
-        initViewPager();
+        addLayout(R.layout.home_header);
+        initTabs();
 
         //init user prefs
         initPreferences();
 
+        //init cursor loaders
+        Bundle b = new Bundle();
+        b.putString("contentUri", TermsProvider.CONTENT_URI.toString());
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.TERM_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", HomeCoursesProvider.CONTENT_URI.toString());
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.HOME_COURSE_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", HomeAssessmentsProvider.CONTENT_URI.toString());
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.HOME_ASSESSMENT_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", TasksProvider.CONTENT_URI.toString());
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.TASK_ID,b,this);
+
+
         //hide fab from generic view
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
+
+        //init screen fields
+        termList = (ListView) findViewById(R.id.termList);
+        termList.setAdapter(termCursorAdapter);
+        termList.setClickable(true);
+        courseList = (ListView) findViewById(R.id.courseList);
+        courseList.setAdapter(courseCursorAdapter);
+        courseList.setClickable(true);
+        assessmentList = (ListView) findViewById(R.id.assessmentList);
+        assessmentList.setAdapter(assessmentCursorAdapter);
+        assessmentList.setClickable(true);
+        taskList = (ListView) findViewById(R.id.taskList);
+        taskList.setAdapter(taskCursorAdapter);
+        taskList.setClickable(true);
+
+        termList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(id>0){
+                    Long l = new Long(id);
+                    sendToTerm(l.intValue());
+                }
+            }
+        });
+
+        courseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(id>0){
+                    Intent intent = new Intent(HomeActivitybackup.this, CourseActivity.class);
+                    Uri uri = Uri.parse(CoursesProvider.CONTENT_URI + "/" + id);
+                    intent.putExtra(Constants.CURRENT_URI, uri);
+                    startActivityForResult(intent,0);
+                }
+            }
+        });
+
+        assessmentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(id>0){
+                    Intent intent = new Intent(HomeActivitybackup.this, AssessmentActivity.class);
+                    Uri uri = Uri.parse(AssessmentsProvider.CONTENT_URI + "/" + id);
+                    intent.putExtra(Constants.CURRENT_URI, uri);
+                    startActivityForResult(intent,0);
+                }
+            }
+        });
+
+        taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(id>0){
+                    Long l = new Long(id);
+                    sendToTask(l.intValue());
+                }
+            }
+        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -71,48 +151,6 @@ public class HomeActivity extends GenericActivity
         //restore values after rotation
         handleRotation(savedInstanceState,false);
 
-    }
-
-    protected void initViewPager() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if(viewPager!=null){
-            CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
-            Bundle b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-            b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
-            HomeGenericFragment termFragment = new HomeGenericFragment();
-            termFragment.setArguments(b);
-
-            b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-            b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
-            HomeGenericFragment courseFragment = new HomeGenericFragment();
-            courseFragment.setArguments(b);
-
-            b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-            b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
-            HomeGenericFragment assessmentFragment = new HomeGenericFragment();
-            assessmentFragment.setArguments(b);
-
-            b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-            b.putString(Constants.CONTENT_URI, TasksProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TASK_ID);
-            HomeGenericFragment taskFragment = new HomeGenericFragment();
-            taskFragment.setArguments(b);
-
-            adapter.addFragment(termFragment, getString(R.string.terms));
-            adapter.addFragment(courseFragment, getString(R.string.courses));
-            adapter.addFragment(assessmentFragment, getString(R.string.assessments));
-            adapter.addFragment(taskFragment, getString(R.string.tasks));
-            viewPager.setAdapter(adapter);
-            viewPager.setOffscreenPageLimit(adapter.getCount());
-            initTabs(viewPager);
-        }
     }
 
     protected void setTitle(){
@@ -137,7 +175,7 @@ public class HomeActivity extends GenericActivity
         }
         setTitle();
 
-        /*//init default tab
+        //init default tab
         if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)){
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(defaultTabIndex));
@@ -145,7 +183,7 @@ public class HomeActivity extends GenericActivity
         }else{
             setDefaultTabIndex(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB,null)));
             selectDefaultTab();
-        }*/
+        }
 
     }
 
@@ -252,21 +290,21 @@ public class HomeActivity extends GenericActivity
     }
 
     private void sendToTerm(int id){
-        Intent intent = new Intent(HomeActivity.this, TermActivity.class);
+        Intent intent = new Intent(HomeActivitybackup.this, TermActivity.class);
         Uri uri = Uri.parse(TermsProvider.CONTENT_URI + "/" + id);
         intent.putExtra(Constants.CURRENT_URI, uri);
         startActivityForResult(intent,0);
     }
 
     private void sendToProf(int id){
-        Intent intent = new Intent(HomeActivity.this, ProfessorActivity.class);
+        Intent intent = new Intent(HomeActivitybackup.this, ProfessorActivity.class);
         Uri uri = Uri.parse(ProfProvider.CONTENT_URI + "/" + id);
         intent.putExtra(Constants.CURRENT_URI, uri);
         startActivityForResult(intent,0);
     }
 
     private void sendToTask(int id){
-        Intent intent = new Intent(HomeActivity.this, TaskActivity.class);
+        Intent intent = new Intent(HomeActivitybackup.this, TaskActivity.class);
         Uri uri = Uri.parse(TasksProvider.CONTENT_URI + "/" + id);
         intent.putExtra(Constants.CURRENT_URI, uri);
         startActivityForResult(intent,0);
@@ -275,13 +313,18 @@ public class HomeActivity extends GenericActivity
     protected void refreshPage(int id){
         setTitle();
         Bundle b = new Bundle();
-        b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-        for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
-            if(f instanceof HomeGenericFragment){
-                ((HomeGenericFragment) f).restartLoader(b);
-            }
-        }
-       // selectDefaultTab();
+        b.putString("contentUri", TermsProvider.CONTENT_URI.toString());
+        getLoaderManager().restartLoader(Constants.CursorLoaderIds.TERM_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", HomeCoursesProvider.CONTENT_URI.toString());
+        getLoaderManager().restartLoader(Constants.CursorLoaderIds.HOME_COURSE_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", HomeAssessmentsProvider.CONTENT_URI.toString());
+        getLoaderManager().restartLoader(Constants.CursorLoaderIds.HOME_ASSESSMENT_ID,b,this);
+        b = new Bundle();
+        b.putString("contentUri", TasksProvider.CONTENT_URI.toString());
+        getLoaderManager().restartLoader(Constants.CursorLoaderIds.TASK_ID,b,this);
+        selectDefaultTab();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -304,5 +347,94 @@ public class HomeActivity extends GenericActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private String getWhereClause(){
+        String num=Integer.toString(numQueryDays);
+
+        if(numQueryDays>0){
+            sortOrder="";
+            return " between strftime("+Utils.getSqlDateNow()+") and strftime("+Utils.getSqlDateNow()+",'"+num+" days')";
+        }else if(numQueryDays<0){
+            sortOrder="desc";
+            return " between strftime("+Utils.getSqlDateNow()+",'"+num+" days') and strftime("+Utils.getSqlDateNow()+",'-1 day')";
+        }else{
+            sortOrder="";
+            return " = strftime("+Utils.getSqlDateNow()+")";
+        }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String[] cols = null;
+        String where = null;
+        String order = null;
+        if(bundle!=null){
+            Uri uri = Uri.parse((String) bundle.get("contentUri"));
+            if(uri.equals(TermsProvider.CONTENT_URI)){
+                if(numQueryDays>=0){
+                    where=Constants.Term.TERM_START_DATE+getWhereClause()+
+                        " OR ("+Constants.Term.TERM_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
+                                "AND "+Constants.Term.TERM_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
+                }else{
+                    where=Constants.Term.TERM_END_DATE+getWhereClause();
+                }
+
+                order=Constants.Term.TERM_START_DATE+" "+sortOrder+","+Constants.Term.TERM_END_DATE+" "+sortOrder;
+            }else if(uri.equals(HomeCoursesProvider.CONTENT_URI)){
+                //raw query
+                if(numQueryDays>=0){
+                    where="WHERE c."+Constants.Course.COURSE_START_DATE+getWhereClause()+
+                            " OR (c."+Constants.Course.COURSE_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
+                            "AND c."+Constants.Course.COURSE_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
+                }else{
+                    where="WHERE c."+Constants.Course.COURSE_END_DATE+getWhereClause();
+                }
+                where+=" ORDER BY c."+Constants.Course.COURSE_START_DATE +" "+sortOrder+", c."+Constants.Course.COURSE_END_DATE+" "+sortOrder;
+            }else if(uri.equals(HomeAssessmentsProvider.CONTENT_URI)){
+                //raw query
+                where="WHERE a."+Constants.Assessment.ASSESSMENT_END_DATE+getWhereClause();
+                where+=" ORDER BY a."+Constants.Assessment.ASSESSMENT_END_DATE+" "+sortOrder;
+            }else if(uri.equals(TasksProvider.CONTENT_URI)){
+                if(numQueryDays>=0){
+                    where=Constants.Task.TASK_START_DATE+getWhereClause()+
+                            " OR ("+Constants.Task.TASK_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
+                            "AND "+Constants.Task.TASK_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
+                }else{
+                    where=Constants.Task.TASK_END_DATE+getWhereClause();
+                }
+
+                order=Constants.Task.TASK_START_DATE+" "+sortOrder+","+Constants.Task.TASK_END_DATE+" "+sortOrder;
+            }
+            return new CursorLoader(this, uri,
+                    cols,where,null,order);
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if(loader.getId()==Constants.CursorLoaderIds.TERM_ID){
+            termCursorAdapter.swapCursor(cursor);
+        }else if(loader.getId()==Constants.CursorLoaderIds.HOME_COURSE_ID){
+            courseCursorAdapter.swapCursor(cursor);
+        }else if(loader.getId()==Constants.CursorLoaderIds.HOME_ASSESSMENT_ID){
+            assessmentCursorAdapter.swapCursor(cursor);
+        }else if(loader.getId()==Constants.CursorLoaderIds.TASK_ID){
+            taskCursorAdapter.swapCursor(cursor);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if(loader.getId()==Constants.CursorLoaderIds.TERM_ID){
+           termCursorAdapter.swapCursor(null);
+        }else if(loader.getId()==Constants.CursorLoaderIds.HOME_COURSE_ID){
+            courseCursorAdapter.swapCursor(null);
+        }else if(loader.getId()==Constants.CursorLoaderIds.HOME_ASSESSMENT_ID){
+            assessmentCursorAdapter.swapCursor(null);
+        }else if(loader.getId()==Constants.CursorLoaderIds.TASK_ID){
+            taskCursorAdapter.swapCursor(null);
+        }
     }
 }

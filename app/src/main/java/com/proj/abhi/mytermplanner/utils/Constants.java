@@ -11,6 +11,8 @@ public final class Constants {
     public static final String APP_NAME = "My Term Planner";
     public static final String CURRENT_URI = "currentUri";
     public static final String CURRENT_INTENT = "currentIntent";
+    public static final String CONTENT_URI = "contentUri";
+    public static final String CURSOR_LOADER_ID = "cursorLoaderId";
 
     public final class Tables{
         public static final String TABLE_TERM = "term";

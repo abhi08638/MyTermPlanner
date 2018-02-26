@@ -4,25 +4,23 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.RelativeLayout;
@@ -42,6 +40,11 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+
 public class GenericActivity extends AppCompatActivity
 {
 
@@ -51,6 +54,7 @@ public class GenericActivity extends AppCompatActivity
     protected AlarmClient alarmClient;
     protected int defaultTabIndex=0;
     private TabHost tabHost=null;
+    protected ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,13 @@ public class GenericActivity extends AppCompatActivity
         LayoutInflater inflater = LayoutInflater.from(this);
         View inflatedLayout= inflater.inflate(id, null, false);
         home.addView(inflatedLayout);
+    }
+
+    protected void initTabs(ViewPager viewPager){
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.setSelectedTabIndicatorHeight(5);
     }
 
     protected void initTabs(){
