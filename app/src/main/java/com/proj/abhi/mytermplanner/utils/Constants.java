@@ -105,6 +105,7 @@ public final class Constants {
         public static final int COURSE_PROF_ID_INCLUDE= -8;
         public static final int COURSE_PROF_ID_EXCLUDE= -9;
         public static final int TASK_ID = -10;
+        public static final int ALARM_ID = -11;
     }
 
     public final class PersistAlarm{
@@ -125,6 +126,14 @@ public final class Constants {
         public static final String NOTIFICATION_GREEN="notification_green";
         public static final String NOTIFICATION_BLUE="notification_blue";
         public static final String NOTIFICATION_VIBRATE_PATTERN="notification_vibrate_pattern";
+    }
+
+    public final class Sql{
+        public static final String WHERE="WHERE";
+    }
+
+    public final class SqlSelect{
+        public static final String QUERY_ALARMS="SELECT * FROM "+ Tables.TABLE_PERSIST_ALARM+" ";
     }
 
     public final class CoursesProfsSql{

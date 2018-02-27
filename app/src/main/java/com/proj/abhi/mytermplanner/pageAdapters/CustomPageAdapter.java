@@ -1,4 +1,4 @@
-package com.proj.abhi.mytermplanner.adapters;
+package com.proj.abhi.mytermplanner.pageAdapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

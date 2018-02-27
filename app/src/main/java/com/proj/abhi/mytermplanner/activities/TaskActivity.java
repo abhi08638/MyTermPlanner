@@ -1,7 +1,6 @@
 package com.proj.abhi.mytermplanner.activities;
 
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,69 +11,59 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.widget.EditText;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
+import com.proj.abhi.mytermplanner.fragments.TaskDetailFragment;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
-import com.proj.abhi.mytermplanner.utils.CustomException;
-import com.proj.abhi.mytermplanner.utils.MaskWatcher;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class TaskActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
 {
-    private EditText title,endDate,startDate,notes;
-    private String[] reminderFields;
-    private int[] reminderFieldIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addLayout(R.layout.task_header);
-        initTabs();
-        initReminderFields();
-
-        //init currentUri
         Intent intent = getIntent();
         if(intent.hasExtra(Constants.CURRENT_URI)){
             currentUri= intent.getParcelableExtra(Constants.CURRENT_URI);
         }else{
             currentUri = Uri.parse(TasksProvider.CONTENT_URI+"/"+0);
         }
+        //init tabs
+        initViewPager();
 
         //init cursor loaders
         getLoaderManager().initLoader(Constants.CursorLoaderIds.TASK_ID,null,this);
-
-        //init screen fields
-        title=(EditText) findViewById(R.id.taskTitle);
-        notes=(EditText) findViewById(R.id.notes);
-        startDate=(EditText) findViewById(R.id.startDate);
-        endDate=(EditText) findViewById(R.id.endDate);
-        startDate.addTextChangedListener(new MaskWatcher("##/##/####"));
-        endDate.addTextChangedListener(new MaskWatcher("##/##/####"));
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         handleRotation(savedInstanceState,false);
-        refreshPage(getCurrentUriId());
         refreshMenu();
     }
 
-    private void initReminderFields(){
-        //always create size plus 1 to allow for creation of custom date
-        reminderFields=new String[2+1];
-        reminderFieldIds=new int[reminderFields.length];
-        reminderFields[0]=getString(R.string.start_date);
-        reminderFieldIds[0]=R.id.startDate;
-        reminderFields[1]=getString(R.string.end_date);
-        reminderFieldIds[1]=R.id.endDate;
+    protected void initViewPager() {
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        if(viewPager!=null){
+            CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
+            Bundle b = new Bundle();
+            b.putParcelable(Constants.CURRENT_URI, currentUri);
+            TaskDetailFragment taskDetailFragment= new TaskDetailFragment();
+            taskDetailFragment.setArguments(b);
+
+            adapter.addFragment(taskDetailFragment, getString(R.string.details));
+            viewPager.setAdapter(adapter);
+            viewPager.setOffscreenPageLimit(adapter.getCount());
+            initTabs(viewPager);
+        }
     }
 
     protected void refreshMenu(){
@@ -82,41 +71,13 @@ public class TaskActivity extends GenericActivity
     }
 
     protected void save() throws Exception{
-        ContentValues values = new ContentValues();
-        //all validations throw exceptions on failure to prevent saving
-        try{
-            //title cant be empty
-            if(title.getText()!=null && !title.getText().toString().trim().equals("")){
-                values.put(Constants.Task.TASK_TITLE,title.getText().toString());
-            }else{throw new CustomException(getString(R.string.error_empty_title));}
-
-            //start date must be valid
-            if(Utils.isValidDate(startDate.getText().toString())) {
-                values.put(Constants.Task.TASK_START_DATE, Utils.getDbDate(startDate.getText().toString()));
+        for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
+            if(f instanceof TaskDetailFragment){
+                currentUri=((TaskDetailFragment) f).save();
+                break;
             }
-            //end date must be valid
-            if(Utils.isValidDate(endDate.getText().toString())) {
-                values.put(Constants.Task.TASK_END_DATE, Utils.getDbDate(endDate.getText().toString()));
-            }
-
-            Utils.isBefore(startDate.getText().toString(),endDate.getText().toString());
-
-            //save notes
-            values.put(Constants.Assessment.NOTES,notes.getText().toString());
-        }catch (CustomException e){
-            Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
-            throw e;
         }
-
-        if(getCurrentUriId()>0){
-            getContentResolver().update(currentUri, values, Constants.ID + "=" + getCurrentUriId(), null);
-        }else{
-            currentUri=getContentResolver().insert(currentUri, values);
-        }
-
         refreshMenu();
-        refreshPage(getCurrentUriId());
-        Snackbar.make(mCoordinatorLayout, R.string.saved, Snackbar.LENGTH_LONG).show();
     }
 
     protected void addItemsInNavMenuDrawer(Cursor c) {
@@ -173,44 +134,22 @@ public class TaskActivity extends GenericActivity
 
             return true;
         }else if (id == Constants.ActionBarIds.ADD_REMINDER && uriId>0) {
-            refreshPage(getCurrentUriId());
-            Intent intent = new Intent(this, this.getClass());
-            intent.putExtra(Constants.CURRENT_URI, currentUri);
-            Bundle b = new Bundle();
-            b.putInt(Constants.Ids.TASK_ID,getCurrentUriId());
-            b.putString(Constants.PersistAlarm.CONTENT_TITLE,title.getText().toString());
-            b.putString(Constants.PersistAlarm.USER_OBJECT,Constants.Tables.TABLE_TASK);
-            b.putParcelable(Constants.CURRENT_INTENT,intent);
-            createReminder(reminderFields,reminderFieldIds,b);
+            for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
+                if(f instanceof TaskDetailFragment){
+                    ((TaskDetailFragment) f).doReminder(this,TaskActivity.class);
+                    break;
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    protected void emptyPage(){
-        currentUri= Uri.parse(TasksProvider.CONTENT_URI+"/"+0);
-        title.setText(null);
-        startDate.setText(null);
-        endDate.setText(null);
-        notes.setText(null);
-    }
-
     protected void refreshPage(int id){
-        currentUri = Uri.parse(TasksProvider.CONTENT_URI+"/"+id);
-        if(id>0){
-            Cursor c = getContentResolver().query(currentUri,null,
-                    Constants.ID+"="+currentUri.getLastPathSegment(),null,null);
-            c.moveToFirst();
-            title.setText(c.getString(c.getColumnIndex(Constants.Task.TASK_TITLE)));
-            notes.setText(c.getString(c.getColumnIndex(Constants.Task.NOTES)));
-            startDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_START_DATE))));
-            endDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_END_DATE))));
-
-            c.close();
-            this.setTitle(title.getText().toString());
-        }else{
-            emptyPage();
-            this.setTitle(R.string.task_editor);
+        for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
+            if(f instanceof TaskDetailFragment){
+                currentUri=((TaskDetailFragment) f).refreshPage(id);
+            }
         }
     }
 
@@ -227,12 +166,15 @@ public class TaskActivity extends GenericActivity
             unSelectCurrNavItem(Constants.MenuGroups.TASK_GROUP);
             item.setCheckable(true);
             item.setChecked(true);
-            this.setTitle(item.getTitle());
+            //this.setTitle(item.getTitle());
             refreshPage(id);
         } else if (id == R.id.nav_share && getCurrentUriId()>0) {
-            refreshPage(getCurrentUriId());
-            setIntentMsg();
-            doShare();
+            for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
+                if(f instanceof TaskDetailFragment){
+                    ((TaskDetailFragment) f).doShare();
+                    break;
+                }
+            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -240,10 +182,9 @@ public class TaskActivity extends GenericActivity
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        String[] cols = null;
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {;
         String where = null;
-        cols = new String[2];
+        String[] cols = new String[2];
         cols[0]=Constants.Task.TASK_TITLE;
         cols[1]=Constants.ID;
         return new CursorLoader(this, TasksProvider.CONTENT_URI,
@@ -258,18 +199,5 @@ public class TaskActivity extends GenericActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-    public void setIntentMsg(){
-        intentMsg=("Task Title: "+title.getText().toString());
-        intentMsg+=("\n");
-        intentMsg+=("Task Start Date: "+startDate.getText().toString());
-        intentMsg+=("\n");
-        intentMsg+=("Task End Date: "+endDate.getText().toString());
-        intentMsg+=("\n");
-        intentMsg+=("Task Notes: "+notes.getText().toString());
-        intentMsg+=("\n");
-    }
+    public void onLoaderReset(Loader<Cursor> loader) {}
 }

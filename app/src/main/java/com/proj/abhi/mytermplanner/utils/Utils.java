@@ -68,6 +68,25 @@ public class Utils {
         }
     }
 
+    public static String getUserTime(String date){
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat userFormat = new SimpleDateFormat("HH:mm");
+            Date newDate=sdf.parse(date);
+            String ampm;
+            if(newDate.getHours()>=12){
+                if(newDate.getHours()!=12)
+                    newDate.setHours(newDate.getHours()-12);
+                ampm=" PM";
+            }else{
+                ampm=" AM";
+            }
+            return userFormat.format(newDate)+ampm;
+        }catch (Exception e){
+            return date;
+        }
+    }
+
     public static Date getDate(String date){
         try{
             Date newDate=format.parse(date);

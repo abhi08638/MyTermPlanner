@@ -12,6 +12,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,10 +24,12 @@ import com.proj.abhi.mytermplanner.activities.AssessmentActivity;
 import com.proj.abhi.mytermplanner.activities.CourseActivity;
 import com.proj.abhi.mytermplanner.activities.TaskActivity;
 import com.proj.abhi.mytermplanner.activities.TermActivity;
+import com.proj.abhi.mytermplanner.cursorAdapters.AlarmsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
+import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
@@ -34,7 +37,7 @@ import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
-public class HomeGenericFragment extends ListFragment implements LoaderCallbacks<Cursor>, OnItemClickListener {
+public class GenericListFragment extends ListFragment implements LoaderCallbacks<Cursor>, OnItemClickListener {
 
     private CursorAdapter cursorAdapter;
     private String sortOrder;
@@ -47,11 +50,10 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
         getListView().setDivider(null);
         getListView().setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.content, null));
         initializer=getArguments();
-        numQueryDays=initializer.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
         switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
-            case Constants.CursorLoaderIds.TERM_ID:
-                cursorAdapter = new HomeTermsCursorAdapter(getActivity(),null,0);
-                setEmptyText("No "+getString(R.string.terms));
+            case Constants.CursorLoaderIds.ALARM_ID:
+                cursorAdapter = new AlarmsCursorAdapter(getActivity(),null,0);
+                setEmptyText("No "+getString(R.string.reminders));
                 break;
             case Constants.CursorLoaderIds.HOME_COURSE_ID:
                 cursorAdapter = new HomeCoursesCursorAdapter(getActivity(),null,0);
@@ -75,23 +77,7 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
     }
 
     public void restartLoader(Bundle b){
-        numQueryDays=b.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
         getLoaderManager().restartLoader(initializer.getInt(Constants.CURSOR_LOADER_ID),initializer,this);
-    }
-
-    private String getWhereClause(){
-        String num=Integer.toString(numQueryDays);
-
-        if(numQueryDays>0){
-            sortOrder="";
-            return " between strftime("+Utils.getSqlDateNow()+") and strftime("+Utils.getSqlDateNow()+",'"+num+" days')";
-        }else if(numQueryDays<0){
-            sortOrder="desc";
-            return " between strftime("+Utils.getSqlDateNow()+",'"+num+" days') and strftime("+Utils.getSqlDateNow()+",'-1 day')";
-        }else{
-            sortOrder="";
-            return " = strftime("+Utils.getSqlDateNow()+")";
-        }
     }
 
     @Override
@@ -101,39 +87,8 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
         String order = null;
         if(bundle!=null){
             Uri uri = Uri.parse((String) bundle.get(Constants.CONTENT_URI));
-            if(uri.equals(TermsProvider.CONTENT_URI)){
-                if(numQueryDays>=0){
-                    where=Constants.Term.TERM_START_DATE+getWhereClause()+
-                            " OR ("+Constants.Term.TERM_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
-                            "AND "+Constants.Term.TERM_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
-                }else{
-                    where=Constants.Term.TERM_END_DATE+getWhereClause();
-                }
-                order=Constants.Term.TERM_START_DATE+" "+sortOrder+","+Constants.Term.TERM_END_DATE+" "+sortOrder;
-            }else if(uri.equals(HomeCoursesProvider.CONTENT_URI)){
-                //raw query
-                if(numQueryDays>=0){
-                    where="WHERE c."+Constants.Course.COURSE_START_DATE+getWhereClause()+
-                            " OR (c."+Constants.Course.COURSE_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
-                            "AND c."+Constants.Course.COURSE_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
-                }else{
-                    where="WHERE c."+Constants.Course.COURSE_END_DATE+getWhereClause();
-                }
-                where+=" ORDER BY c."+Constants.Course.COURSE_START_DATE +" "+sortOrder+", c."+Constants.Course.COURSE_END_DATE+" "+sortOrder;
-            }else if(uri.equals(HomeAssessmentsProvider.CONTENT_URI)){
-                //raw query
-                where="WHERE a."+Constants.Assessment.ASSESSMENT_END_DATE+getWhereClause();
-                where+=" ORDER BY a."+Constants.Assessment.ASSESSMENT_END_DATE+" "+sortOrder;
-            }else if(uri.equals(TasksProvider.CONTENT_URI)){
-                if(numQueryDays>=0){
-                    where=Constants.Task.TASK_START_DATE+getWhereClause()+
-                            " OR ("+Constants.Task.TASK_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
-                            "AND "+Constants.Task.TASK_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
-                }else{
-                    where=Constants.Task.TASK_END_DATE+getWhereClause();
-                }
-
-                order=Constants.Task.TASK_START_DATE+" "+sortOrder+","+Constants.Task.TASK_END_DATE+" "+sortOrder;
+            if(uri.equals(AlarmsProvider.CONTENT_URI)){
+                where=initializer.getString(Constants.Sql.WHERE);
             }
             return new CursorLoader(getActivity(), uri,
                     cols,where,null,order);

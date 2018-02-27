@@ -92,4 +92,5 @@
     <string name="course_status">Course Status</string>
     <string name="assessment_type">Assessment Type</string>
     <string name="prof_title">Title</string>
+    <string name="reminders">Reminders</string>
 </resources>

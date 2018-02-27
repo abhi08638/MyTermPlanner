@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,7 +88,7 @@ public class GenericActivity extends AppCompatActivity
         alarmClient.doBindService();
     }
 
-    protected void addLayout(int id){
+    public void addLayout(int id){
         RelativeLayout home = findViewById(R.id.content_home);
         LayoutInflater inflater = LayoutInflater.from(this);
         View inflatedLayout= inflater.inflate(id, null, false);
@@ -99,6 +100,32 @@ public class GenericActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorHeight(5);
+       /* tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position=tab.getPosition();
+                HorizontalScrollView horizontalScrollView = findViewById(R.id.hsv);
+                final int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+                final int leftX = tabLayout.getLeft();
+                int newX = 0;
+                newX = leftX+(tab.getText().length()*2) - (screenWidth/2);
+                if(newX<0){
+                    newX=0;
+                }
+                Log.d(null, "onTabSelected: "+leftX);
+                tabLayout.scrollTo(200,0);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });*/
     }
 
     protected void initTabs(){
@@ -320,7 +347,7 @@ public class GenericActivity extends AppCompatActivity
         }
     }
 
-    protected void createReminder(String[] list, int[] listIds,Bundle userBundle){
+    public void createReminder(String[] list, int[] listIds, Bundle userBundle){
         try{
             final int[] ids = listIds;
             final Bundle b=userBundle;

@@ -21,8 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.adapters.CustomPageAdapter;
+import com.proj.abhi.mytermplanner.fragments.GenericListFragment;
+import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.HomeGenericFragment;
+import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -31,6 +33,9 @@ import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.Utils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeActivity extends GenericActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -41,7 +46,7 @@ public class HomeActivity extends GenericActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addLayout(R.layout.home_header_fragment);
+        //addLayout(R.layout.home_header_fragment);
         //init user prefs
         initPreferences();
 
@@ -93,10 +98,18 @@ public class HomeActivity extends GenericActivity
             HomeGenericFragment taskFragment = new HomeGenericFragment();
             taskFragment.setArguments(b);
 
+            b = new Bundle();
+            b.putString(Constants.Sql.WHERE,Constants.SqlSelect.QUERY_ALARMS +"ORDER BY "+Constants.PersistAlarm.NOTIFY_DATETIME);
+            b.putString(Constants.CONTENT_URI, AlarmsProvider.CONTENT_URI.toString());
+            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.ALARM_ID);
+            GenericListFragment reminderFragment= new GenericListFragment();
+            reminderFragment.setArguments(b);
+
             adapter.addFragment(termFragment, getString(R.string.terms));
             adapter.addFragment(courseFragment, getString(R.string.courses));
             adapter.addFragment(assessmentFragment, getString(R.string.assessments));
             adapter.addFragment(taskFragment, getString(R.string.tasks));
+            adapter.addFragment(reminderFragment, getString(R.string.reminders));
             viewPager.setAdapter(adapter);
             viewPager.setOffscreenPageLimit(adapter.getCount());
             initTabs(viewPager);
@@ -246,6 +259,8 @@ public class HomeActivity extends GenericActivity
         for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
             if(f instanceof HomeGenericFragment){
                 ((HomeGenericFragment) f).restartLoader(b);
+            }else if(f instanceof GenericListFragment){
+                ((GenericListFragment)f).restartLoader(null);
             }
         }
     }
@@ -255,20 +270,28 @@ public class HomeActivity extends GenericActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         doAbout(item);
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        int groupId = item.getGroupId();
-
-        if (groupId == Constants.MenuGroups.MANAGEMENT_GROUP) {
-            if(id == Constants.MenuGroups.TERM_GROUP ){
-                Utils.sendToActivity(0,this,TermActivity.class,TermsProvider.CONTENT_URI);
-            }else if(id == Constants.MenuGroups.PROF_GROUP){
-                Utils.sendToActivity(0,this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
-            }else if(id == Constants.MenuGroups.TASK_GROUP){
-                Utils.sendToActivity(0,this,TaskActivity.class,TasksProvider.CONTENT_URI);
-            }
-        }
+        final int id = item.getItemId();
+        final int groupId = item.getGroupId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        new Timer().schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (groupId == Constants.MenuGroups.MANAGEMENT_GROUP) {
+                            if(id == Constants.MenuGroups.TERM_GROUP ){
+                                Utils.sendToActivity(0,HomeActivity.this,TermActivity.class,TermsProvider.CONTENT_URI);
+                            }else if(id == Constants.MenuGroups.PROF_GROUP){
+                                Utils.sendToActivity(0,HomeActivity.this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
+                            }else if(id == Constants.MenuGroups.TASK_GROUP){
+                                Utils.sendToActivity(0,HomeActivity.this,TaskActivity.class,TasksProvider.CONTENT_URI);
+                            }
+                        }
+                    }
+                },
+                200
+        );
+
         return true;
     }
 }
