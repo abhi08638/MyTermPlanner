@@ -112,7 +112,7 @@ public class AssessmentActivity extends GenericActivity
 
             //end date must be valid
             if(Utils.isValidDate(endDate.getText().toString())) {
-                values.put(Constants.Assessment.ASSESSMENT_END_DATE, Utils.getDbDate(endDate.getText().toString()));
+                values.put(Constants.Assessment.ASSESSMENT_END_DATE, Utils.getDbDateTime(endDate.getText().toString()));
             }
 
             //save type and notes

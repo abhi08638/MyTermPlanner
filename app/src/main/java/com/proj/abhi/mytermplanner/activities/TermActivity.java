@@ -120,11 +120,11 @@ public class TermActivity extends GenericActivity
             }else{throw new CustomException(getString(R.string.error_empty_title));}
             //start date must be valid
             if(Utils.isValidDate(startDate.getText().toString())) {
-                termValues.put(Constants.Term.TERM_START_DATE, Utils.getDbDate(startDate.getText().toString()));
+                termValues.put(Constants.Term.TERM_START_DATE, Utils.getDbDateTime(startDate.getText().toString()));
             }
             //end date must be valid
             if(Utils.isValidDate(endDate.getText().toString())) {
-                termValues.put(Constants.Term.TERM_END_DATE, Utils.getDbDate(endDate.getText().toString()));
+                termValues.put(Constants.Term.TERM_END_DATE, Utils.getDbDateTime(endDate.getText().toString()));
             }
             //start date must be before end date
             Utils.isBefore(startDate.getText().toString(),endDate.getText().toString());

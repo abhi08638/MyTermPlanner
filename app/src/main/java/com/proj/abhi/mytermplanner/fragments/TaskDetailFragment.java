@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,21 +28,20 @@ import android.widget.TimePicker;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.GenericActivity;
-import com.proj.abhi.mytermplanner.activities.TaskActivity;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.MaskWatcher;
 import com.proj.abhi.mytermplanner.utils.Utils;
+import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TaskDetailFragment extends Fragment {
     private Bundle initializer=null;
     private Uri currentUri;
-    private EditText title,endDate,startDate,notes;
+    private EditText title,notes;
+    private EditTextDatePicker startDate,endDate;
     protected CoordinatorLayout mCoordinatorLayout;
     private String[] reminderFields;
     private int[] reminderFieldIds;
@@ -67,10 +65,8 @@ public class TaskDetailFragment extends Fragment {
         //init screen fields
         title=(EditText) getActivity().findViewById(R.id.taskTitle);
         notes=(EditText) getActivity().findViewById(R.id.notes);
-        startDate=(EditText) getActivity().findViewById(R.id.startDate);
-        endDate=(EditText) getActivity().findViewById(R.id.endDate);
-        startDate.addTextChangedListener(new MaskWatcher("##/##/####"));
-        endDate.addTextChangedListener(new MaskWatcher("##/##/####"));
+        startDate=new EditTextDatePicker(getContext(),R.id.startDate);
+        endDate=new EditTextDatePicker(getContext(),R.id.endDate);
         refreshPage(getCurrentUriId());
     }
 
@@ -144,16 +140,10 @@ public class TaskDetailFragment extends Fragment {
                 values.put(Constants.Task.TASK_TITLE,title.getText().toString());
             }else{throw new CustomException(getString(R.string.error_empty_title));}
 
-            //start date must be valid
-            if(Utils.isValidDate(startDate.getText().toString())) {
-                values.put(Constants.Task.TASK_START_DATE, Utils.getDbDate(startDate.getText().toString()));
+            if(Utils.isBefore(startDate.getText(),endDate.getText())){
+                values.put(Constants.Task.TASK_START_DATE, Utils.getDbDateTime(startDate.getText()));
+                values.put(Constants.Task.TASK_END_DATE, Utils.getDbDateTime(endDate.getText()));
             }
-            //end date must be valid
-            if(Utils.isValidDate(endDate.getText().toString())) {
-                values.put(Constants.Task.TASK_END_DATE, Utils.getDbDate(endDate.getText().toString()));
-            }
-
-            Utils.isBefore(startDate.getText().toString(),endDate.getText().toString());
 
             //save notes
             values.put(Constants.Assessment.NOTES,notes.getText().toString());
@@ -188,9 +178,9 @@ public class TaskDetailFragment extends Fragment {
     public void setIntentMsg(){
         intentMsg=("Task Title: "+title.getText().toString());
         intentMsg+=("\n");
-        intentMsg+=("Task Start Date: "+startDate.getText().toString());
+        intentMsg+=("Task Start Date: "+startDate.getText());
         intentMsg+=("\n");
-        intentMsg+=("Task End Date: "+endDate.getText().toString());
+        intentMsg+=("Task End Date: "+endDate.getText());
         intentMsg+=("\n");
         intentMsg+=("Task Notes: "+notes.getText().toString());
         intentMsg+=("\n");
@@ -214,7 +204,7 @@ public class TaskDetailFragment extends Fragment {
             LayoutInflater li = LayoutInflater.from(getActivity());
             final View promptsView = li.inflate(R.layout.reminder_alert, null);
             final Spinner mSpinner= (Spinner) promptsView.findViewById(R.id.reminderDropdown);
-            final TextView customDate = (TextView) promptsView.findViewById(R.id.reminderDate);
+            final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
             final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
 
@@ -227,7 +217,6 @@ public class TaskDetailFragment extends Fragment {
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                     if(parentView.getItemAtPosition(position).toString().equals(getString(R.string.custom_date))){
                         customDate.setVisibility(View.VISIBLE);
-                        customDate.addTextChangedListener(new MaskWatcher("##/##/####"));
                         customDate.setText(Utils.getCurrentDate());
                     }else{
                         customDate.setVisibility(View.GONE);
@@ -259,7 +248,7 @@ public class TaskDetailFragment extends Fragment {
                                         }
                                     }
                                     if(Utils.isValidDate(date.getText().toString())) {
-                                        Date alarmDate = Utils.getDate(date.getText().toString());
+                                        Date alarmDate = Utils.getDateFromUser(date.getText().toString());
                                         alarmDate.setHours(timePicker.getCurrentHour());
                                         alarmDate.setMinutes(timePicker.getCurrentMinute());
                                         ((GenericActivity)getActivity()).setAlarmForDate(alarmDate,b);

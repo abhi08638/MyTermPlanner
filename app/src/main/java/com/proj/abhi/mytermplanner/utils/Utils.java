@@ -17,33 +17,20 @@ import java.util.TimeZone;
 
 public class Utils {
 
-    public static String pattern = "MM/dd/yyyy";
-    public static SimpleDateFormat format = new SimpleDateFormat(pattern);
+    public static String userDatePattern = "MMM dd, yyyy";
+    public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
+    public static SimpleDateFormat userDateFormat = new SimpleDateFormat(userDatePattern);
+    public static SimpleDateFormat dbDateTimeFormat = new SimpleDateFormat(dbDateTimePattern);
 
     public static boolean isValidDate(String date) throws CustomException{
-        try{
-           Date newDate=format.parse(date);
-           Date maxDate=format.parse("12/31/2999");
-           Date minDate=format.parse("01/01/1000");
-            if(newDate.after(maxDate) || newDate.before(minDate)){
-                throw new CustomException("Year must be between 1000 and 3000");
-            }
-        }catch (Exception e){
-            if(e instanceof CustomException){
-                throw new CustomException(e.getMessage());
-            }
-            else{
-                throw new CustomException("Invalid Date");
-            }
-        }
+
         return true;
     }
 
-    public static String getDbDate(String date){
+    public static String getDbDateTime(String date){
         try{
-            Date newDate=getDate(date);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            return sdf.format(newDate);
+            Date newDate=getDateFromUser(date);
+            return getDbDateTime(newDate);
         }catch (Exception e){
             return date;
         }
@@ -51,8 +38,7 @@ public class Utils {
 
     public static String getDbDateTime(Date date){
         try{
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return sdf.format(date);
+            return dbDateTimeFormat.format(date);
         }catch (Exception e){
             return null;
         }
@@ -60,9 +46,8 @@ public class Utils {
 
     public static String getUserDate(String date){
         try{
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date newDate=sdf.parse(date);
-            return format.format(newDate);
+            Date newDate=dbDateTimeFormat.parse(date);
+            return userDateFormat.format(newDate);
         }catch (Exception e){
             return date;
         }
@@ -87,9 +72,9 @@ public class Utils {
         }
     }
 
-    public static Date getDate(String date){
+    public static Date getDateFromUser(String date){
         try{
-            Date newDate=format.parse(date);
+            Date newDate=userDateFormat.parse(date);
             return newDate;
         }catch (Exception e){
             return null;
@@ -99,7 +84,7 @@ public class Utils {
     public static String getCurrentDate(){
         try{
             Date newDate=new Date();
-            return format.format(newDate);
+            return userDateFormat.format(newDate);
         }catch (Exception e){
             return null;
         }
@@ -108,7 +93,7 @@ public class Utils {
 
     public static boolean isBefore(String startDate,String endDate) throws CustomException{
         try{
-            if(format.parse(startDate).after(format.parse(endDate))){
+            if(userDateFormat.parse(startDate).after(userDateFormat.parse(endDate))){
                 throw new CustomException("Start Date must be before End Date");
             }
         }catch(Exception e){

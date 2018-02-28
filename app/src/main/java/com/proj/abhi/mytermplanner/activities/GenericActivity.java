@@ -381,7 +381,7 @@ public class GenericActivity extends AppCompatActivity
                                         }
                                     }
                                     if(Utils.isValidDate(date.getText().toString())) {
-                                        Date alarmDate = Utils.getDate(date.getText().toString());
+                                        Date alarmDate = Utils.getDateFromUser(date.getText().toString());
                                         alarmDate.setHours(timePicker.getCurrentHour());
                                         alarmDate.setMinutes(timePicker.getCurrentMinute());
                                         setAlarmForDate(alarmDate,b);
