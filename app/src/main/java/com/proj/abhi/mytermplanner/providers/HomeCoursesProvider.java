@@ -72,7 +72,7 @@ public class HomeCoursesProvider extends ContentProvider{
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        return database.delete(Constants.Tables.TABLE_COURSE, selection, selectionArgs);
     }
 
     @Override

@@ -36,6 +36,7 @@ public class HomeTasksCursorAdapter extends CursorAdapter{
         TextView t = (TextView) view.findViewById(R.id.item1);
         TextView sd = (TextView) view.findViewById(R.id.item2);
         TextView ed = (TextView) view.findViewById(R.id.item3);
+        t.setTextSize(18);
         t.setText(title);
         sd.setText("Start Date: "+startDate);
         ed.setText("End Date: "+endDate);

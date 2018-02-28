@@ -4,14 +4,19 @@ package com.proj.abhi.mytermplanner.fragments;
  * Created by Abhi on 2/25/2018.
  */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,10 +32,12 @@ import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
+import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
+import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
@@ -39,6 +46,7 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
     private CursorAdapter cursorAdapter;
     private String sortOrder;
     private int numQueryDays;
+    protected CoordinatorLayout mCoordinatorLayout;
     private Bundle initializer=null;
 
     @Override
@@ -46,6 +54,7 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
         super.onActivityCreated(savedInstanceState);
         getListView().setDivider(null);
         getListView().setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.content, null));
+        mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer=getArguments();
         numQueryDays=initializer.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
         switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
@@ -68,6 +77,45 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
         }
         setListAdapter(cursorAdapter);
         initLoader();
+
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> av, View v, int position, long l) {
+                Long val=new Long(l);
+                final int id=val.intValue();
+                DialogInterface.OnClickListener dialogClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int button) {
+                                if (button == DialogInterface.BUTTON_POSITIVE) {
+                                    String cancelAlarmsWhere=" WHERE "+initializer.get(Constants.ID)+"="+id;
+                                    new AlarmTask(getActivity(),null, null).cancelAlarms(cancelAlarmsWhere);
+                                    String where = Constants.ID+"="+id;
+                                    getActivity().getContentResolver().delete(Uri.parse((String) initializer.get(Constants.CONTENT_URI)),where,null);
+                                    for(android.support.v4.app.Fragment f:getActivity().getSupportFragmentManager().getFragments()){
+                                        if(f instanceof HomeGenericFragment){
+                                            ((HomeGenericFragment)f).restartLoader(null);
+                                        }
+                                        if(f instanceof AlarmListFragment){
+                                            ((AlarmListFragment)f).restartLoader(null);
+                                        }
+                                    }
+                                    Snackbar.make(mCoordinatorLayout, R.string.deleted, Snackbar.LENGTH_LONG).show();
+                                }
+                            }
+                        };
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                alertDialogBuilder.setTitle(R.string.do_delete)
+                        .setPositiveButton(getString(R.string.delete), dialogClickListener)
+                        .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+
+                final AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                alertDialog.setCanceledOnTouchOutside(false);
+                return true;
+            }
+        });
     }
 
     private void initLoader(){
@@ -75,7 +123,8 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
     }
 
     public void restartLoader(Bundle b){
-        numQueryDays=b.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
+        if(b!=null)
+            numQueryDays=b.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
         getLoaderManager().restartLoader(initializer.getInt(Constants.CURSOR_LOADER_ID),initializer,this);
     }
 

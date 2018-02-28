@@ -29,6 +29,8 @@
         <item name="android:paddingRight">@dimen/input_padding</item>
         <item name="android:ems">10</item>
         <item name="android:textSize">28dp</item>
+        <item name="android:inputType">textCapWords|textAutoCorrect|textAutoComplete|textMultiLine</item>
+        <item name="android:singleLine">false</item>
     </style>
     <style name="InputMargin">
         <item name="android:layout_marginLeft">@dimen/input_margin</item>
@@ -41,6 +43,15 @@
         <item name="android:layout_marginLeft">@dimen/input_margin</item>
         <item name="android:layout_marginRight">@dimen/input_margin</item>
         <item name="android:ems">10</item>
+    </style>
+
+    <style name="SelectableItemTheme">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
+    <style name="SelectableItemBackground">
+        <item name="android:theme">@style/SelectableItemTheme</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
 </resources>

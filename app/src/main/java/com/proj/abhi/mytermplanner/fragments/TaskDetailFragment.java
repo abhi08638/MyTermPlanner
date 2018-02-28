@@ -4,27 +4,41 @@ package com.proj.abhi.mytermplanner.fragments;
  * Created by Abhi on 2/25/2018.
  */
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.GenericActivity;
+import com.proj.abhi.mytermplanner.activities.TaskActivity;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.MaskWatcher;
 import com.proj.abhi.mytermplanner.utils.Utils;
+
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TaskDetailFragment extends Fragment {
     private Bundle initializer=null;
@@ -57,7 +71,6 @@ public class TaskDetailFragment extends Fragment {
         endDate=(EditText) getActivity().findViewById(R.id.endDate);
         startDate.addTextChangedListener(new MaskWatcher("##/##/####"));
         endDate.addTextChangedListener(new MaskWatcher("##/##/####"));
-
         refreshPage(getCurrentUriId());
     }
 
@@ -79,23 +92,38 @@ public class TaskDetailFragment extends Fragment {
         }
     }
 
-    public Uri refreshPage(int id){
+    public Uri refreshPage(int i){
+        final int id=i;
         currentUri = Uri.parse(TasksProvider.CONTENT_URI+"/"+id);
-        if(id>0){
-            Cursor c = getActivity().getContentResolver().query(currentUri,null,
-                    Constants.ID+"="+getCurrentUriId(),null,null);
-            c.moveToFirst();
-            title.setText(c.getString(c.getColumnIndex(Constants.Task.TASK_TITLE)));
-            notes.setText(c.getString(c.getColumnIndex(Constants.Task.NOTES)));
-            startDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_START_DATE))));
-            endDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_END_DATE))));
-
-            c.close();
-            //getActivity().setTitle(title.getText().toString());
-        }else{
-            emptyPage();
-            getActivity().setTitle(R.string.task_editor);
-        }
+        AsyncTask.execute(new Runnable(){
+            @Override
+            public void run(){
+                if(id>0){
+                    final Cursor c = getActivity().getContentResolver().query(currentUri,null,
+                            Constants.ID+"="+getCurrentUriId(),null,null);
+                    c.moveToFirst();
+                    getActivity().runOnUiThread(new Runnable(){
+                        @Override
+                        public void run(){
+                            title.setText(c.getString(c.getColumnIndex(Constants.Task.TASK_TITLE)));
+                            notes.setText(c.getString(c.getColumnIndex(Constants.Task.NOTES)));
+                            startDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_START_DATE))));
+                            endDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_END_DATE))));
+                            getActivity().setTitle(title.getText().toString());
+                            c.close();
+                        }
+                    });
+                }else{
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            emptyPage();
+                            getActivity().setTitle(R.string.task_editor);
+                        }
+                    });
+                }
+            }
+        });
         return currentUri;
     }
 
@@ -154,7 +182,7 @@ public class TaskDetailFragment extends Fragment {
         b.putString(Constants.PersistAlarm.CONTENT_TITLE,title.getText().toString());
         b.putString(Constants.PersistAlarm.USER_OBJECT,Constants.Tables.TABLE_TASK);
         b.putParcelable(Constants.CURRENT_INTENT,intent);
-        ((GenericActivity)getActivity()).createReminder(reminderFields,reminderFieldIds,b);
+        createReminder(reminderFields,reminderFieldIds,b);
     }
 
     public void setIntentMsg(){
@@ -177,5 +205,99 @@ public class TaskDetailFragment extends Fragment {
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "From "+Constants.APP_NAME);
 
         startActivity(Intent.createChooser(shareIntent, "From "+Constants.APP_NAME));
+    }
+
+    public void createReminder(String[] list, int[] listIds, Bundle userBundle){
+        try{
+            final int[] ids = listIds;
+            final Bundle b=userBundle;
+            LayoutInflater li = LayoutInflater.from(getActivity());
+            final View promptsView = li.inflate(R.layout.reminder_alert, null);
+            final Spinner mSpinner= (Spinner) promptsView.findViewById(R.id.reminderDropdown);
+            final TextView customDate = (TextView) promptsView.findViewById(R.id.reminderDate);
+            final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
+            final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
+
+            list[list.length-1]=getString(R.string.custom_date);
+            listIds[listIds.length-1]=R.id.reminderDate;
+            timePicker.setCurrentMinute(timePicker.getCurrentMinute()+1);
+
+            mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    if(parentView.getItemAtPosition(position).toString().equals(getString(R.string.custom_date))){
+                        customDate.setVisibility(View.VISIBLE);
+                        customDate.addTextChangedListener(new MaskWatcher("##/##/####"));
+                        customDate.setText(Utils.getCurrentDate());
+                    }else{
+                        customDate.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView) {
+                    // your code here
+                }
+
+            });
+            DialogInterface.OnClickListener dialogClickListener =
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int button) {
+                            if (button == DialogInterface.BUTTON_POSITIVE) {
+                                try{
+                                    TextView date = getActivity().findViewById(ids[mSpinner.getSelectedItemPosition()]);
+                                    b.putString(Constants.PersistAlarm.CONTENT_TEXT,reminderMsg.getText().toString());
+                                    if(date==null){
+                                        date = promptsView.findViewById(ids[mSpinner.getSelectedItemPosition()]);
+                                        if(!Utils.hasValue(reminderMsg.getText().toString())){
+                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT,getString(R.string.notification_date));
+                                        }
+                                    }else{
+                                        if(!Utils.hasValue(reminderMsg.getText().toString())){
+                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT,mSpinner.getSelectedItem().toString());
+                                        }
+                                    }
+                                    if(Utils.isValidDate(date.getText().toString())) {
+                                        Date alarmDate = Utils.getDate(date.getText().toString());
+                                        alarmDate.setHours(timePicker.getCurrentHour());
+                                        alarmDate.setMinutes(timePicker.getCurrentMinute());
+                                        ((GenericActivity)getActivity()).setAlarmForDate(alarmDate,b);
+                                        for(android.support.v4.app.Fragment f:getActivity().getSupportFragmentManager().getFragments()){
+                                            if(f instanceof AlarmListFragment){
+                                                ((AlarmListFragment)f).restartLoader(null);
+                                            }
+                                        }
+                                    }
+                                }catch (Exception e){
+                                    if(e instanceof CustomException){
+                                        Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                                    }else{
+                                        Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
+                                    }
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    };
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+            alertDialogBuilder.setView(promptsView);
+            alertDialogBuilder.setTitle(R.string.reminder_header)
+                    .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                    .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+
+            final ArrayAdapter<String> adp = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, list);
+            adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            final AlertDialog alertDialog = alertDialogBuilder.create();
+            mSpinner.setAdapter(adp);
+            mSpinner.setSelection(list.length-1);
+            alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
+        }catch(Exception e){
+            Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 }

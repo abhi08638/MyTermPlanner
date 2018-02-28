@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -23,10 +24,12 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TabWidget;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -98,34 +101,13 @@ public class GenericActivity extends AppCompatActivity
     protected void initTabs(ViewPager viewPager){
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         tabLayout.setSelectedTabIndicatorHeight(5);
-       /* tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                int position=tab.getPosition();
-                HorizontalScrollView horizontalScrollView = findViewById(R.id.hsv);
-                final int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
-                final int leftX = tabLayout.getLeft();
-                int newX = 0;
-                newX = leftX+(tab.getText().length()*2) - (screenWidth/2);
-                if(newX<0){
-                    newX=0;
-                }
-                Log.d(null, "onTabSelected: "+leftX);
-                tabLayout.scrollTo(200,0);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
+        tabLayout.setSelectedTabIndicatorColor(Color.WHITE);
+        if(tabLayout.getTabCount()>2) {
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        }else{
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        }
     }
 
     protected void initTabs(){

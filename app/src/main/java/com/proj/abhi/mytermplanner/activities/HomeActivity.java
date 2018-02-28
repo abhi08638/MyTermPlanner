@@ -21,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.fragments.GenericListFragment;
+import com.proj.abhi.mytermplanner.fragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.HomeGenericFragment;
 import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
@@ -73,6 +73,7 @@ public class HomeActivity extends GenericActivity
             Bundle b = new Bundle();
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
             b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
+            b.putString(Constants.ID, Constants.Ids.TERM_ID);
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
             HomeGenericFragment termFragment = new HomeGenericFragment();
             termFragment.setArguments(b);
@@ -81,6 +82,7 @@ public class HomeActivity extends GenericActivity
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
             b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
+            b.putString(Constants.ID, Constants.Ids.COURSE_ID);
             HomeGenericFragment courseFragment = new HomeGenericFragment();
             courseFragment.setArguments(b);
 
@@ -88,6 +90,7 @@ public class HomeActivity extends GenericActivity
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
             b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
+            b.putString(Constants.ID, Constants.Ids.ASSESSMENT_ID);
             HomeGenericFragment assessmentFragment = new HomeGenericFragment();
             assessmentFragment.setArguments(b);
 
@@ -95,6 +98,7 @@ public class HomeActivity extends GenericActivity
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
             b.putString(Constants.CONTENT_URI, TasksProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TASK_ID);
+            b.putString(Constants.ID, Constants.Ids.TASK_ID);
             HomeGenericFragment taskFragment = new HomeGenericFragment();
             taskFragment.setArguments(b);
 
@@ -102,7 +106,8 @@ public class HomeActivity extends GenericActivity
             b.putString(Constants.Sql.WHERE,Constants.SqlSelect.QUERY_ALARMS +"ORDER BY "+Constants.PersistAlarm.NOTIFY_DATETIME);
             b.putString(Constants.CONTENT_URI, AlarmsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.ALARM_ID);
-            GenericListFragment reminderFragment= new GenericListFragment();
+            b.putString(Constants.ID, Constants.Ids.ALARM_ID);
+            AlarmListFragment reminderFragment= new AlarmListFragment();
             reminderFragment.setArguments(b);
 
             adapter.addFragment(termFragment, getString(R.string.terms));
@@ -259,8 +264,8 @@ public class HomeActivity extends GenericActivity
         for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
             if(f instanceof HomeGenericFragment){
                 ((HomeGenericFragment) f).restartLoader(b);
-            }else if(f instanceof GenericListFragment){
-                ((GenericListFragment)f).restartLoader(null);
+            }else if(f instanceof AlarmListFragment){
+                ((AlarmListFragment)f).restartLoader(null);
             }
         }
     }

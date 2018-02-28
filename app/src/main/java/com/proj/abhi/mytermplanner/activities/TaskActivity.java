@@ -18,8 +18,10 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.fragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.TaskDetailFragment;
+import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -59,7 +61,18 @@ public class TaskActivity extends GenericActivity
             TaskDetailFragment taskDetailFragment= new TaskDetailFragment();
             taskDetailFragment.setArguments(b);
 
+            b = new Bundle();
+            b.putString(Constants.Sql.WHERE,Constants.SqlSelect.QUERY_ALARMS+
+                    "WHERE "+Constants.Ids.TASK_ID+"="+getCurrentUriId()+
+                    " ORDER BY "+Constants.PersistAlarm.NOTIFY_DATETIME);
+            b.putString(Constants.CONTENT_URI, AlarmsProvider.CONTENT_URI.toString());
+            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.ALARM_ID);
+            AlarmListFragment reminderFragment= new AlarmListFragment();
+            reminderFragment.setArguments(b);
+
+
             adapter.addFragment(taskDetailFragment, getString(R.string.details));
+            adapter.addFragment(reminderFragment, getString(R.string.reminders));
             viewPager.setAdapter(adapter);
             viewPager.setOffscreenPageLimit(adapter.getCount());
             initTabs(viewPager);
@@ -166,7 +179,7 @@ public class TaskActivity extends GenericActivity
             unSelectCurrNavItem(Constants.MenuGroups.TASK_GROUP);
             item.setCheckable(true);
             item.setChecked(true);
-            //this.setTitle(item.getTitle());
+            this.setTitle(item.getTitle());
             refreshPage(id);
         } else if (id == R.id.nav_share && getCurrentUriId()>0) {
             for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
