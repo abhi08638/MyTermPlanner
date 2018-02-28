@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,6 +23,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -31,7 +34,6 @@ import com.proj.abhi.mytermplanner.activities.GenericActivity;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
-import com.proj.abhi.mytermplanner.utils.MaskWatcher;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 
@@ -207,7 +209,6 @@ public class TaskDetailFragment extends Fragment {
             final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
             final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
-
             list[list.length-1]=getString(R.string.custom_date);
             listIds[listIds.length-1]=R.id.reminderDate;
             timePicker.setCurrentMinute(timePicker.getCurrentMinute()+1);
