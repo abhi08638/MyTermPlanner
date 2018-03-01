@@ -140,10 +140,17 @@ public class DateUtils {
 
     //////////////////////////////////////////////////////////////////////
 
-    public static String getSqlDateNow(){
+    public static String getSqlDateNowStart(){
         long offset= TimeZone.getDefault().getOffset(System.currentTimeMillis());
         offset=offset/1000;
-        String format = "'%Y-%m-%d','now','"+offset+" seconds'";
+        String format = "'%Y-%m-%d %H:%M:%S','now','"+offset+" seconds','start of day'";
+        return format;
+    }
+
+    public static String getSqlDateNowEnd(){
+        long offset= TimeZone.getDefault().getOffset(System.currentTimeMillis());
+        offset=offset/1000;
+        String format = "'%Y-%m-%d 23:59:59','now','"+offset+" seconds'";
         return format;
     }
 }

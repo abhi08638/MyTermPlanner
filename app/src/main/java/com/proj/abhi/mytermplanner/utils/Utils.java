@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.inputmethod.InputMethodManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -212,6 +213,17 @@ public class Utils {
             ((Activity)context).startActivityForResult(intent,0);
         }catch (Exception e){
             new CustomException("No caller Activity provided");
+        }
+    }
+
+    public static void closeKeyboard(Context c){
+        try{
+            Activity act = (Activity)c;
+            InputMethodManager inputManager =(InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow((null==act.getCurrentFocus()) ? null: act.getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

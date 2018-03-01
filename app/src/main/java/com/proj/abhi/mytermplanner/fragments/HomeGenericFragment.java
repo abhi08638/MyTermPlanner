@@ -39,6 +39,7 @@ import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class HomeGenericFragment extends ListFragment implements LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -133,13 +134,13 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
 
         if(numQueryDays>0){
             sortOrder="";
-            return " between strftime("+Utils.getSqlDateNow()+") and strftime("+Utils.getSqlDateNow()+",'"+num+" days')";
+            return " between strftime("+DateUtils.getSqlDateNowStart()+") and strftime("+DateUtils.getSqlDateNowEnd()+",'"+num+" days')";
         }else if(numQueryDays<0){
             sortOrder="desc";
-            return " between strftime("+Utils.getSqlDateNow()+",'"+num+" days') and strftime("+Utils.getSqlDateNow()+",'-1 day')";
+            return " between strftime("+DateUtils.getSqlDateNowStart()+",'"+num+" days') and strftime("+DateUtils.getSqlDateNowEnd()+",'-1 day')";
         }else{
             sortOrder="";
-            return " = strftime("+Utils.getSqlDateNow()+")";
+            return " between strftime("+DateUtils.getSqlDateNowStart()+") and strftime("+DateUtils.getSqlDateNowEnd()+")";
         }
     }
 
@@ -176,8 +177,8 @@ public class HomeGenericFragment extends ListFragment implements LoaderCallbacks
             }else if(uri.equals(TasksProvider.CONTENT_URI)){
                 if(numQueryDays>=0){
                     where=Constants.Task.TASK_START_DATE+getWhereClause()+
-                            " OR ("+Constants.Task.TASK_START_DATE+" <= strftime("+Utils.getSqlDateNow()+") " +
-                            "AND "+Constants.Task.TASK_END_DATE+" >= strftime("+Utils.getSqlDateNow()+"))";
+                            " OR ("+Constants.Task.TASK_START_DATE+" <= strftime("+ DateUtils.getSqlDateNowStart()+") " +
+                            "AND "+Constants.Task.TASK_END_DATE+" >= strftime("+DateUtils.getSqlDateNowStart()+"))";
                 }else{
                     where=Constants.Task.TASK_END_DATE+getWhereClause();
                 }

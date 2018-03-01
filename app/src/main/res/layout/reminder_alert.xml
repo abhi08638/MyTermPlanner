@@ -80,7 +80,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.512"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/reminderDate" />
+                    app:layout_constraintTop_toBottomOf="@+id/reminderDate"/>
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 </ScrollView>

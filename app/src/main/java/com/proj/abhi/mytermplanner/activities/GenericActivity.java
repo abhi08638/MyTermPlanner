@@ -108,6 +108,22 @@ public class GenericActivity extends AppCompatActivity
         }else{
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
         }
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Utils.closeKeyboard(GenericActivity.this);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     protected void initTabs(){
@@ -327,6 +343,10 @@ public class GenericActivity extends AppCompatActivity
             alarmClient.setAlarmForNotification(date,userBundle);
             Snackbar.make(mCoordinatorLayout, "Notification set for "+c.getTime(), Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    public void setAlarmForNotification(Date date, Bundle userBundle){
+        alarmClient.setAlarmForNotification(date,userBundle);
     }
 
     public void createReminder(String[] list, int[] listIds, Bundle userBundle){

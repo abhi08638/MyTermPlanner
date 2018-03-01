@@ -47,10 +47,7 @@ public class EditTextDatePicker implements View.OnClickListener, DatePickerDialo
 
     @Override
     public void onClick(View v) {
-        Activity act = (Activity)_context;
-        InputMethodManager inputManager =(InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow((null==act.getCurrentFocus()) ? null: act.getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+        Utils.closeKeyboard(_context);
         DatePickerDialog dialog = new DatePickerDialog(_context, this,
                 myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH));
