@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.proj.abhi.mytermplanner.activities.TermActivity"
+    android:fitsSystemWindows="true"
     android:id="@+id/coordinatorLayout">
 
     <android.support.design.widget.AppBarLayout

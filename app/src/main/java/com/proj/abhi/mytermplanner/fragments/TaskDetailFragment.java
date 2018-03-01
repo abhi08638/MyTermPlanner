@@ -9,33 +9,35 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.GenericActivity;
+import com.proj.abhi.mytermplanner.pojos.TaskPojo;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
+import com.proj.abhi.mytermplanner.xmlObjects.EditTextTimePicker;
 
 import java.util.Date;
 
@@ -44,10 +46,12 @@ public class TaskDetailFragment extends Fragment {
     private Uri currentUri;
     private EditText title,notes;
     private EditTextDatePicker startDate,endDate;
+    private EditTextTimePicker startTime,endTime;
     protected CoordinatorLayout mCoordinatorLayout;
     private String[] reminderFields;
     private int[] reminderFieldIds;
     private String intentMsg;
+    private TaskPojo task=new TaskPojo();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
@@ -69,6 +73,8 @@ public class TaskDetailFragment extends Fragment {
         notes=(EditText) getActivity().findViewById(R.id.notes);
         startDate=new EditTextDatePicker(getContext(),R.id.startDate);
         endDate=new EditTextDatePicker(getContext(),R.id.endDate);
+        startTime=new EditTextTimePicker(getContext(),R.id.startTime);
+        endTime=new EditTextTimePicker(getContext(),R.id.endTime);
         refreshPage(getCurrentUriId());
     }
 
@@ -100,15 +106,18 @@ public class TaskDetailFragment extends Fragment {
                     final Cursor c = getActivity().getContentResolver().query(currentUri,null,
                             Constants.ID+"="+getCurrentUriId(),null,null);
                     c.moveToFirst();
+                    task.initPojo(c);
+                    c.close();
                     getActivity().runOnUiThread(new Runnable(){
                         @Override
                         public void run(){
-                            title.setText(c.getString(c.getColumnIndex(Constants.Task.TASK_TITLE)));
-                            notes.setText(c.getString(c.getColumnIndex(Constants.Task.NOTES)));
-                            startDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_START_DATE))));
-                            endDate.setText(Utils.getUserDate(c.getString(c.getColumnIndex(Constants.Task.TASK_END_DATE))));
+                            title.setText(task.getTitle());
+                            notes.setText(task.getNotes());
+                            startDate.setText(DateUtils.getUserDate(task.getStartDate()));
+                            endDate.setText(DateUtils.getUserDate(task.getEndDate()));
+                            startTime.setText(task.getStartDate());
+                            endTime.setText(task.getEndDate());
                             getActivity().setTitle(title.getText().toString());
-                            c.close();
                         }
                     });
                 }else{
@@ -129,26 +138,33 @@ public class TaskDetailFragment extends Fragment {
         currentUri= Uri.parse(TasksProvider.CONTENT_URI+"/"+0);
         title.setText(null);
         startDate.setText(null);
+        startTime.setText(null);
+        endTime.setText(null);
         endDate.setText(null);
         notes.setText(null);
+        task.reset();
     }
 
     public Uri save() throws Exception{
         ContentValues values = new ContentValues();
         //all validations throw exceptions on failure to prevent saving
         try{
+            task.setTitle(title.getText().toString());
+            task.setNotes(notes.getText().toString());
+            task.setStartDate(DateUtils.getDateTimeFromUser(startDate.getText(),startTime.getText(),false));
+            task.setEndDate(DateUtils.getDateTimeFromUser(endDate.getText(),endTime.getText(),true));
             //title cant be empty
-            if(title.getText()!=null && !title.getText().toString().trim().equals("")){
+            if(Utils.hasValue(task.getTitle())){
                 values.put(Constants.Task.TASK_TITLE,title.getText().toString());
             }else{throw new CustomException(getString(R.string.error_empty_title));}
 
-            if(Utils.isBefore(startDate.getText(),endDate.getText())){
-                values.put(Constants.Task.TASK_START_DATE, Utils.getDbDateTime(startDate.getText()));
-                values.put(Constants.Task.TASK_END_DATE, Utils.getDbDateTime(endDate.getText()));
+            if(DateUtils.isBefore(task.getStartDate(),task.getEndDate())){
+                values.put(Constants.Task.TASK_START_DATE, DateUtils.getDbDate(task.getStartDate()));
+                values.put(Constants.Task.TASK_END_DATE, DateUtils.getDbDate(task.getEndDate()));
             }
 
             //save notes
-            values.put(Constants.Assessment.NOTES,notes.getText().toString());
+            values.put(Constants.Assessment.NOTES,task.getNotes());
         }catch (CustomException e){
             Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
             throw e;
@@ -178,13 +194,13 @@ public class TaskDetailFragment extends Fragment {
     }
 
     public void setIntentMsg(){
-        intentMsg=("Task Title: "+title.getText().toString());
+        intentMsg=("Task Title: "+task.getTitle());
         intentMsg+=("\n");
-        intentMsg+=("Task Start Date: "+startDate.getText());
+        intentMsg+=("Start Date: "+DateUtils.getUserDateTime(task.getStartDate()));
         intentMsg+=("\n");
-        intentMsg+=("Task End Date: "+endDate.getText());
+        intentMsg+=("End Date: "+DateUtils.getUserDateTime(task.getEndDate()));
         intentMsg+=("\n");
-        intentMsg+=("Task Notes: "+notes.getText().toString());
+        intentMsg+=("Notes: "+task.getNotes());
         intentMsg+=("\n");
     }
 
@@ -205,21 +221,25 @@ public class TaskDetailFragment extends Fragment {
             final Bundle b=userBundle;
             LayoutInflater li = LayoutInflater.from(getActivity());
             final View promptsView = li.inflate(R.layout.reminder_alert, null);
+            final TextInputLayout lbl= promptsView.findViewById(R.id.reminderDateLbl);
             final Spinner mSpinner= (Spinner) promptsView.findViewById(R.id.reminderDropdown);
             final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
-            final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
+            final EditTextTimePicker timePicker = new EditTextTimePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderTime));
             list[list.length-1]=getString(R.string.custom_date);
             listIds[listIds.length-1]=R.id.reminderDate;
-            timePicker.setCurrentMinute(timePicker.getCurrentMinute()+1);
-
+            Date now = new Date();
+            now.setMinutes(now.getMinutes()+10);
+            timePicker.setText(now);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                     if(parentView.getItemAtPosition(position).toString().equals(getString(R.string.custom_date))){
+                        lbl.setVisibility(View.VISIBLE);
                         customDate.setVisibility(View.VISIBLE);
-                        customDate.setText(Utils.getCurrentDate());
+                        customDate.setText(DateUtils.getCurrentDate());
                     }else{
+                        lbl.setVisibility(View.GONE);
                         customDate.setVisibility(View.GONE);
                     }
                 }
@@ -250,8 +270,8 @@ public class TaskDetailFragment extends Fragment {
                                     }
                                     if(Utils.isValidDate(date.getText().toString())) {
                                         Date alarmDate = Utils.getDateFromUser(date.getText().toString());
-                                        alarmDate.setHours(timePicker.getCurrentHour());
-                                        alarmDate.setMinutes(timePicker.getCurrentMinute());
+                                        alarmDate.setHours(timePicker.getHour());
+                                        alarmDate.setMinutes(timePicker.getMinute());
                                         ((GenericActivity)getActivity()).setAlarmForDate(alarmDate,b);
                                         for(android.support.v4.app.Fragment f:getActivity().getSupportFragmentManager().getFragments()){
                                             if(f instanceof AlarmListFragment){

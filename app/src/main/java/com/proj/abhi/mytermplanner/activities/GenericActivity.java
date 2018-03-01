@@ -338,11 +338,11 @@ public class GenericActivity extends AppCompatActivity
             final Spinner mSpinner= (Spinner) promptsView.findViewById(R.id.reminderDropdown);
             final TextView customDate = (TextView) promptsView.findViewById(R.id.reminderDate);
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
-            final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
+     //       final TimePicker timePicker =promptsView.findViewById(R.id.timePicker);
 
             list[list.length-1]=getString(R.string.custom_date);
             listIds[listIds.length-1]=R.id.reminderDate;
-            timePicker.setCurrentMinute(timePicker.getCurrentMinute()+1);
+       //     timePicker.setCurrentMinute(timePicker.getCurrentMinute()+1);
 
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -382,8 +382,8 @@ public class GenericActivity extends AppCompatActivity
                                     }
                                     if(Utils.isValidDate(date.getText().toString())) {
                                         Date alarmDate = Utils.getDateFromUser(date.getText().toString());
-                                        alarmDate.setHours(timePicker.getCurrentHour());
-                                        alarmDate.setMinutes(timePicker.getCurrentMinute());
+                                     //   alarmDate.setHours(timePicker.getCurrentHour());
+                                       // alarmDate.setMinutes(timePicker.getCurrentMinute());
                                         setAlarmForDate(alarmDate,b);
                                     }
                                 }catch (Exception e){

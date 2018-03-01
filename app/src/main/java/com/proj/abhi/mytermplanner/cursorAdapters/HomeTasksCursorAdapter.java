@@ -9,7 +9,9 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.pojos.TaskPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class HomeTasksCursorAdapter extends CursorAdapter{
@@ -26,20 +28,15 @@ public class HomeTasksCursorAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-
-        String title = cursor.getString(
-                cursor.getColumnIndex(Constants.Task.TASK_TITLE));
-        String startDate = Utils.getUserDate(cursor.getString(
-                cursor.getColumnIndex(Constants.Task.TASK_START_DATE)));
-        String endDate = Utils.getUserDate(cursor.getString(
-                cursor.getColumnIndex(Constants.Task.TASK_END_DATE)));
-        TextView t = (TextView) view.findViewById(R.id.item1);
-        TextView sd = (TextView) view.findViewById(R.id.item2);
-        TextView ed = (TextView) view.findViewById(R.id.item3);
-        t.setTextSize(18);
-        t.setText(title);
-        sd.setText("Start Date: "+startDate);
-        ed.setText("End Date: "+endDate);
+        TaskPojo task = new TaskPojo();
+        task.initPojo(cursor);
+        TextView i1 = (TextView) view.findViewById(R.id.item1);
+        TextView i2 = (TextView) view.findViewById(R.id.item2);
+        TextView i3 = (TextView) view.findViewById(R.id.item3);
+        i1.setTextSize(18);
+        i1.setText(task.getTitle());
+        i2.setText("Start Date: "+DateUtils.getUserDateTime(task.getStartDate()));
+        i3.setText("End Date: "+DateUtils.getUserDateTime(task.getEndDate()));
 
         view.findViewById(R.id.item4).setVisibility(View.GONE);
         view.findViewById(R.id.item5).setVisibility(View.GONE);

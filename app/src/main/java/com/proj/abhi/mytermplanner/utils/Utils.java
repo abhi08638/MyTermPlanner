@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -18,9 +19,13 @@ import java.util.TimeZone;
 public class Utils {
 
     public static String userDatePattern = "MMM dd, yyyy";
+    public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
+    public static String userDateTimePattern = userDatePattern+" "+userTimePattern;
+    public static SimpleDateFormat userTimeFormat = new SimpleDateFormat(userTimePattern);
     public static SimpleDateFormat userDateFormat = new SimpleDateFormat(userDatePattern);
     public static SimpleDateFormat dbDateTimeFormat = new SimpleDateFormat(dbDateTimePattern);
+    public static SimpleDateFormat userDateTimeFormat = new SimpleDateFormat(userDateTimePattern);
 
     public static boolean isValidDate(String date) throws CustomException{
 
@@ -53,20 +58,29 @@ public class Utils {
         }
     }
 
-    public static String getUserTime(String date){
+    public static String getUserTime(Date newDate){
         try{
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat userFormat = new SimpleDateFormat("HH:mm");
-            Date newDate=sdf.parse(date);
             String ampm;
             if(newDate.getHours()>=12){
                 if(newDate.getHours()!=12)
                     newDate.setHours(newDate.getHours()-12);
                 ampm=" PM";
             }else{
+                if(newDate.getHours()==0){
+                    newDate.setHours(12);
+                }
                 ampm=" AM";
             }
-            return userFormat.format(newDate)+ampm;
+            return userTimeFormat.format(newDate)+ampm;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public static String getUserTime(String date){
+        try{
+            Date newDate=dbDateTimeFormat.parse(date);
+            return getUserTime(newDate);
         }catch (Exception e){
             return date;
         }
@@ -90,10 +104,56 @@ public class Utils {
         }
     }
 
-
     public static boolean isBefore(String startDate,String endDate) throws CustomException{
         try{
             if(userDateFormat.parse(startDate).after(userDateFormat.parse(endDate))){
+                throw new CustomException("Start Date must be before End Date");
+            }
+        }catch(Exception e){
+            if(e instanceof CustomException){
+                throw new CustomException(e.getMessage());
+            }
+            else{
+                throw new CustomException("Invalid Date");
+            }
+        }
+        return true;
+    }
+
+    public static Date getDateTimeFromUser(String date, String time,boolean eod)throws CustomException{
+        try{
+            Date newDate;
+            if(hasValue(time)){
+                int hourOffset=0;
+                if(time.contains("AM")){
+                    if(time.startsWith("12"))
+                        hourOffset=-12;
+                    else
+                        hourOffset=0;
+                }else{
+                    if(time.startsWith("12"))
+                        hourOffset=0;
+                    else
+                        hourOffset=12;
+                }
+                time=time.substring(0,time.indexOf(":")+2);
+                newDate = userDateTimeFormat.parse(date+" "+time);
+                newDate.setHours(newDate.getHours()+hourOffset);
+            }else{
+                if(eod)
+                    newDate = userDateTimeFormat.parse(date+" 23:59");
+                else
+                    newDate = userDateTimeFormat.parse(date+" 00:00");
+            }
+            return newDate;
+        }catch (Exception e){
+            throw new CustomException("Invalid Date Time Format");
+        }
+    }
+
+    public static boolean isBefore(Date startDate,Date endDate) throws CustomException{
+        try{
+            if(startDate.after(endDate)){
                 throw new CustomException("Start Date must be before End Date");
             }
         }catch(Exception e){

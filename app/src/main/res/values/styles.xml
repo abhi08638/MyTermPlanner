@@ -38,6 +38,15 @@
         <item name="android:paddingLeft">@dimen/input_padding</item>
         <item name="android:paddingRight">@dimen/input_padding</item>
         <item name="android:ems">10</item>
+        <item name="android:inputType">textAutoCorrect|textCapSentences|textAutoComplete|textMultiLine</item>
+    </style>
+    <style name="InputMarginDate">
+        <item name="android:layout_marginLeft">@dimen/input_margin</item>
+        <item name="android:layout_marginRight">@dimen/input_margin</item>
+        <item name="android:paddingLeft">@dimen/input_padding</item>
+        <item name="android:paddingRight">@dimen/input_padding</item>
+        <item name="android:ems">10</item>
+        <item name="android:inputType">none|textNoSuggestions</item>
     </style>
     <style name="InputMarginSpinner">
         <item name="android:layout_marginLeft">@dimen/input_margin</item>
@@ -52,6 +61,17 @@
     <style name="SelectableItemBackground">
         <item name="android:theme">@style/SelectableItemTheme</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+    
+    <style name="detailPage">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:fillViewport">false</item>
+        <item name="android:minHeight">45dp</item>
+        <item name="android:paddingBottom">1dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">1dp</item>
     </style>
 
 </resources>

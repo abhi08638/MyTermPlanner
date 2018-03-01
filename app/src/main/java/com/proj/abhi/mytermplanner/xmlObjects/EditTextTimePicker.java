@@ -1,24 +1,26 @@
 package com.proj.abhi.mytermplanner.xmlObjects;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
-public class EditTextDatePicker implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class EditTextTimePicker implements View.OnClickListener, TimePickerDialog.OnTimeSetListener {
     EditText _editText;
     private Calendar myCalendar;
     private Context _context;
 
-    public EditTextDatePicker(Context context, int editTextViewID)
+    public EditTextTimePicker(Context context, int editTextViewID)
     {
         Activity act = (Activity)context;
         this._editText = (EditText)act.findViewById(editTextViewID);
@@ -27,41 +29,35 @@ public class EditTextDatePicker implements View.OnClickListener, DatePickerDialo
         myCalendar = Calendar.getInstance(TimeZone.getDefault());
     }
 
-    public EditTextDatePicker(Context context, EditText editText)
+    public EditTextTimePicker(Context context, EditText editText)
     {
         Activity act = (Activity)context;
         this._editText = editText;
         this._editText.setOnClickListener(this);
         this._context = context;
-        myCalendar = Calendar.getInstance(TimeZone.getDefault());
-    }
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        myCalendar.set(Calendar.YEAR, year);
-        myCalendar.set(Calendar.MONTH, monthOfYear);
-        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        _editText.setText(Utils.userDateFormat.format(myCalendar.getTime()));
+        myCalendar = Calendar.getInstance();
     }
 
     @Override
     public void onClick(View v) {
+        if(!Utils.hasValue(getText())){
+            myCalendar=Calendar.getInstance(TimeZone.getDefault());
+        }
         Activity act = (Activity)_context;
         InputMethodManager inputManager =(InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow((null==act.getCurrentFocus()) ? null: act.getCurrentFocus().getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
-        DatePickerDialog dialog = new DatePickerDialog(_context, this,
-                myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH));
+        int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
+        int min = myCalendar.get(Calendar.MINUTE);
+        TimePickerDialog dialog = new TimePickerDialog(_context, this,hour, min, false);
         dialog.show();
 
     }
 
-    public void setText(String text){
-        _editText.setText(text);
-        if (Utils.hasValue(text))
-            myCalendar.setTime(Utils.getDateFromUser(text));
+    public void setText(Date date){
+        _editText.setText(DateUtils.getUserTime(date));
+        if (date!=null)
+                myCalendar.setTime(date);
     }
 
     public String getText(){
@@ -70,5 +66,21 @@ public class EditTextDatePicker implements View.OnClickListener, DatePickerDialo
 
     public void setVisibility(int id){
         _editText.setVisibility(id);
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hour, int min) {
+        myCalendar.set(Calendar.HOUR_OF_DAY, hour);
+        myCalendar.set(Calendar.MINUTE, min);
+
+        setText(myCalendar.getTime());
+    }
+
+    public int getHour(){
+        return myCalendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public int getMinute(){
+        return myCalendar.get(Calendar.MINUTE);
     }
 }
