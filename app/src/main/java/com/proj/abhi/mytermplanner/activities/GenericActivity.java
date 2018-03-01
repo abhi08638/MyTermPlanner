@@ -37,6 +37,7 @@ import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.services.AlarmClient;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.MaskWatcher;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
@@ -89,6 +90,8 @@ public class GenericActivity extends AppCompatActivity
 
         alarmClient = new AlarmClient(this);
         alarmClient.doBindService();
+        DateUtils.context=this;
+        Utils.context=this;
     }
 
     public void addLayout(int id){
@@ -111,7 +114,7 @@ public class GenericActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Utils.closeKeyboard(GenericActivity.this);
+                Utils.closeKeyboard();
             }
 
             @Override
@@ -178,7 +181,7 @@ public class GenericActivity extends AppCompatActivity
         try{
             final TabWidget tabWidget = tabHost.getTabWidget();
             int position=tabHost.getCurrentTab();
-            HorizontalScrollView horizontalScrollView = findViewById(R.id.hsv);
+            //HorizontalScrollView horizontalScrollView = findViewById(R.id.hsv);
             final int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
             final int leftX = tabWidget.getChildAt(position).getLeft();
             int newX = 0;
@@ -186,7 +189,7 @@ public class GenericActivity extends AppCompatActivity
             if(newX<0){
                 newX=0;
             }
-            horizontalScrollView.scrollTo(newX,0);
+            //horizontalScrollView.scrollTo(newX,0);
         }catch (Exception e){
             //do nothing since scroll view does not exist
         }
@@ -341,7 +344,7 @@ public class GenericActivity extends AppCompatActivity
             Calendar c = Calendar.getInstance();
             c.setTime(date);
             alarmClient.setAlarmForNotification(date,userBundle);
-            Snackbar.make(mCoordinatorLayout, "Notification set for "+c.getTime(), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mCoordinatorLayout, "Notification set for "+ DateUtils.getUserDateTime(date), Snackbar.LENGTH_LONG).show();
         }
     }
 

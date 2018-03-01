@@ -185,13 +185,13 @@ public class HomeActivity extends GenericActivity
         int id = item.getItemId();
 
         if (id == Constants.ActionBarIds.ADD_TERM) {
-            Utils.sendToActivity(0, this, TermActivity.class, TermsProvider.CONTENT_URI);
+            Utils.sendToActivity(0, TermActivity.class, TermsProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.ADD_PROF) {
-            Utils.sendToActivity(0, this, ProfessorActivity.class, ProfProvider.CONTENT_URI);
+            Utils.sendToActivity(0, ProfessorActivity.class, ProfProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.ADD_TASK) {
-            Utils.sendToActivity(0, this, TaskActivity.class, TasksProvider.CONTENT_URI);
+            Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.USER_PREFS) {
             String[] tabList = {getString(R.string.terms), getString(R.string.courses), getString(R.string.assessments), getString(R.string.tasks), getString(R.string.reminders)};
@@ -280,11 +280,11 @@ public class HomeActivity extends GenericActivity
                     public void run() {
                         if (groupId == Constants.MenuGroups.MANAGEMENT_GROUP) {
                             if (id == Constants.MenuGroups.TERM_GROUP) {
-                                Utils.sendToActivity(0, HomeActivity.this, TermActivity.class, TermsProvider.CONTENT_URI);
+                                Utils.sendToActivity(0, TermActivity.class, TermsProvider.CONTENT_URI);
                             } else if (id == Constants.MenuGroups.PROF_GROUP) {
-                                Utils.sendToActivity(0, HomeActivity.this, ProfessorActivity.class, ProfProvider.CONTENT_URI);
+                                Utils.sendToActivity(0, ProfessorActivity.class, ProfProvider.CONTENT_URI);
                             } else if (id == Constants.MenuGroups.TASK_GROUP) {
-                                Utils.sendToActivity(0, HomeActivity.this, TaskActivity.class, TasksProvider.CONTENT_URI);
+                                Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
                             }
                         }
                     }

@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -18,7 +17,7 @@ import java.util.TimeZone;
  */
 
 public class Utils {
-
+    public static Context context;
     public static String userDatePattern = "MMM dd, yyyy";
     public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
@@ -151,21 +150,6 @@ public class Utils {
         }
     }
 
-    public static boolean isBefore(Date startDate, Date endDate) throws CustomException {
-        try {
-            if (startDate.after(endDate)) {
-                throw new CustomException("Start Date must be before End Date");
-            }
-        } catch (Exception e) {
-            if (e instanceof CustomException) {
-                throw new CustomException(e.getMessage());
-            } else {
-                throw new CustomException("Invalid Date");
-            }
-        }
-        return true;
-    }
-
     public static ContentValues addTableId(ContentValues values, Bundle b) {
         if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TERM)) {
             values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
@@ -203,7 +187,7 @@ public class Utils {
         return word;
     }
 
-    public static void sendToActivity(int id, Context context, Class toActivity, Uri contentUri) {
+    public static void sendToActivity(int id, Class toActivity, Uri contentUri) {
         try {
             Intent intent = new Intent(context, toActivity);
             Uri uri = Uri.parse(contentUri + "/" + id);
@@ -214,9 +198,9 @@ public class Utils {
         }
     }
 
-    public static void closeKeyboard(Context c) {
+    public static void closeKeyboard() {
         try {
-            Activity act = (Activity) c;
+            Activity act = (Activity) context;
             InputMethodManager inputManager = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow((null == act.getCurrentFocus()) ? null : act.getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);

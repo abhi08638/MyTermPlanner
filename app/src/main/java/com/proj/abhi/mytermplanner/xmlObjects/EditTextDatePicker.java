@@ -47,7 +47,7 @@ public class EditTextDatePicker implements View.OnClickListener, DatePickerDialo
 
     @Override
     public void onClick(View v) {
-        Utils.closeKeyboard(_context);
+        Utils.closeKeyboard();
         DatePickerDialog dialog = new DatePickerDialog(_context, this,
                 myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                 myCalendar.get(Calendar.DAY_OF_MONTH));

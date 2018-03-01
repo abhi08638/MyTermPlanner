@@ -105,7 +105,7 @@ public abstract class GenericDetailFragment extends Fragment {
             Calendar c = Calendar.getInstance();
             c.setTime(date);
             ((GenericActivity) getActivity()).setAlarmForNotification(date, userBundle);
-            Snackbar.make(mCoordinatorLayout, "Notification set for " + c.getTime(), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mCoordinatorLayout, "Notification set for " + DateUtils.getUserDateTime(date), Snackbar.LENGTH_LONG).show();
         }
     }
 

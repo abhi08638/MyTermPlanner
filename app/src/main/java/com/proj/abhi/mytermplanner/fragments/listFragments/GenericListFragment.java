@@ -120,16 +120,16 @@ public abstract class GenericListFragment extends ListFragment implements Loader
             Long l = new Long(id);
             switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
                 case Constants.CursorLoaderIds.TERM_ID:
-                    Utils.sendToActivity(l.intValue(), getActivity(), TermActivity.class, TermsProvider.CONTENT_URI);
+                    Utils.sendToActivity(l.intValue(), TermActivity.class, TermsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_COURSE_ID:
-                    Utils.sendToActivity(l.intValue(), getActivity(), CourseActivity.class, HomeCoursesProvider.CONTENT_URI);
+                    Utils.sendToActivity(l.intValue(), CourseActivity.class, HomeCoursesProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
-                    Utils.sendToActivity(l.intValue(), getActivity(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);
+                    Utils.sendToActivity(l.intValue(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.TASK_ID:
-                    Utils.sendToActivity(l.intValue(), getActivity(), TaskActivity.class, TasksProvider.CONTENT_URI);
+                    Utils.sendToActivity(l.intValue(), TaskActivity.class, TasksProvider.CONTENT_URI);
                     break;
             }
         }

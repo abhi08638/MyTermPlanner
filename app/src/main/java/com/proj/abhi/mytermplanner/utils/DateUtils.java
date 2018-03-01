@@ -1,12 +1,8 @@
 package com.proj.abhi.mytermplanner.utils;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
+
+import com.proj.abhi.mytermplanner.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +14,7 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
+    public static Context context;
     public static String userDatePattern = "MMM dd, yyyy";
     public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
@@ -38,7 +35,7 @@ public class DateUtils {
 
     public static String getUserDateTime(Date date){
         try{
-            return getUserDate(date)+" "+getUserTime(date);
+            return getUserDate(date)+" "+context.getString(R.string.at)+" "+getUserTime(date);
         }catch (Exception e){
             return null;
         }
@@ -137,8 +134,6 @@ public class DateUtils {
             return null;
         }
     }
-
-    //////////////////////////////////////////////////////////////////////
 
     public static String getSqlDateNowStart(){
         long offset= TimeZone.getDefault().getOffset(System.currentTimeMillis());

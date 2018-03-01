@@ -43,7 +43,7 @@ public class EditTextTimePicker implements View.OnClickListener, TimePickerDialo
         if(!Utils.hasValue(getText())){
             myCalendar=Calendar.getInstance(TimeZone.getDefault());
         }
-        Utils.closeKeyboard(_context);
+        Utils.closeKeyboard();
         int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
         int min = myCalendar.get(Calendar.MINUTE);
         TimePickerDialog dialog = new TimePickerDialog(_context, this,hour, min, false);
