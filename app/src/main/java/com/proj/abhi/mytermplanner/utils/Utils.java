@@ -22,207 +22,205 @@ public class Utils {
     public static String userDatePattern = "MMM dd, yyyy";
     public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
-    public static String userDateTimePattern = userDatePattern+" "+userTimePattern;
+    public static String userDateTimePattern = userDatePattern + " " + userTimePattern;
     public static SimpleDateFormat userTimeFormat = new SimpleDateFormat(userTimePattern);
     public static SimpleDateFormat userDateFormat = new SimpleDateFormat(userDatePattern);
     public static SimpleDateFormat dbDateTimeFormat = new SimpleDateFormat(dbDateTimePattern);
     public static SimpleDateFormat userDateTimeFormat = new SimpleDateFormat(userDateTimePattern);
 
-    public static boolean isValidDate(String date) throws CustomException{
+    public static boolean isValidDate(String date) throws CustomException {
 
         return true;
     }
 
-    public static String getDbDateTime(String date){
-        try{
-            Date newDate=getDateFromUser(date);
+    public static String getDbDateTime(String date) {
+        try {
+            Date newDate = getDateFromUser(date);
             return getDbDateTime(newDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             return date;
         }
     }
 
-    public static String getDbDateTime(Date date){
-        try{
+    public static String getDbDateTime(Date date) {
+        try {
             return dbDateTimeFormat.format(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public static String getUserDate(String date){
-        try{
-            Date newDate=dbDateTimeFormat.parse(date);
+    public static String getUserDate(String date) {
+        try {
+            Date newDate = dbDateTimeFormat.parse(date);
             return userDateFormat.format(newDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             return date;
         }
     }
 
-    public static String getUserTime(Date newDate){
-        try{
+    public static String getUserTime(Date newDate) {
+        try {
             String ampm;
-            if(newDate.getHours()>=12){
-                if(newDate.getHours()!=12)
-                    newDate.setHours(newDate.getHours()-12);
-                ampm=" PM";
-            }else{
-                if(newDate.getHours()==0){
+            if (newDate.getHours() >= 12) {
+                if (newDate.getHours() != 12)
+                    newDate.setHours(newDate.getHours() - 12);
+                ampm = " PM";
+            } else {
+                if (newDate.getHours() == 0) {
                     newDate.setHours(12);
                 }
-                ampm=" AM";
+                ampm = " AM";
             }
-            return userTimeFormat.format(newDate)+ampm;
-        }catch (Exception e){
+            return userTimeFormat.format(newDate) + ampm;
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public static String getUserTime(String date){
-        try{
-            Date newDate=dbDateTimeFormat.parse(date);
+    public static String getUserTime(String date) {
+        try {
+            Date newDate = dbDateTimeFormat.parse(date);
             return getUserTime(newDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             return date;
         }
     }
 
-    public static Date getDateFromUser(String date){
-        try{
-            Date newDate=userDateFormat.parse(date);
+    public static Date getDateFromUser(String date) {
+        try {
+            Date newDate = userDateFormat.parse(date);
             return newDate;
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public static String getCurrentDate(){
-        try{
-            Date newDate=new Date();
+    public static String getCurrentDate() {
+        try {
+            Date newDate = new Date();
             return userDateFormat.format(newDate);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public static boolean isBefore(String startDate,String endDate) throws CustomException{
-        try{
-            if(userDateFormat.parse(startDate).after(userDateFormat.parse(endDate))){
+    public static boolean isBefore(String startDate, String endDate) throws CustomException {
+        try {
+            if (userDateFormat.parse(startDate).after(userDateFormat.parse(endDate))) {
                 throw new CustomException("Start Date must be before End Date");
             }
-        }catch(Exception e){
-            if(e instanceof CustomException){
+        } catch (Exception e) {
+            if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());
-            }
-            else{
+            } else {
                 throw new CustomException("Invalid Date");
             }
         }
         return true;
     }
 
-    public static Date getDateTimeFromUser(String date, String time,boolean eod)throws CustomException{
-        try{
+    public static Date getDateTimeFromUser(String date, String time, boolean eod) throws CustomException {
+        try {
             Date newDate;
-            if(hasValue(time)){
-                int hourOffset=0;
-                if(time.contains("AM")){
-                    if(time.startsWith("12"))
-                        hourOffset=-12;
+            if (hasValue(time)) {
+                int hourOffset = 0;
+                if (time.contains("AM")) {
+                    if (time.startsWith("12"))
+                        hourOffset = -12;
                     else
-                        hourOffset=0;
-                }else{
-                    if(time.startsWith("12"))
-                        hourOffset=0;
+                        hourOffset = 0;
+                } else {
+                    if (time.startsWith("12"))
+                        hourOffset = 0;
                     else
-                        hourOffset=12;
+                        hourOffset = 12;
                 }
-                time=time.substring(0,time.indexOf(":")+2);
-                newDate = userDateTimeFormat.parse(date+" "+time);
-                newDate.setHours(newDate.getHours()+hourOffset);
-            }else{
-                if(eod)
-                    newDate = userDateTimeFormat.parse(date+" 23:59");
+                time = time.substring(0, time.indexOf(":") + 2);
+                newDate = userDateTimeFormat.parse(date + " " + time);
+                newDate.setHours(newDate.getHours() + hourOffset);
+            } else {
+                if (eod)
+                    newDate = userDateTimeFormat.parse(date + " 23:59");
                 else
-                    newDate = userDateTimeFormat.parse(date+" 00:00");
+                    newDate = userDateTimeFormat.parse(date + " 00:00");
             }
             return newDate;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new CustomException("Invalid Date Time Format");
         }
     }
 
-    public static boolean isBefore(Date startDate,Date endDate) throws CustomException{
-        try{
-            if(startDate.after(endDate)){
+    public static boolean isBefore(Date startDate, Date endDate) throws CustomException {
+        try {
+            if (startDate.after(endDate)) {
                 throw new CustomException("Start Date must be before End Date");
             }
-        }catch(Exception e){
-            if(e instanceof CustomException){
+        } catch (Exception e) {
+            if (e instanceof CustomException) {
                 throw new CustomException(e.getMessage());
-            }
-            else{
+            } else {
                 throw new CustomException("Invalid Date");
             }
         }
         return true;
     }
 
-    public static ContentValues addTableId(ContentValues values,Bundle b){
-        if(b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TERM)){
-            values.put(Constants.Ids.TERM_ID,b.getInt(Constants.Ids.TERM_ID));
-        }else if(b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_COURSE)){
-            values.put(Constants.Ids.TERM_ID,b.getInt(Constants.Ids.TERM_ID));
-            values.put(Constants.Ids.COURSE_ID,b.getInt(Constants.Ids.COURSE_ID));
-        }else if(b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_ASSESSMENT)){
-            values.put(Constants.Ids.TERM_ID,b.getInt(Constants.Ids.TERM_ID));
-            values.put(Constants.Ids.COURSE_ID,b.getInt(Constants.Ids.COURSE_ID));
-            values.put(Constants.Ids.ASSESSMENT_ID,b.getInt(Constants.Ids.ASSESSMENT_ID));
-        }else if(b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TASK)){
-            values.put(Constants.Ids.TASK_ID,b.getInt(Constants.Ids.TASK_ID));
+    public static ContentValues addTableId(ContentValues values, Bundle b) {
+        if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TERM)) {
+            values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
+        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_COURSE)) {
+            values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
+            values.put(Constants.Ids.COURSE_ID, b.getInt(Constants.Ids.COURSE_ID));
+        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_ASSESSMENT)) {
+            values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
+            values.put(Constants.Ids.COURSE_ID, b.getInt(Constants.Ids.COURSE_ID));
+            values.put(Constants.Ids.ASSESSMENT_ID, b.getInt(Constants.Ids.ASSESSMENT_ID));
+        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TASK)) {
+            values.put(Constants.Ids.TASK_ID, b.getInt(Constants.Ids.TASK_ID));
         }
         return values;
     }
 
-    public static String getSqlDateNow(){
-        long offset= TimeZone.getDefault().getOffset(System.currentTimeMillis());
-        offset=offset/1000;
-        String format = "'%Y-%m-%d','now','"+offset+" seconds'";
+    public static String getSqlDateNow() {
+        long offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+        offset = offset / 1000;
+        String format = "'%Y-%m-%d','now','" + offset + " seconds'";
         return format;
     }
 
-    public static boolean hasValue(String val){
-        if(val!=null && !val.trim().equals("")){
+    public static boolean hasValue(String val) {
+        if (val != null && !val.trim().equals("")) {
             return true;
         }
         return false;
     }
 
-    public static String getProperName(String word){
-        if(hasValue(word)){
-            return word.substring(0,1).toUpperCase()+word.substring(1);
+    public static String getProperName(String word) {
+        if (hasValue(word)) {
+            return word.substring(0, 1).toUpperCase() + word.substring(1);
         }
         return word;
     }
 
-    public static void sendToActivity(int id, Context context,Class toActivity,Uri contentUri){
-        try{
+    public static void sendToActivity(int id, Context context, Class toActivity, Uri contentUri) {
+        try {
             Intent intent = new Intent(context, toActivity);
             Uri uri = Uri.parse(contentUri + "/" + id);
             intent.putExtra(Constants.CURRENT_URI, uri);
-            ((Activity)context).startActivityForResult(intent,0);
-        }catch (Exception e){
+            ((Activity) context).startActivityForResult(intent, 0);
+        } catch (Exception e) {
             new CustomException("No caller Activity provided");
         }
     }
 
-    public static void closeKeyboard(Context c){
-        try{
-            Activity act = (Activity)c;
-            InputMethodManager inputManager =(InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow((null==act.getCurrentFocus()) ? null: act.getCurrentFocus().getWindowToken(),
+    public static void closeKeyboard(Context c) {
+        try {
+            Activity act = (Activity) c;
+            InputMethodManager inputManager = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow((null == act.getCurrentFocus()) ? null : act.getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

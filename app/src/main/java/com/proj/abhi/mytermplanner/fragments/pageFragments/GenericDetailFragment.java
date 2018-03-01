@@ -1,4 +1,4 @@
-package com.proj.abhi.mytermplanner.fragments;
+package com.proj.abhi.mytermplanner.fragments.pageFragments;
 
 /**
  * Created by Abhi on 2/25/2018.
@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.GenericActivity;
+import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
@@ -36,7 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public abstract class GenericDetailFragment extends Fragment {
-    protected Bundle initializer=null;
+    protected Bundle initializer = null;
     protected Uri currentUri;
     protected CoordinatorLayout mCoordinatorLayout;
     protected String[] reminderFields;
@@ -47,18 +48,18 @@ public abstract class GenericDetailFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
-        initializer=getArguments();
-        if(initializer!=null) {
-            currentUri=initializer.getParcelable(Constants.CURRENT_URI);
+        initializer = getArguments();
+        if (initializer != null) {
+            currentUri = initializer.getParcelable(Constants.CURRENT_URI);
         }
     }
 
     protected abstract void initReminderFields();
 
-    protected int getCurrentUriId(){
-        try{
+    protected int getCurrentUriId() {
+        try {
             return Integer.parseInt(currentUri.getLastPathSegment());
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -69,14 +70,14 @@ public abstract class GenericDetailFragment extends Fragment {
 
     public abstract Uri save() throws Exception;
 
-    public abstract void doReminder(Context context,Class clazz);
+    public abstract void doReminder(Context context, Class clazz);
 
-    protected Bundle prepareReminder(Context context,Class clazz){
+    protected Bundle prepareReminder(Context context, Class clazz) {
         refreshPage(getCurrentUriId());
         Intent intent = new Intent(context, clazz);
         intent.putExtra(Constants.CURRENT_URI, currentUri);
         Bundle b = new Bundle();
-        b.putParcelable(Constants.CURRENT_INTENT,intent);
+        b.putParcelable(Constants.CURRENT_INTENT, intent);
         return b;
     }
 
@@ -84,56 +85,56 @@ public abstract class GenericDetailFragment extends Fragment {
 
     public void doShare() {
         refreshPage(getCurrentUriId());
-        AsyncTask.execute(new Runnable(){
+        AsyncTask.execute(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 setIntentMsg();
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_TEXT,intentMsg);
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "From "+Constants.APP_NAME);
-                startActivity(Intent.createChooser(shareIntent, "From "+Constants.APP_NAME));
+                shareIntent.putExtra(Intent.EXTRA_TEXT, intentMsg);
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "From " + Constants.APP_NAME);
+                startActivity(Intent.createChooser(shareIntent, "From " + Constants.APP_NAME));
             }
         });
     }
 
-    public void setAlarmForDate(Date date,Bundle userBundle){
-        if(date.before(new Date())){
+    public void setAlarmForDate(Date date, Bundle userBundle) {
+        if (date.before(new Date())) {
             Snackbar.make(mCoordinatorLayout, R.string.error_alarm_before, Snackbar.LENGTH_LONG).show();
-        }else{
+        } else {
             Calendar c = Calendar.getInstance();
             c.setTime(date);
-            ((GenericActivity)getActivity()).setAlarmForNotification(date,userBundle);
-            Snackbar.make(mCoordinatorLayout, "Notification set for "+c.getTime(), Snackbar.LENGTH_LONG).show();
+            ((GenericActivity) getActivity()).setAlarmForNotification(date, userBundle);
+            Snackbar.make(mCoordinatorLayout, "Notification set for " + c.getTime(), Snackbar.LENGTH_LONG).show();
         }
     }
 
-    public void createReminder(Bundle userBundle){
-        try{
+    public void createReminder(Bundle userBundle) {
+        try {
             final int[] ids = reminderFieldIds;
             final String[] fields = reminderFields;
-            final Bundle b=userBundle;
+            final Bundle b = userBundle;
             LayoutInflater li = LayoutInflater.from(getActivity());
             final View promptsView = li.inflate(R.layout.reminder_alert, null);
-            final TextInputLayout lbl= promptsView.findViewById(R.id.reminderDateLbl);
-            final Spinner mSpinner= (Spinner) promptsView.findViewById(R.id.reminderDropdown);
-            final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderDate));
+            final TextInputLayout lbl = promptsView.findViewById(R.id.reminderDateLbl);
+            final Spinner mSpinner = (Spinner) promptsView.findViewById(R.id.reminderDropdown);
+            final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(), (EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
-            final EditTextTimePicker timePicker = new EditTextTimePicker(getActivity(),(EditText) promptsView.findViewById(R.id.reminderTime));
-            fields[fields.length-1]=getString(R.string.custom_date);
-            ids[ids.length-1]=R.id.reminderDate;
+            final EditTextTimePicker timePicker = new EditTextTimePicker(getActivity(), (EditText) promptsView.findViewById(R.id.reminderTime));
+            fields[fields.length - 1] = getString(R.string.custom_date);
+            ids[ids.length - 1] = R.id.reminderDate;
             Date now = new Date();
-            now.setMinutes(now.getMinutes()+10);
+            now.setMinutes(now.getMinutes() + 1);
             timePicker.setText(now);
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                    if(parentView.getItemAtPosition(position).toString().equals(getString(R.string.custom_date))){
+                    if (parentView.getItemAtPosition(position).toString().equals(getString(R.string.custom_date))) {
                         lbl.setVisibility(View.VISIBLE);
                         customDate.setVisibility(View.VISIBLE);
                         customDate.setText(DateUtils.getCurrentDate());
                         reminderMsg.setText(b.getString(Constants.PersistAlarm.CONTENT_TEXT));
-                    }else{
+                    } else {
                         lbl.setVisibility(View.GONE);
                         customDate.setVisibility(View.GONE);
                     }
@@ -149,34 +150,34 @@ public abstract class GenericDetailFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int button) {
                             if (button == DialogInterface.BUTTON_POSITIVE) {
-                                try{
+                                try {
                                     TextView date = getActivity().findViewById(ids[mSpinner.getSelectedItemPosition()]);
-                                    b.putString(Constants.PersistAlarm.CONTENT_TEXT,reminderMsg.getText().toString());
-                                    if(date==null){
+                                    b.putString(Constants.PersistAlarm.CONTENT_TEXT, reminderMsg.getText().toString());
+                                    if (date == null) {
                                         date = promptsView.findViewById(ids[mSpinner.getSelectedItemPosition()]);
-                                        if(!Utils.hasValue(reminderMsg.getText().toString())){
-                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT,getString(R.string.notification_date));
+                                        if (!Utils.hasValue(reminderMsg.getText().toString())) {
+                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT, getString(R.string.notification_date));
                                         }
-                                    }else{
-                                        if(!Utils.hasValue(reminderMsg.getText().toString())){
-                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT,mSpinner.getSelectedItem().toString());
+                                    } else {
+                                        if (!Utils.hasValue(reminderMsg.getText().toString())) {
+                                            b.putString(Constants.PersistAlarm.CONTENT_TEXT, mSpinner.getSelectedItem().toString());
                                         }
                                     }
-                                    if(Utils.isValidDate(date.getText().toString())) {
+                                    if (Utils.isValidDate(date.getText().toString())) {
                                         Date alarmDate = Utils.getDateFromUser(date.getText().toString());
                                         alarmDate.setHours(timePicker.getHour());
                                         alarmDate.setMinutes(timePicker.getMinute());
-                                        setAlarmForDate(alarmDate,b);
-                                        for(Fragment f:getActivity().getSupportFragmentManager().getFragments()){
-                                            if(f instanceof AlarmListFragment){
-                                                ((AlarmListFragment)f).restartLoader(null);
+                                        setAlarmForDate(alarmDate, b);
+                                        for (Fragment f : getActivity().getSupportFragmentManager().getFragments()) {
+                                            if (f instanceof AlarmListFragment) {
+                                                ((AlarmListFragment) f).restartLoader();
                                             }
                                         }
                                     }
-                                }catch (Exception e){
-                                    if(e instanceof CustomException){
+                                } catch (Exception e) {
+                                    if (e instanceof CustomException) {
                                         Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
-                                    }else{
+                                    } else {
                                         Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
                                     }
                                     e.printStackTrace();
@@ -196,10 +197,10 @@ public abstract class GenericDetailFragment extends Fragment {
             adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             final AlertDialog alertDialog = alertDialogBuilder.create();
             mSpinner.setAdapter(adp);
-            mSpinner.setSelection(fields.length-1);
+            mSpinner.setSelection(fields.length - 1);
             alertDialog.show();
             alertDialog.setCanceledOnTouchOutside(false);
-        }catch(Exception e){
+        } catch (Exception e) {
             Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
             e.printStackTrace();
         }

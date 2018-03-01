@@ -1,4 +1,4 @@
-package com.proj.abhi.mytermplanner.fragments;
+package com.proj.abhi.mytermplanner.fragments.pageFragments;
 
 /**
  * Created by Abhi on 2/25/2018.
@@ -27,14 +27,14 @@ import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextTimePicker;
 
 public class TaskDetailFragment extends GenericDetailFragment {
-    private EditText title,notes;
-    private EditTextDatePicker startDate,endDate;
-    private EditTextTimePicker startTime,endTime;
-    private TaskPojo task=new TaskPojo();
+    private EditText title, notes;
+    private EditTextDatePicker startDate, endDate;
+    private EditTextTimePicker startTime, endTime;
+    private TaskPojo task = new TaskPojo();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
-        return inflater.inflate(R.layout.task_header_fragment,container,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
+        return inflater.inflate(R.layout.task_header_fragment, container, false);
     }
 
     @Override
@@ -43,40 +43,40 @@ public class TaskDetailFragment extends GenericDetailFragment {
 
         initReminderFields();
         //init screen fields
-        title=(EditText) getActivity().findViewById(R.id.taskTitle);
-        notes=(EditText) getActivity().findViewById(R.id.notes);
-        startDate=new EditTextDatePicker(getContext(),R.id.startDate);
-        endDate=new EditTextDatePicker(getContext(),R.id.endDate);
-        startTime=new EditTextTimePicker(getContext(),R.id.startTime);
-        endTime=new EditTextTimePicker(getContext(),R.id.endTime);
+        title = (EditText) getActivity().findViewById(R.id.taskTitle);
+        notes = (EditText) getActivity().findViewById(R.id.notes);
+        startDate = new EditTextDatePicker(getContext(), R.id.startDate);
+        endDate = new EditTextDatePicker(getContext(), R.id.endDate);
+        startTime = new EditTextTimePicker(getContext(), R.id.startTime);
+        endTime = new EditTextTimePicker(getContext(), R.id.endTime);
         refreshPage(getCurrentUriId());
     }
 
-    protected void initReminderFields(){
+    protected void initReminderFields() {
         //always create size plus 1 to allow for creation of custom date
-        reminderFields=new String[2+1];
-        reminderFieldIds=new int[reminderFields.length];
-        reminderFields[0]=getString(R.string.start_date);
-        reminderFieldIds[0]=R.id.startDate;
-        reminderFields[1]=getString(R.string.end_date);
-        reminderFieldIds[1]=R.id.endDate;
+        reminderFields = new String[2 + 1];
+        reminderFieldIds = new int[reminderFields.length];
+        reminderFields[0] = getString(R.string.start_date);
+        reminderFieldIds[0] = R.id.startDate;
+        reminderFields[1] = getString(R.string.end_date);
+        reminderFieldIds[1] = R.id.endDate;
     }
 
-    public Uri refreshPage(int i){
-        final int id=i;
-        currentUri = Uri.parse(TasksProvider.CONTENT_URI+"/"+id);
-        AsyncTask.execute(new Runnable(){
+    public Uri refreshPage(int i) {
+        final int id = i;
+        currentUri = Uri.parse(TasksProvider.CONTENT_URI + "/" + id);
+        AsyncTask.execute(new Runnable() {
             @Override
-            public void run(){
-                if(id>0){
-                    final Cursor c = getActivity().getContentResolver().query(currentUri,null,
-                            Constants.ID+"="+getCurrentUriId(),null,null);
+            public void run() {
+                if (id > 0) {
+                    final Cursor c = getActivity().getContentResolver().query(currentUri, null,
+                            Constants.ID + "=" + getCurrentUriId(), null, null);
                     c.moveToFirst();
                     task.initPojo(c);
                     c.close();
-                    getActivity().runOnUiThread(new Runnable(){
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
-                        public void run(){
+                        public void run() {
                             title.setText(task.getTitle());
                             notes.setText(task.getNotes());
                             startDate.setText(DateUtils.getUserDate(task.getStartDate()));
@@ -86,7 +86,7 @@ public class TaskDetailFragment extends GenericDetailFragment {
                             getActivity().setTitle(title.getText().toString());
                         }
                     });
-                }else{
+                } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -100,8 +100,8 @@ public class TaskDetailFragment extends GenericDetailFragment {
         return currentUri;
     }
 
-    protected void emptyPage(){
-        currentUri= Uri.parse(TasksProvider.CONTENT_URI+"/"+0);
+    protected void emptyPage() {
+        currentUri = Uri.parse(TasksProvider.CONTENT_URI + "/" + 0);
         title.setText(null);
         startDate.setText(null);
         startTime.setText(null);
@@ -111,35 +111,37 @@ public class TaskDetailFragment extends GenericDetailFragment {
         task.reset();
     }
 
-    public Uri save() throws Exception{
+    public Uri save() throws Exception {
         ContentValues values = new ContentValues();
         //all validations throw exceptions on failure to prevent saving
-        try{
+        try {
             task.setTitle(title.getText().toString());
             task.setNotes(notes.getText().toString());
-            task.setStartDate(DateUtils.getDateTimeFromUser(startDate.getText(),startTime.getText(),false));
-            task.setEndDate(DateUtils.getDateTimeFromUser(endDate.getText(),endTime.getText(),true));
+            task.setStartDate(DateUtils.getDateTimeFromUser(startDate.getText(), startTime.getText(), false));
+            task.setEndDate(DateUtils.getDateTimeFromUser(endDate.getText(), endTime.getText(), true));
             //title cant be empty
-            if(Utils.hasValue(task.getTitle())){
-                values.put(Constants.Task.TASK_TITLE,title.getText().toString());
-            }else{throw new CustomException(getString(R.string.error_empty_title));}
+            if (Utils.hasValue(task.getTitle())) {
+                values.put(Constants.Task.TASK_TITLE, title.getText().toString());
+            } else {
+                throw new CustomException(getString(R.string.error_empty_title));
+            }
 
-            if(DateUtils.isBefore(task.getStartDate(),task.getEndDate())){
+            if (DateUtils.isBefore(task.getStartDate(), task.getEndDate())) {
                 values.put(Constants.Task.TASK_START_DATE, DateUtils.getDbDate(task.getStartDate()));
                 values.put(Constants.Task.TASK_END_DATE, DateUtils.getDbDate(task.getEndDate()));
             }
 
             //save notes
-            values.put(Constants.Assessment.NOTES,task.getNotes());
-        }catch (CustomException e){
+            values.put(Constants.Assessment.NOTES, task.getNotes());
+        } catch (CustomException e) {
             Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
             throw e;
         }
 
-        if(getCurrentUriId()>0){
+        if (getCurrentUriId() > 0) {
             getActivity().getContentResolver().update(currentUri, values, Constants.ID + "=" + getCurrentUriId(), null);
-        }else{
-            currentUri=getActivity().getContentResolver().insert(currentUri, values);
+        } else {
+            currentUri = getActivity().getContentResolver().insert(currentUri, values);
         }
 
         refreshPage(getCurrentUriId());
@@ -147,23 +149,23 @@ public class TaskDetailFragment extends GenericDetailFragment {
         return currentUri;
     }
 
-    public void doReminder(Context context,Class clazz){
-        Bundle b = prepareReminder(context,clazz);
-        b.putInt(Constants.Ids.TASK_ID,getCurrentUriId());
-        b.putString(Constants.PersistAlarm.CONTENT_TITLE,task.getTitle());
-        b.putString(Constants.PersistAlarm.CONTENT_TEXT,task.getNotes());
-        b.putString(Constants.PersistAlarm.USER_OBJECT,Constants.Tables.TABLE_TASK);
+    public void doReminder(Context context, Class clazz) {
+        Bundle b = prepareReminder(context, clazz);
+        b.putInt(Constants.Ids.TASK_ID, getCurrentUriId());
+        b.putString(Constants.PersistAlarm.CONTENT_TITLE, task.getTitle());
+        b.putString(Constants.PersistAlarm.CONTENT_TEXT, task.getNotes());
+        b.putString(Constants.PersistAlarm.USER_OBJECT, Constants.Tables.TABLE_TASK);
         createReminder(b);
     }
 
-    public void setIntentMsg(){
-        intentMsg=("Task Title: "+task.getTitle());
-        intentMsg+=("\n");
-        intentMsg+=("Start Date: "+DateUtils.getUserDateTime(task.getStartDate()));
-        intentMsg+=("\n");
-        intentMsg+=("End Date: "+DateUtils.getUserDateTime(task.getEndDate()));
-        intentMsg+=("\n");
-        intentMsg+=("Notes: "+task.getNotes());
-        intentMsg+=("\n");
+    public void setIntentMsg() {
+        intentMsg = ("Task Title: " + task.getTitle());
+        intentMsg += ("\n");
+        intentMsg += ("Start Date: " + DateUtils.getUserDateTime(task.getStartDate()));
+        intentMsg += ("\n");
+        intentMsg += ("End Date: " + DateUtils.getUserDateTime(task.getEndDate()));
+        intentMsg += ("\n");
+        intentMsg += ("Notes: " + task.getNotes());
+        intentMsg += ("\n");
     }
 }

@@ -21,10 +21,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.fragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
-import com.proj.abhi.mytermplanner.fragments.HomeGenericFragment;
-import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
+import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragment;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -38,15 +37,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class HomeActivity extends GenericActivity
-        implements NavigationView.OnNavigationItemSelectedListener
-{
-    private int numQueryDays=7;
+        implements NavigationView.OnNavigationItemSelectedListener {
+    private int numQueryDays = 7;
     private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //addLayout(R.layout.home_header_fragment);
+
         //init user prefs
         initPreferences();
 
@@ -62,52 +60,49 @@ public class HomeActivity extends GenericActivity
         addItemsInNavMenuDrawer();
 
         //restore values after rotation
-        handleRotation(savedInstanceState,false);
+        handleRotation(savedInstanceState, false);
 
     }
 
     protected void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if(viewPager!=null){
+        if (viewPager != null) {
             CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
             Bundle b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
+            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
             b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
             b.putString(Constants.ID, Constants.Ids.TERM_ID);
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
-            HomeGenericFragment termFragment = new HomeGenericFragment();
+            HomeListFragment termFragment = new HomeListFragment();
             termFragment.setArguments(b);
 
             b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
+            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
             b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
             b.putString(Constants.ID, Constants.Ids.COURSE_ID);
-            HomeGenericFragment courseFragment = new HomeGenericFragment();
+            HomeListFragment courseFragment = new HomeListFragment();
             courseFragment.setArguments(b);
 
             b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
+            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
             b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
             b.putString(Constants.ID, Constants.Ids.ASSESSMENT_ID);
-            HomeGenericFragment assessmentFragment = new HomeGenericFragment();
+            HomeListFragment assessmentFragment = new HomeListFragment();
             assessmentFragment.setArguments(b);
 
             b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
+            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
             b.putString(Constants.CONTENT_URI, TasksProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TASK_ID);
             b.putString(Constants.ID, Constants.Ids.TASK_ID);
-            HomeGenericFragment taskFragment = new HomeGenericFragment();
+            HomeListFragment taskFragment = new HomeListFragment();
             taskFragment.setArguments(b);
 
             b = new Bundle();
-            b.putString(Constants.Sql.WHERE,Constants.SqlSelect.QUERY_ALARMS +"ORDER BY "+Constants.PersistAlarm.NOTIFY_DATETIME);
-            b.putString(Constants.CONTENT_URI, AlarmsProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.ALARM_ID);
-            b.putString(Constants.ID, Constants.Ids.ALARM_ID);
-            AlarmListFragment reminderFragment= new AlarmListFragment();
+            b.putString(Constants.Sql.WHERE, Constants.SqlSelect.QUERY_ALARMS + "ORDER BY " + Constants.PersistAlarm.NOTIFY_DATETIME);
+            AlarmListFragment reminderFragment = new AlarmListFragment();
             reminderFragment.setArguments(b);
 
             adapter.addFragment(termFragment, getString(R.string.terms));
@@ -122,35 +117,35 @@ public class HomeActivity extends GenericActivity
         }
     }
 
-    protected void setTitle(){
-        if(numQueryDays>0){
-            this.setTitle(getString(R.string.active_future_events)+": "+numQueryDays+" Day(s)");
-        }else if(numQueryDays<0){
-            this.setTitle(getString(R.string.past_events)+": "+numQueryDays+" Day(s)");
-        }else{
+    protected void setTitle() {
+        if (numQueryDays > 0) {
+            this.setTitle(getString(R.string.active_future_events) + ": " + numQueryDays + " Day(s)");
+        } else if (numQueryDays < 0) {
+            this.setTitle(getString(R.string.past_events) + ": " + numQueryDays + " Day(s)");
+        } else {
             this.setTitle(getString(R.string.todays_events));
         }
     }
 
-    private void initPreferences(){
+    private void initPreferences() {
         //init query params
         sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS)){
+        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS)) {
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numQueryDays));
             editor.apply();
-        }else{
-            numQueryDays=Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,null));
+        } else {
+            numQueryDays = Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, null));
         }
         setTitle();
 
         //init default tab
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)){
+        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)) {
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(defaultTabIndex));
             editor.apply();
-        }else{
-            setDefaultTabIndex(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB,null)));
+        } else {
+            setDefaultTabIndex(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB, null)));
         }
 
     }
@@ -163,11 +158,11 @@ public class HomeActivity extends GenericActivity
         menu.getItem(0).getSubMenu().getItem(0).setVisible(false);
 
         //add others
-        SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.MANAGEMENT_GROUP,Constants.MenuGroups.MANAGEMENT_GROUP,0, R.string.manage);
-        submenu.setGroupCheckable(Constants.MenuGroups.MANAGEMENT_GROUP,false,true);
-        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP,Constants.MenuGroups.TASK_GROUP,0,R.string.tasks);
-        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP,Constants.MenuGroups.TERM_GROUP,0,R.string.terms);
-        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP,Constants.MenuGroups.PROF_GROUP,0,R.string.profs);
+        SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.MANAGEMENT_GROUP, 0, R.string.manage);
+        submenu.setGroupCheckable(Constants.MenuGroups.MANAGEMENT_GROUP, false, true);
+        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TASK_GROUP, 0, R.string.tasks);
+        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TERM_GROUP, 0, R.string.terms);
+        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.PROF_GROUP, 0, R.string.profs);
         navView.invalidate();
     }
 
@@ -178,10 +173,10 @@ public class HomeActivity extends GenericActivity
         menu.findItem(R.id.action_delete_all).setVisible(false);
         menu.findItem(R.id.action_delete).setVisible(false);
         menu.findItem(R.id.action_add).setVisible(false);
-        menu.add(0,Constants.ActionBarIds.ADD_TASK,0,getString(R.string.create_task));
-        menu.add(0,Constants.ActionBarIds.ADD_TERM,0,getString(R.string.create_term));
-        menu.add(0,Constants.ActionBarIds.ADD_PROF,0,getString(R.string.create_prof));
-        menu.add(0,Constants.ActionBarIds.USER_PREFS,0,getString(R.string.user_prefs));
+        menu.add(0, Constants.ActionBarIds.ADD_TASK, 0, getString(R.string.create_task));
+        menu.add(0, Constants.ActionBarIds.ADD_TERM, 0, getString(R.string.create_term));
+        menu.add(0, Constants.ActionBarIds.ADD_PROF, 0, getString(R.string.create_prof));
+        menu.add(0, Constants.ActionBarIds.USER_PREFS, 0, getString(R.string.user_prefs));
         return true;
     }
 
@@ -189,23 +184,23 @@ public class HomeActivity extends GenericActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == Constants.ActionBarIds.ADD_TERM ) {
-            Utils.sendToActivity(0,this,TermActivity.class,TermsProvider.CONTENT_URI);
+        if (id == Constants.ActionBarIds.ADD_TERM) {
+            Utils.sendToActivity(0, this, TermActivity.class, TermsProvider.CONTENT_URI);
             return true;
-        }else if (id == Constants.ActionBarIds.ADD_PROF ) {
-            Utils.sendToActivity(0,this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
+        } else if (id == Constants.ActionBarIds.ADD_PROF) {
+            Utils.sendToActivity(0, this, ProfessorActivity.class, ProfProvider.CONTENT_URI);
             return true;
-        }else if (id == Constants.ActionBarIds.ADD_TASK ) {
-            Utils.sendToActivity(0,this,TaskActivity.class,TasksProvider.CONTENT_URI);
+        } else if (id == Constants.ActionBarIds.ADD_TASK) {
+            Utils.sendToActivity(0, this, TaskActivity.class, TasksProvider.CONTENT_URI);
             return true;
-        }else if(id == Constants.ActionBarIds.USER_PREFS){
-            String[] tabList = {getString(R.string.terms),getString(R.string.courses),getString(R.string.assessments),getString(R.string.tasks)};
+        } else if (id == Constants.ActionBarIds.USER_PREFS) {
+            String[] tabList = {getString(R.string.terms), getString(R.string.courses), getString(R.string.assessments), getString(R.string.tasks), getString(R.string.reminders)};
             LayoutInflater li = LayoutInflater.from(this);
             final View prefsView = li.inflate(R.layout.prefs_dialog, null);
             final TextView daysInput = prefsView.findViewById(R.id.numDays);
             daysInput.setText(Integer.toString(numQueryDays));
 
-            final Spinner mSpinner= (Spinner) prefsView.findViewById(R.id.tabDropDown);
+            final Spinner mSpinner = (Spinner) prefsView.findViewById(R.id.tabDropDown);
             final ArrayAdapter<String> adp = new ArrayAdapter<>(this,
                     android.R.layout.simple_spinner_item, tabList);
             adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -233,7 +228,7 @@ public class HomeActivity extends GenericActivity
                                 } catch (Exception e) {
                                     if (e instanceof CustomException) {
                                         Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
-                                    } else{
+                                    } else {
                                         Snackbar.make(mCoordinatorLayout, "Failed to save preferences", Snackbar.LENGTH_LONG).show();
                                     }
                                     e.printStackTrace();
@@ -257,15 +252,15 @@ public class HomeActivity extends GenericActivity
         return super.onOptionsItemSelected(item);
     }
 
-    protected void refreshPage(int id){
+    protected void refreshPage(int id) {
         setTitle();
         Bundle b = new Bundle();
-        b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS,numQueryDays);
-        for(android.support.v4.app.Fragment f:getSupportFragmentManager().getFragments()){
-            if(f instanceof HomeGenericFragment){
-                ((HomeGenericFragment) f).restartLoader(b);
-            }else if(f instanceof AlarmListFragment){
-                ((AlarmListFragment)f).restartLoader(null);
+        b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
+        for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof HomeListFragment) {
+                ((HomeListFragment) f).restartLoader(b);
+            } else if (f instanceof AlarmListFragment) {
+                ((AlarmListFragment) f).restartLoader();
             }
         }
     }
@@ -284,12 +279,12 @@ public class HomeActivity extends GenericActivity
                     @Override
                     public void run() {
                         if (groupId == Constants.MenuGroups.MANAGEMENT_GROUP) {
-                            if(id == Constants.MenuGroups.TERM_GROUP ){
-                                Utils.sendToActivity(0,HomeActivity.this,TermActivity.class,TermsProvider.CONTENT_URI);
-                            }else if(id == Constants.MenuGroups.PROF_GROUP){
-                                Utils.sendToActivity(0,HomeActivity.this,ProfessorActivity.class,ProfProvider.CONTENT_URI);
-                            }else if(id == Constants.MenuGroups.TASK_GROUP){
-                                Utils.sendToActivity(0,HomeActivity.this,TaskActivity.class,TasksProvider.CONTENT_URI);
+                            if (id == Constants.MenuGroups.TERM_GROUP) {
+                                Utils.sendToActivity(0, HomeActivity.this, TermActivity.class, TermsProvider.CONTENT_URI);
+                            } else if (id == Constants.MenuGroups.PROF_GROUP) {
+                                Utils.sendToActivity(0, HomeActivity.this, ProfessorActivity.class, ProfProvider.CONTENT_URI);
+                            } else if (id == Constants.MenuGroups.TASK_GROUP) {
+                                Utils.sendToActivity(0, HomeActivity.this, TaskActivity.class, TasksProvider.CONTENT_URI);
                             }
                         }
                     }
