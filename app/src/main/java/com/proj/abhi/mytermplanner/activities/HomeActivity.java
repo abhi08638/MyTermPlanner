@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragment;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
@@ -36,8 +38,7 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class HomeActivity extends GenericActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends GenericActivity{
     private int numQueryDays = 7;
     private SharedPreferences sharedpreferences;
 
@@ -60,9 +61,12 @@ public class HomeActivity extends GenericActivity
         addItemsInNavMenuDrawer();
 
         //restore values after rotation
-        handleRotation(savedInstanceState, false);
+        handleRotation(savedInstanceState);
 
     }
+
+    @Override
+    protected void save() throws Exception {}
 
     protected void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);

@@ -2,6 +2,7 @@ package com.proj.abhi.mytermplanner.providers;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -45,9 +46,12 @@ public class TasksProvider extends ContentProvider{
             selection = Constants.ID + "=" + uri.getLastPathSegment();
         }
 
+        if(sortOrder==null){
+            sortOrder= Constants.CREATED;
+        }
+
         return database.query(Constants.Tables.TABLE_TASK, null,
-                selection, null, null, null,
-                Constants.CREATED);
+                selection, null, null, null, sortOrder);
     }
 
     @Override

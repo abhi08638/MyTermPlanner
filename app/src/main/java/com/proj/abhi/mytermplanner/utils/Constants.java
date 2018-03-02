@@ -13,6 +13,7 @@ public final class Constants {
     public static final String CURRENT_INTENT = "currentIntent";
     public static final String CONTENT_URI = "contentUri";
     public static final String CURSOR_LOADER_ID = "cursorLoaderId";
+    public static final String CURRENT_FRAGMENT_BUNDLE = "fragBundle";
 
     public final class Tables{
         public static final String TABLE_TERM = "term";
@@ -94,6 +95,7 @@ public final class Constants {
     }
 
     public final class CursorLoaderIds{
+        public static final int NONE=999;
         public static final int TERM_ID=0;
         public static final int COURSE_ID=1;
         public static final int ASSESSMENT_ID=2;
@@ -130,6 +132,7 @@ public final class Constants {
 
     public final class Sql{
         public static final String WHERE="WHERE";
+        public static final String COL1="col1";
     }
 
     public final class SqlSelect{

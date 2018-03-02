@@ -1,33 +1,26 @@
 package com.proj.abhi.mytermplanner.activities;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
-import com.proj.abhi.mytermplanner.fragments.pageFragments.GenericDetailFragment;
+import com.proj.abhi.mytermplanner.generics.GenericActivity;
+import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
+import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
+import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
-import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
 
-public class TaskActivity extends GenericActivity
-        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class TaskActivity extends GenericActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +35,16 @@ public class TaskActivity extends GenericActivity
         initViewPager();
 
         //init cursor loaders
-        getLoaderManager().initLoader(Constants.CursorLoaderIds.TASK_ID, null, this);
+        navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.TASK_ID);
+        navBundle.putString(Constants.Sql.COL1,Constants.Task.TASK_TITLE);
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.TASK_ID, navBundle, this);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        handleRotation(savedInstanceState, false);
-        refreshMenu();
+        navMenuPojo=new NavMenuPojo(Constants.MenuGroups.TASK_GROUP,getString(R.string.tasks),
+                getString(R.string.create_task),Constants.Task.TASK_TITLE);
+        handleRotation(savedInstanceState);
     }
 
     protected void initViewPager() {
@@ -76,34 +72,14 @@ public class TaskActivity extends GenericActivity
         }
     }
 
-    protected void refreshMenu() {
-        getLoaderManager().restartLoader(Constants.CursorLoaderIds.TASK_ID, null, this);
-    }
-
     protected void save() throws Exception {
         for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
-            if (f instanceof GenericDetailFragment) {
-                currentUri = ((GenericDetailFragment) f).save();
+            if (f instanceof TaskDetailFragment) {
+                currentUri = ((TaskDetailFragment) f).save();
                 break;
             }
         }
         refreshMenu();
-    }
-
-    protected void addItemsInNavMenuDrawer(Cursor c) {
-        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
-        Menu menu = navView.getMenu();
-        menu.removeItem(Constants.MenuGroups.TASK_GROUP);
-        SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.TASK_GROUP, Constants.MenuGroups.TASK_GROUP, 0, R.string.tasks);
-        submenu.setGroupCheckable(Constants.MenuGroups.TASK_GROUP, false, true);
-        submenu.add(Constants.MenuGroups.TASK_GROUP, 0, 0, R.string.create_task);
-        while (c.moveToNext()) {
-            submenu.add(Constants.MenuGroups.TASK_GROUP, c.getInt(c.getColumnIndex(Constants.ID)), 0,
-                    c.getString(c.getColumnIndex(Constants.Task.TASK_TITLE)));
-        }
-        selectNavItem(submenu);
-        c.close();
-        navView.invalidate();
     }
 
     @Override
@@ -129,13 +105,7 @@ public class TaskActivity extends GenericActivity
                         public void onClick(DialogInterface dialog, int button) {
                             if (button == DialogInterface.BUTTON_POSITIVE) {
                                 String cancelAlarmsWhere = " WHERE " + Constants.Ids.TASK_ID + "=" + getCurrentUriId();
-                                new AlarmTask(TaskActivity.this, null, null).cancelAlarms(cancelAlarmsWhere);
-                                getContentResolver().delete(currentUri,
-                                        Constants.ID + "=" + currentUri.getLastPathSegment(), null);
-                                refreshPage(0);
-                                selectDefaultTab();
-                                Snackbar.make(mCoordinatorLayout, R.string.deleted, Snackbar.LENGTH_LONG).show();
-                                refreshMenu();
+                                delete(cancelAlarmsWhere);
                             }
                         }
                     };
@@ -156,60 +126,13 @@ public class TaskActivity extends GenericActivity
     }
 
     protected void refreshPage(int id) {
+        //handles switching tasks from nav bar
         for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
             if (f instanceof GenericDetailFragment) {
                 currentUri = ((GenericDetailFragment) f).refreshPage(id);
+            }else if (f instanceof GenericListFragment) {
+                ((GenericListFragment) f).restartLoader();
             }
         }
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        doAbout(item);
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        int groupId = item.getGroupId();
-
-        if (groupId == Constants.MenuGroups.TASK_GROUP) {
-            selectDefaultTab();
-            unSelectCurrNavItem(Constants.MenuGroups.TASK_GROUP);
-            item.setCheckable(true);
-            item.setChecked(true);
-            this.setTitle(item.getTitle());
-            refreshPage(id);
-        } else if (id == R.id.nav_share && getCurrentUriId() > 0) {
-            for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
-                if (f instanceof GenericDetailFragment) {
-                    ((GenericDetailFragment) f).doShare();
-                    break;
-                }
-            }
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        ;
-        String where = null;
-        String[] cols = new String[2];
-        cols[0] = Constants.Task.TASK_TITLE;
-        cols[1] = Constants.ID;
-        return new CursorLoader(this, TasksProvider.CONTENT_URI,
-                cols, where, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (cursor != null && loader.getId() == Constants.CursorLoaderIds.TASK_ID) {
-            addItemsInNavMenuDrawer(cursor);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
     }
 }

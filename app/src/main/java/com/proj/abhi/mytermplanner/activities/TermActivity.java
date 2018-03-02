@@ -33,7 +33,7 @@ import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
-public class TermActivity extends GenericActivity
+public class TermActivity extends GenericActivityOld
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
 {
 

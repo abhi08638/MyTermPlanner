@@ -1,4 +1,4 @@
-package com.proj.abhi.mytermplanner.fragments.pageFragments;
+package com.proj.abhi.mytermplanner.generics;
 
 /**
  * Created by Abhi on 2/25/2018.
@@ -24,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.activities.GenericActivity;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
@@ -49,8 +48,22 @@ public abstract class GenericDetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer = getArguments();
+        handleRotation(savedInstanceState);
         if (initializer != null) {
             currentUri = initializer.getParcelable(Constants.CURRENT_URI);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Persist selected bundle across orientation changes.
+        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
+    }
+
+    protected void handleRotation(Bundle savedInstanceState){
+        // Recreate state if applicable.
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
+            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
         }
     }
 
@@ -126,6 +139,7 @@ public abstract class GenericDetailFragment extends Fragment {
             Date now = new Date();
             now.setMinutes(now.getMinutes() + 1);
             timePicker.setText(now);
+            reminderMsg.setText(b.getString(Constants.PersistAlarm.CONTENT_TEXT));
             mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -133,7 +147,6 @@ public abstract class GenericDetailFragment extends Fragment {
                         lbl.setVisibility(View.VISIBLE);
                         customDate.setVisibility(View.VISIBLE);
                         customDate.setText(DateUtils.getCurrentDate());
-                        reminderMsg.setText(b.getString(Constants.PersistAlarm.CONTENT_TEXT));
                     } else {
                         lbl.setVisibility(View.GONE);
                         customDate.setVisibility(View.GONE);

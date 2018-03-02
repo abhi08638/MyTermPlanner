@@ -49,7 +49,7 @@ import android.support.v4.view.ViewPager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-public class GenericActivity extends AppCompatActivity
+public class GenericActivityOld extends AppCompatActivity
 {
 
     protected Uri currentUri;

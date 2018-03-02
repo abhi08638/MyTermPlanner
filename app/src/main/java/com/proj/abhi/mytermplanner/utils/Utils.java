@@ -194,7 +194,7 @@ public class Utils {
             intent.putExtra(Constants.CURRENT_URI, uri);
             ((Activity) context).startActivityForResult(intent, 0);
         } catch (Exception e) {
-            new CustomException("No caller Activity provided");
+            e.printStackTrace();
         }
     }
 

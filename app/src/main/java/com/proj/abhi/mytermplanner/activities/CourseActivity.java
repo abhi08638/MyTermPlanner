@@ -45,7 +45,7 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseActivity extends GenericActivity
+public class CourseActivity extends GenericActivityOld
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
 {
 

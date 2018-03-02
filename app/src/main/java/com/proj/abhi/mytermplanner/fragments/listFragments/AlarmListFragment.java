@@ -12,6 +12,7 @@ import android.support.v4.content.Loader;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.cursorAdapters.AlarmsCursorAdapter;
+import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.providers.AlarmsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 

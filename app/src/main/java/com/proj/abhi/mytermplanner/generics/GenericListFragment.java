@@ -1,4 +1,4 @@
-package com.proj.abhi.mytermplanner.fragments.listFragments;
+package com.proj.abhi.mytermplanner.generics;
 
 /**
  * Created by Abhi on 2/25/2018.
@@ -40,14 +40,25 @@ public abstract class GenericListFragment extends ListFragment implements Loader
     protected boolean restartAll = true;
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Persist selected bundle across orientation changes.
+        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
+    }
+
+    protected void handleRotation(Bundle savedInstanceState){
+        // Recreate state if applicable.
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
+            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
+        }
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setDivider(null);
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer = getArguments();
-        if (initializer == null) {
-            initializer = new Bundle();
-        }
+        handleRotation(savedInstanceState);
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> av, View v, int position, long l) {

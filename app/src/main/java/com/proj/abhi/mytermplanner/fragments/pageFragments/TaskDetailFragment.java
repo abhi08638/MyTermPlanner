@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.pojos.TaskPojo;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;

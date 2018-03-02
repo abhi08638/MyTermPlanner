@@ -16,6 +16,7 @@ import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
+import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
@@ -53,7 +54,6 @@ public class HomeListFragment extends GenericListFragment implements LoaderCallb
         }
         setListAdapter(cursorAdapter);
         initLoader();
-
     }
 
     public void restartLoader(Bundle b) {

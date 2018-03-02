@@ -54,7 +54,9 @@ public class EditTextTimePicker implements View.OnClickListener, TimePickerDialo
     public void setText(Date date){
         _editText.setText(DateUtils.getUserTime(date));
         if (date!=null)
-                myCalendar.setTime(date);
+            myCalendar.setTime(date);
+        else
+            myCalendar=Calendar.getInstance(TimeZone.getDefault());
     }
 
     public String getText(){

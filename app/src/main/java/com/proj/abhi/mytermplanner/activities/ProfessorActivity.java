@@ -15,7 +15,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +31,6 @@ import android.widget.TextView;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.cursorAdapters.EmailsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.PhonesCursorAdapter;
-import com.proj.abhi.mytermplanner.providers.CoursesProfsProvider;
 import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -43,7 +41,7 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfessorActivity extends GenericActivity
+public class ProfessorActivity extends GenericActivityOld
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
 {
     private EditText firstName,middleName,lastName;
