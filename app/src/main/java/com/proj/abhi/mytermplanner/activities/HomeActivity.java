@@ -59,10 +59,12 @@ public class HomeActivity extends GenericActivity{
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         addItemsInNavMenuDrawer();
+    }
 
-        //restore values after rotation
-        handleRotation(savedInstanceState);
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        refreshPage(0);
     }
 
     @Override

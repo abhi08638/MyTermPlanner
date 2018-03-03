@@ -10,8 +10,14 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.View;
+import android.widget.ListView;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.activities.AssessmentActivity;
+import com.proj.abhi.mytermplanner.activities.CourseActivity;
+import com.proj.abhi.mytermplanner.activities.TaskActivity;
+import com.proj.abhi.mytermplanner.activities.TermActivity;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeAssessmentsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
@@ -122,5 +128,28 @@ public class HomeListFragment extends GenericListFragment implements LoaderCallb
                     cols, where, null, order);
         }
         return null;
+    }
+
+    @Override
+    public void onListItemClick(ListView parent, View view, int position, long id) {
+        if (id > 0) {
+            Long l = new Long(id);
+            switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
+                case Constants.CursorLoaderIds.TERM_ID:
+                    Utils.sendToActivity(l.intValue(), TermActivity.class, TermsProvider.CONTENT_URI);
+                    break;
+                case Constants.CursorLoaderIds.HOME_COURSE_ID:
+                    Utils.sendToActivity(l.intValue(), CourseActivity.class, HomeCoursesProvider.CONTENT_URI);
+                    break;
+                case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
+                    Utils.sendToActivity(l.intValue(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);
+                    break;
+                case Constants.CursorLoaderIds.TASK_ID:
+                    Utils.sendToActivity(l.intValue(), TaskActivity.class, TasksProvider.CONTENT_URI);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -49,12 +50,16 @@ public abstract class GenericActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //setTheme(R.style.AppThemeRed);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +88,8 @@ public abstract class GenericActivity extends AppCompatActivity
 
     protected void initTabs(ViewPager viewPager){
         tabLayout = (TabLayout) findViewById(R.id.tabs);
+        /*AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);*/
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorHeight(5);
         tabLayout.setSelectedTabIndicatorColor(Color.WHITE);
@@ -98,34 +105,11 @@ public abstract class GenericActivity extends AppCompatActivity
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabUnselected(TabLayout.Tab tab) {}
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
-    }
-
-    protected void handleRotation(Bundle savedInstanceState){
-        // Recreate state if applicable.
-        if (savedInstanceState != null) {
-            // Get selected uri from saved state.
-            if(savedInstanceState.containsKey(Constants.CURRENT_URI))
-                currentUri = Uri.parse((String) savedInstanceState.get(Constants.CURRENT_URI));
-        }
-        refreshMenu();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Persist selected uri across orientation changes.
-        if(currentUri!=null)
-            outState.putString(Constants.CURRENT_URI, currentUri.toString());
     }
 
     protected int getCurrentUriId(){

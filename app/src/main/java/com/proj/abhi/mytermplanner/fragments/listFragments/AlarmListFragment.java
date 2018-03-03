@@ -4,6 +4,7 @@ package com.proj.abhi.mytermplanner.fragments.listFragments;
  * Created by Abhi on 2/25/2018.
  */
 
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,5 +46,17 @@ public class AlarmListFragment extends GenericListFragment {
                     cols, where, null, order);
         }
         return null;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        restartLoader();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        restartLoader();
     }
 }

@@ -6,8 +6,10 @@ package com.proj.abhi.mytermplanner.generics;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -17,20 +19,12 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.activities.AssessmentActivity;
-import com.proj.abhi.mytermplanner.activities.CourseActivity;
-import com.proj.abhi.mytermplanner.activities.TaskActivity;
-import com.proj.abhi.mytermplanner.activities.TermActivity;
-import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
-import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
-import com.proj.abhi.mytermplanner.providers.TasksProvider;
-import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
 public abstract class GenericListFragment extends ListFragment implements LoaderCallbacks<Cursor> {
 
@@ -40,25 +34,15 @@ public abstract class GenericListFragment extends ListFragment implements Loader
     protected boolean restartAll = true;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Persist selected bundle across orientation changes.
-        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
-    }
-
-    protected void handleRotation(Bundle savedInstanceState){
-        // Recreate state if applicable.
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
-            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
-        }
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setDivider(null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getListView().setNestedScrollingEnabled(true);
+        }
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer = getArguments();
-        handleRotation(savedInstanceState);
+        //handleRotation(savedInstanceState);
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> av, View v, int position, long l) {
@@ -126,25 +110,7 @@ public abstract class GenericListFragment extends ListFragment implements Loader
     }
 
     @Override
-    public void onListItemClick(ListView parent, View view, int position, long id) {
-        if (id > 0) {
-            Long l = new Long(id);
-            switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
-                case Constants.CursorLoaderIds.TERM_ID:
-                    Utils.sendToActivity(l.intValue(), TermActivity.class, TermsProvider.CONTENT_URI);
-                    break;
-                case Constants.CursorLoaderIds.HOME_COURSE_ID:
-                    Utils.sendToActivity(l.intValue(), CourseActivity.class, HomeCoursesProvider.CONTENT_URI);
-                    break;
-                case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
-                    Utils.sendToActivity(l.intValue(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);
-                    break;
-                case Constants.CursorLoaderIds.TASK_ID:
-                    Utils.sendToActivity(l.intValue(), TaskActivity.class, TasksProvider.CONTENT_URI);
-                    break;
-            }
-        }
-    }
+    public void onListItemClick(ListView parent, View view, int position, long id) {}
 
 
 }

@@ -44,7 +44,6 @@ public class TaskActivity extends GenericActivity {
 
         navMenuPojo=new NavMenuPojo(Constants.MenuGroups.TASK_GROUP,getString(R.string.tasks),
                 getString(R.string.create_task),Constants.Task.TASK_TITLE);
-        handleRotation(savedInstanceState);
     }
 
     protected void initViewPager() {

@@ -1,16 +1,24 @@
-<resources>
+<resources xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="background">@color/lightBackground</item>
+    </style>
+
+    <style name="AppThemeBlue" parent="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryBlue</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>
+        <item name="colorAccent">@color/colorAccentBlue</item>
+        <item name="background">@color/darkBackground</item>
+    </style>
+
+    <style name="AppThemeRed" parent="AppTheme.NoActionBar" >
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkRed</item>
+        <item name="colorPrimary">@color/colorPrimaryRed</item>
+        <item name="colorAccent">@color/colorAccentRed</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -55,7 +63,7 @@
     </style>
 
     <style name="SelectableItemTheme">
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlHighlight">?attr/colorAccent</item>
     </style>
 
     <style name="SelectableItemBackground">

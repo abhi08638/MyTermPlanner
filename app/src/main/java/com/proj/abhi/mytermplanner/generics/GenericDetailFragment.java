@@ -48,22 +48,8 @@ public abstract class GenericDetailFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer = getArguments();
-        handleRotation(savedInstanceState);
         if (initializer != null) {
             currentUri = initializer.getParcelable(Constants.CURRENT_URI);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        // Persist selected bundle across orientation changes.
-        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
-    }
-
-    protected void handleRotation(Bundle savedInstanceState){
-        // Recreate state if applicable.
-        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
-            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
         }
     }
 

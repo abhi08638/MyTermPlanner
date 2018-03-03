@@ -8,11 +8,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppThemeBlue"
+        android:configChanges="orientation|screenSize"
+        android:hardwareAccelerated="true">
         <activity
             android:name=".activities.HomeActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -20,40 +21,35 @@
         </activity>
         <activity
             android:name=".activities.TermActivity"
-            android:label="@string/term_editor"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/term_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.ProfessorActivity"
-            android:label="@string/prof_editor"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/prof_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.CourseActivity"
-            android:label="@string/course_editor"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/course_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.TermActivity" />
         </activity>
         <activity
             android:name=".activities.AssessmentActivity"
-            android:label="@string/assessment_editor"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/assessment_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.CourseActivity" />
         </activity>
         <activity
             android:name=".activities.TaskActivity"
-            android:label="@string/task_editor"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/task_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />
