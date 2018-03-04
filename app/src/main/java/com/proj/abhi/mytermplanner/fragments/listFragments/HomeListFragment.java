@@ -59,7 +59,8 @@ public class HomeListFragment extends GenericListFragment implements LoaderCallb
                 break;
         }
         setListAdapter(cursorAdapter);
-        initLoader();
+        if(savedInstanceState==null)
+            initLoader();
     }
 
     public void restartLoader(Bundle b) {

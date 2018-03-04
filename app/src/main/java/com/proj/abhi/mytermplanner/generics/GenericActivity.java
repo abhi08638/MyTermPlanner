@@ -20,6 +20,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +52,8 @@ public abstract class GenericActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //setTheme(R.style.AppThemeRed);
+        AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
@@ -84,6 +87,16 @@ public abstract class GenericActivity extends AppCompatActivity
         DateUtils.context=this;
         Utils.context=this;
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
+    }
+
+    protected void handleRotation(Bundle savedInstanceState){
+        // Recreate state if applicable.
+        if (savedInstanceState != null) {
+            // Get selected uri from saved state.
+            if(savedInstanceState.containsKey(Constants.CURRENT_URI))
+                currentUri = Uri.parse((String) savedInstanceState.get(Constants.CURRENT_URI));
+        }
+        refreshMenu();
     }
 
     protected void initTabs(ViewPager viewPager){
@@ -123,6 +136,7 @@ public abstract class GenericActivity extends AppCompatActivity
     protected void selectNavItem(SubMenu subMenu) {
         MenuItem item = subMenu.findItem(getCurrentUriId());
         if(item!=null){
+            this.setTitle(item.getTitle());
             item.setCheckable(true);
             item.setChecked(true);
         }

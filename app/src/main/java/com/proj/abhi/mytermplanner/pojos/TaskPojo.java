@@ -2,6 +2,7 @@ package com.proj.abhi.mytermplanner.pojos;
 
 import android.database.Cursor;
 
+import com.proj.abhi.mytermplanner.generics.GenericDetailPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
 
@@ -11,12 +12,13 @@ import java.util.Date;
  * Created by Abhi on 2/19/2018.
  */
 
-public class TaskPojo {
+public class TaskPojo extends GenericDetailPojo{
     private String title,notes;
     private Date startDate;
     private Date endDate;
 
     public TaskPojo() {
+        className="task";
     }
 
     public void reset() {
@@ -65,4 +67,5 @@ public class TaskPojo {
     public void setNotes(String notes) {
         this.notes = notes;
     }
+
 }

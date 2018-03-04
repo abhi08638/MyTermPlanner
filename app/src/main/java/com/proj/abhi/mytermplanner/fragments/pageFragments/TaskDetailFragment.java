@@ -41,7 +41,6 @@ public class TaskDetailFragment extends GenericDetailFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         initReminderFields();
         //init screen fields
         title = (EditText) getActivity().findViewById(R.id.taskTitle);
@@ -50,7 +49,12 @@ public class TaskDetailFragment extends GenericDetailFragment {
         endDate = new EditTextDatePicker(getContext(), R.id.endDate);
         startTime = new EditTextTimePicker(getContext(), R.id.startTime);
         endTime = new EditTextTimePicker(getContext(), R.id.endTime);
-        refreshPage(getCurrentUriId());
+        if(savedInstanceState==null) {
+            refreshPage(getCurrentUriId());
+        }else{
+            task=(TaskPojo) task.initJson(savedInstanceState.getString(task.className));
+        }
+        pojo=task;
     }
 
     protected void initReminderFields() {
@@ -112,28 +116,33 @@ public class TaskDetailFragment extends GenericDetailFragment {
         task.reset();
     }
 
+    private void mapObject(TaskPojo task){
+        task.setTitle(title.getText().toString().trim());
+        task.setNotes(notes.getText().toString().trim());
+        task.setStartDate(DateUtils.getDateTimeFromUser(startDate.getText(), startTime.getText(), false));
+        task.setEndDate(DateUtils.getDateTimeFromUser(endDate.getText(), endTime.getText(), true));
+    }
+
     public Uri save() throws Exception {
         ContentValues values = new ContentValues();
+        TaskPojo tempPojo = new TaskPojo();
         //all validations throw exceptions on failure to prevent saving
         try {
-            task.setTitle(title.getText().toString());
-            task.setNotes(notes.getText().toString());
-            task.setStartDate(DateUtils.getDateTimeFromUser(startDate.getText(), startTime.getText(), false));
-            task.setEndDate(DateUtils.getDateTimeFromUser(endDate.getText(), endTime.getText(), true));
+            mapObject(tempPojo);
             //title cant be empty
-            if (Utils.hasValue(task.getTitle())) {
-                values.put(Constants.Task.TASK_TITLE, title.getText().toString());
+            if (Utils.hasValue(tempPojo.getTitle())) {
+                values.put(Constants.Task.TASK_TITLE, tempPojo.getTitle());
             } else {
                 throw new CustomException(getString(R.string.error_empty_title));
             }
 
-            if (DateUtils.isBefore(task.getStartDate(), task.getEndDate())) {
-                values.put(Constants.Task.TASK_START_DATE, DateUtils.getDbDate(task.getStartDate()));
-                values.put(Constants.Task.TASK_END_DATE, DateUtils.getDbDate(task.getEndDate()));
+            if (DateUtils.isBefore(tempPojo.getStartDate(), tempPojo.getEndDate())) {
+                values.put(Constants.Task.TASK_START_DATE, DateUtils.getDbDate(tempPojo.getStartDate()));
+                values.put(Constants.Task.TASK_END_DATE, DateUtils.getDbDate(tempPojo.getEndDate()));
             }
 
             //save notes
-            values.put(Constants.Assessment.NOTES, task.getNotes());
+            values.put(Constants.Assessment.NOTES, tempPojo.getNotes());
         } catch (CustomException e) {
             Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
             throw e;
@@ -144,7 +153,7 @@ public class TaskDetailFragment extends GenericDetailFragment {
         } else {
             currentUri = getActivity().getContentResolver().insert(currentUri, values);
         }
-
+        task=tempPojo;
         refreshPage(getCurrentUriId());
         Snackbar.make(mCoordinatorLayout, R.string.saved, Snackbar.LENGTH_LONG).show();
         return currentUri;

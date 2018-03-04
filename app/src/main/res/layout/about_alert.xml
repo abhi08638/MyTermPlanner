@@ -15,8 +15,7 @@
         android:layout_marginTop="15dp"
         android:gravity="center"
         android:text="Created By: Abhishek Gandhi"
-        android:textAlignment="center"
-        android:textColor="@android:color/black" />
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/textView2"
@@ -29,7 +28,6 @@
         android:layout_marginTop="15dp"
         android:gravity="center"
         android:text="Last Modified: Feb. 20th 2018"
-        android:textAlignment="center"
-        android:textColor="@android:color/black" />
+        android:textAlignment="center"/>
 
 </LinearLayout>

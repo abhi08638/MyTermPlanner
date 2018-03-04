@@ -42,7 +42,7 @@ public abstract class GenericListFragment extends ListFragment implements Loader
         }
         mCoordinatorLayout = (CoordinatorLayout) getActivity().findViewById(R.id.coordinatorLayout);
         initializer = getArguments();
-        //handleRotation(savedInstanceState);
+        handleRotation(savedInstanceState);
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> av, View v, int position, long l) {
@@ -74,6 +74,19 @@ public abstract class GenericListFragment extends ListFragment implements Loader
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Persist selected bundle across orientation changes.
+        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
+    }
+
+    protected void handleRotation(Bundle savedInstanceState){
+        // Recreate state if applicable.
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
+            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
+        }
     }
 
     private void restartLoaders(boolean restartAll) {
