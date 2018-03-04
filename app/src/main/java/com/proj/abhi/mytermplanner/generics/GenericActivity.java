@@ -134,7 +134,7 @@ public abstract class GenericActivity extends AppCompatActivity
         });
     }
 
-    protected int getCurrentUriId(){
+    public int getCurrentUriId(){
         try{
             return Integer.parseInt(currentUri.getLastPathSegment());
         }catch (Exception e){

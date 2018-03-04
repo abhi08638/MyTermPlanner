@@ -33,6 +33,7 @@ import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.cursorAdapters.EmailsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.PhonesCursorAdapter;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.ProfessorListFragments;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.ProfessorDetailFragment;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
@@ -165,7 +166,15 @@ public class ProfessorActivity extends GenericActivity
             ProfessorDetailFragment profDetailFragment = new ProfessorDetailFragment();
             profDetailFragment.setArguments(b);
 
+            b = new Bundle();
+            b.putString(Constants.CONTENT_URI, PhonesProvider.CONTENT_URI.toString());
+            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.PHONE_ID);
+            ProfessorListFragments phoneFragment = new ProfessorListFragments();
+            phoneFragment.setArguments(b);
+
+
             adapter.addFragment(profDetailFragment, getString(R.string.details));
+            adapter.addFragment(phoneFragment, getString(R.string.phones));
             viewPager.setAdapter(adapter);
             viewPager.setOffscreenPageLimit(adapter.getCount());
             initTabs(viewPager);
@@ -182,6 +191,18 @@ public class ProfessorActivity extends GenericActivity
                 ((GenericListFragment) f).restartLoader();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        super.onCreateOptionsMenu(menu);
+        menu.findItem(R.id.action_delete_all).setVisible(false);
+        menu.findItem(R.id.action_delete).setTitle(R.string.delete_prof);
+        menu.findItem(R.id.action_add).setVisible(false);
+        menu.add(0,Constants.ActionBarIds.ADD_PHONE,0, R.string.add_phone);
+        menu.add(0,Constants.ActionBarIds.ADD_EMAIL,0, R.string.add_email);
+        return true;
     }
 
     /*private void initSpinner(){
@@ -350,66 +371,6 @@ public class ProfessorActivity extends GenericActivity
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
         alertDialog.setCanceledOnTouchOutside(false);
-    }
-
-    protected void save() throws Exception{
-        ContentValues values = new ContentValues();
-        //all validations throw exceptions on failure to prevent saving
-        try{
-            //First and last name cant be empty
-            if(firstName.getText()!=null && !firstName.getText().toString().trim().equals("")){
-                values.put(Constants.Professor.FIRST_NAME,firstName.getText().toString());
-            }else{throw new CustomException(getString(R.string.error_empty_first_name));}
-            if(lastName.getText()!=null && !lastName.getText().toString().trim().equals("")){
-                values.put(Constants.Professor.LAST_NAME,lastName.getText().toString());
-            }else{throw new CustomException(getString(R.string.error_empty_last_name));}
-
-            //other data
-            values.put(Constants.Professor.MIDDLE_NAME,middleName.getText().toString());
-            values.put(Constants.Professor.TITLE,title.getSelectedItem().toString());
-        }catch (CustomException e){
-            Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
-            throw e;
-        }
-
-        if(getCurrentUriId()>0){
-            getContentResolver().update(currentUri, values, Constants.ID + "=" + getCurrentUriId(), null);
-        }else{
-            currentUri=getContentResolver().insert(currentUri, values);
-        }
-
-        refreshMenu();
-        refreshPage(getCurrentUriId());
-        Snackbar.make(mCoordinatorLayout, R.string.saved, Snackbar.LENGTH_LONG).show();
-    }
-
-    protected void addItemsInNavMenuDrawer(Cursor c) {
-        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
-        Menu menu = navView.getMenu();
-        menu.removeItem(Constants.MenuGroups.PROF_GROUP);
-        SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.PROF_GROUP,Constants.MenuGroups.PROF_GROUP,0, R.string.profs);
-        submenu.setGroupCheckable(Constants.MenuGroups.PROF_GROUP,false,true);
-        submenu.add(Constants.MenuGroups.PROF_GROUP,0,0,R.string.create_prof);
-        String name;
-        while (c.moveToNext()){
-            name=c.getString(c.getColumnIndex(Constants.Professor.TITLE))+" "+c.getString(c.getColumnIndex(Constants.Professor.LAST_NAME));
-            submenu.add(Constants.MenuGroups.PROF_GROUP,c.getInt(c.getColumnIndex(Constants.ID)),0,name);
-        }
-        selectNavItem(submenu);
-        c.close();
-        navView.invalidate();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        super.onCreateOptionsMenu(menu);
-        menu.findItem(R.id.action_delete_all).setVisible(false);
-        menu.findItem(R.id.action_delete).setTitle(R.string.delete_prof);
-        menu.findItem(R.id.action_add).setVisible(false);
-        menu.add(0,Constants.ActionBarIds.ADD_PHONE,0, R.string.add_phone);
-        menu.add(0,Constants.ActionBarIds.ADD_EMAIL,0, R.string.add_email);
-        return true;
     }
 
     @Override
