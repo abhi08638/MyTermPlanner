@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ public class TaskDetailFragment extends GenericDetailFragment {
         endDate = new EditTextDatePicker(getContext(), R.id.endDate);
         startTime = new EditTextTimePicker(getContext(), R.id.startTime);
         endTime = new EditTextTimePicker(getContext(), R.id.endTime);
+        Log.d(null, "onActivityCreated: "+initializer);
         if(savedInstanceState==null) {
             refreshPage(getCurrentUriId());
         }else{

@@ -15,13 +15,13 @@ public class NavMenuPojo {
     private int menuGroup;
     private String groupName;
     private String groupHeaderName;
-    private String itemName;
+    private String[] itemNames;
 
-    public NavMenuPojo(int menuGroup, String groupName, String groupHeaderName, String itemName) {
+    public NavMenuPojo(int menuGroup, String groupName, String groupHeaderName, String...itemNames) {
         this.menuGroup = menuGroup;
         this.groupName = groupName;
         this.groupHeaderName = groupHeaderName;
-        this.itemName = itemName;
+        this.itemNames = itemNames;
     }
 
     public int getMenuGroup() {
@@ -48,11 +48,11 @@ public class NavMenuPojo {
         this.groupHeaderName = groupHeaderName;
     }
 
-    public String getItemName() {
-        return itemName;
+    public String[] getItemNames() {
+        return itemNames;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
+    public void setItemNames(String[] itemNames) {
+        this.itemNames = itemNames;
     }
 }

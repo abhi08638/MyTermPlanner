@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -87,6 +88,14 @@ public abstract class GenericActivity extends AppCompatActivity
         DateUtils.context=this;
         Utils.context=this;
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Persist selected bundle across orientation changes.
+        if(currentUri!=null)
+            outState.putString(Constants.CURRENT_URI, currentUri.toString());
     }
 
     protected void handleRotation(Bundle savedInstanceState){
@@ -170,9 +179,14 @@ public abstract class GenericActivity extends AppCompatActivity
                 SubMenu submenu = menu.addSubMenu(navMenuPojo.getMenuGroup(), navMenuPojo.getMenuGroup(), 0, navMenuPojo.getGroupName());
                 submenu.setGroupCheckable(navMenuPojo.getMenuGroup(), false, true);
                 submenu.add(navMenuPojo.getMenuGroup(), 0, 0, navMenuPojo.getGroupHeaderName());
+                String itemName;
                 while (c.moveToNext()) {
+                    itemName="";
+                    for (String col:navMenuPojo.getItemNames()){
+                        itemName+=c.getString(c.getColumnIndex(col))+" ";
+                    }
                     submenu.add(navMenuPojo.getMenuGroup(), c.getInt(c.getColumnIndex(Constants.ID)), 0,
-                            c.getString(c.getColumnIndex(navMenuPojo.getItemName())));
+                            itemName.trim());
                 }
                 selectNavItem(submenu);
                 c.close();
@@ -299,8 +313,12 @@ public abstract class GenericActivity extends AppCompatActivity
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String where = bundle.getString(Constants.Sql.WHERE);
         String[] cols = new String[2];
-        cols[0] = bundle.getString(Constants.Sql.COL1);
-        cols[1] = Constants.ID;
+        if(bundle.containsKey(Constants.Sql.COL1)){
+            cols[0] = bundle.getString(Constants.Sql.COL1);
+            cols[1] = Constants.ID;
+        }else{
+            cols=null;
+        }
         Uri uri = Uri.parse(currentUri.toString().substring(0,currentUri.toString().lastIndexOf("/")));
         return new CursorLoader(this, uri,
                 cols, where, null, null);

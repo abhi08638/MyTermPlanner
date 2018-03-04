@@ -6,7 +6,6 @@ package com.proj.abhi.mytermplanner.generics;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +18,6 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.proj.abhi.mytermplanner.R;
@@ -74,6 +72,7 @@ public abstract class GenericListFragment extends ListFragment implements Loader
                 return true;
             }
         });
+
     }
 
     @Override

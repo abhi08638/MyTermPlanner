@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -31,9 +32,18 @@ import android.widget.TextView;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.cursorAdapters.EmailsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.PhonesCursorAdapter;
+import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.pageFragments.ProfessorDetailFragment;
+import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
+import com.proj.abhi.mytermplanner.generics.GenericActivity;
+import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
+import com.proj.abhi.mytermplanner.generics.GenericListFragment;
+import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
+import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
+import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.Utils;
@@ -41,8 +51,7 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfessorActivity extends GenericActivityOld
-        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
+public class ProfessorActivity extends GenericActivity
 {
     private EditText firstName,middleName,lastName;
     private Spinner title;
@@ -53,8 +62,7 @@ public class ProfessorActivity extends GenericActivityOld
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        addLayout(R.layout.prof_header);
+        /*super.onCreate(savedInstanceState);
         initTabs();
 
         //init currentUri
@@ -113,10 +121,70 @@ public class ProfessorActivity extends GenericActivityOld
         //restore values after rotation
         handleRotation(savedInstanceState,false);
         refreshMenu();
-        refreshPage(getCurrentUriId());
+        refreshPage(getCurrentUriId());*/
+        super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        if (intent.hasExtra(Constants.CURRENT_URI)) {
+            currentUri = intent.getParcelableExtra(Constants.CURRENT_URI);
+        } else {
+            currentUri = Uri.parse(ProfProvider.CONTENT_URI + "/" + 0);
+        }
+
+        //init cursor loaders
+        navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.PROF_ID);
+        getLoaderManager().initLoader(Constants.CursorLoaderIds.PROF_ID, navBundle, this);
+        handleRotation(savedInstanceState);
+        //init tabs
+        initViewPager();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navMenuPojo=new NavMenuPojo(Constants.MenuGroups.PROF_GROUP,getString(R.string.profs),
+                getString(R.string.create_prof),Constants.Professor.TITLE,Constants.Professor.LAST_NAME);
     }
 
-    private void initSpinner(){
+    @Override
+    protected void save() throws Exception {
+        for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof ProfessorDetailFragment) {
+                currentUri = ((ProfessorDetailFragment) f).save();
+                break;
+            }
+        }
+        refreshMenu();
+    }
+
+    @Override
+    protected void initViewPager() {
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        if (viewPager != null) {
+            CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
+            Bundle b = new Bundle();
+            b.putParcelable(Constants.CURRENT_URI, currentUri);
+            ProfessorDetailFragment profDetailFragment = new ProfessorDetailFragment();
+            profDetailFragment.setArguments(b);
+
+            adapter.addFragment(profDetailFragment, getString(R.string.details));
+            viewPager.setAdapter(adapter);
+            viewPager.setOffscreenPageLimit(adapter.getCount());
+            initTabs(viewPager);
+        }
+    }
+
+    @Override
+    protected void refreshPage(int id) {
+        //handles switching tasks from nav bar
+        for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f instanceof GenericDetailFragment) {
+                currentUri = ((GenericDetailFragment) f).refreshPage(id);
+            }else if (f instanceof GenericListFragment) {
+                ((GenericListFragment) f).restartLoader();
+            }
+        }
+    }
+
+    /*private void initSpinner(){
         title=(Spinner) findViewById(R.id.profTitle);
         List<String> list = new ArrayList<String>();
         list.add("Mr.");
@@ -378,15 +446,6 @@ public class ProfessorActivity extends GenericActivityOld
         return super.onOptionsItemSelected(item);
     }
 
-    protected void emptyPage(){
-        currentUri= Uri.parse(ProfProvider.CONTENT_URI+"/"+0);
-        title.setSelection(0);
-        firstName.setText(null);
-        lastName.setText(null);
-        middleName.setText(null);
-        phoneCursorAdapter.swapCursor(null);
-        emailCursorAdapter.swapCursor(null);
-    }
 
     protected void refreshPage(int id){
         currentUri = Uri.parse(ProfProvider.CONTENT_URI+"/"+id);
@@ -503,5 +562,5 @@ public class ProfessorActivity extends GenericActivityOld
         intentMsg+=("\n");
         intentMsg+=phoneMsg;
         intentMsg+=emailMsg;
-    }
+    }*/
 }

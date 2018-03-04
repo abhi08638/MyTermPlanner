@@ -31,20 +31,19 @@ public class TaskActivity extends GenericActivity {
         } else {
             currentUri = Uri.parse(TasksProvider.CONTENT_URI + "/" + 0);
         }
-        //init tabs
-        initViewPager();
-
         //init cursor loaders
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.TASK_ID);
         navBundle.putString(Constants.Sql.COL1,Constants.Task.TASK_TITLE);
         getLoaderManager().initLoader(Constants.CursorLoaderIds.TASK_ID, navBundle, this);
+        handleRotation(savedInstanceState);
+        //init tabs
+        initViewPager();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         navMenuPojo=new NavMenuPojo(Constants.MenuGroups.TASK_GROUP,getString(R.string.tasks),
                 getString(R.string.create_task),Constants.Task.TASK_TITLE);
-        handleRotation(savedInstanceState);
     }
 
     protected void initViewPager() {
