@@ -31,7 +31,7 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
-public class HomeListFragment extends GenericListFragment implements LoaderCallbacks<Cursor> {
+public class HomeListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
 
     private String sortOrder;
     private int numQueryDays;

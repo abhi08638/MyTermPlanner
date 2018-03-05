@@ -15,6 +15,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -58,6 +59,7 @@ public abstract class GenericDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // Persist selected bundle across orientation changes.
+        initializer.putParcelable(Constants.CURRENT_URI,currentUri);
         outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
         outState.putString(pojo.className,pojo.getGson());
     }

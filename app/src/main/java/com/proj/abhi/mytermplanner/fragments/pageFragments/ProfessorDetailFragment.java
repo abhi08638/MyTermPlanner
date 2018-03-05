@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.fragments.listFragments.ProfessorListFragments;
+import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.pojos.ProfessorPojo;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -80,6 +82,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
     public Uri refreshPage(int i) {
         final int id = i;
         currentUri = Uri.parse(ProfProvider.CONTENT_URI + "/" + id);
+        Log.d(null, "handleRotation: "+currentUri);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -166,7 +169,12 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
     }
 
     public void setIntentMsg() {
-        intentMsg=("Professor: "+title.getItemAtPosition(profPojo.getTitleIndex())+" "+profPojo.getFirstName()
-                +" "+profPojo.getMiddleName()+" "+profPojo.getLastName());
+        intentMsg=(title.getItemAtPosition(profPojo.getTitleIndex())+" "+profPojo.getFirstName()
+                +" "+profPojo.getMiddleName()+" "+profPojo.getLastName()+"\n");
+        ProfessorListFragments phoneFragment = (ProfessorListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.phones));
+        ProfessorListFragments emailFragment = (ProfessorListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.emails));
+        intentMsg+=phoneFragment.getMsg();
+        intentMsg+=emailFragment.getMsg();
+
     }
 }

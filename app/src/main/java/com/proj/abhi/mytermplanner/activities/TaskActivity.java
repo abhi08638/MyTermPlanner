@@ -14,7 +14,6 @@ import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericListFragment;
-import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
@@ -49,7 +48,6 @@ public class TaskActivity extends GenericActivity {
     protected void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
-            CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
             Bundle b = new Bundle();
             b.putParcelable(Constants.CURRENT_URI, currentUri);
             TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
@@ -62,7 +60,6 @@ public class TaskActivity extends GenericActivity {
             AlarmListFragment reminderFragment = new AlarmListFragment();
             reminderFragment.setArguments(b);
 
-
             adapter.addFragment(taskDetailFragment, getString(R.string.details));
             adapter.addFragment(reminderFragment, getString(R.string.reminders));
             viewPager.setAdapter(adapter);
@@ -72,12 +69,8 @@ public class TaskActivity extends GenericActivity {
     }
 
     protected void save() throws Exception {
-        for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
-            if (f instanceof TaskDetailFragment) {
-                currentUri = ((TaskDetailFragment) f).save();
-                break;
-            }
-        }
+        TaskDetailFragment taskDetailFragment = (TaskDetailFragment) getFragmentByTitle(R.string.details);
+        currentUri=taskDetailFragment.save();
         refreshMenu();
     }
 
@@ -113,12 +106,8 @@ public class TaskActivity extends GenericActivity {
 
             return true;
         } else if (id == Constants.ActionBarIds.ADD_REMINDER && uriId > 0) {
-            for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
-                if (f instanceof GenericDetailFragment) {
-                    ((GenericDetailFragment) f).doReminder(this, TaskActivity.class);
-                    break;
-                }
-            }
+            TaskDetailFragment taskDetailFragment = (TaskDetailFragment) getFragmentByTitle(R.string.details);
+            taskDetailFragment.doReminder(this,TaskActivity.class);
         }
 
         return super.onOptionsItemSelected(item);

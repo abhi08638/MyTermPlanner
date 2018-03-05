@@ -45,5 +45,5 @@
         android:layout_alignTop="@+id/spinnerText"
         android:layout_toEndOf="@+id/spinnerText"
         android:layout_toRightOf="@+id/spinnerText"
-        android:background="@android:drawable/editbox_dropdown_light_frame" />
+        style="@style/AlertSpinnerBackground" />
 </RelativeLayout>

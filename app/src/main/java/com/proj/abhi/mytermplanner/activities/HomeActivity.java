@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -25,7 +24,7 @@ import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
-import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragments;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -79,7 +78,7 @@ public class HomeActivity extends GenericActivity{
             b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
             b.putString(Constants.ID, Constants.Ids.TERM_ID);
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
-            HomeListFragment termFragment = new HomeListFragment();
+            HomeListFragments termFragment = new HomeListFragments();
             termFragment.setArguments(b);
 
             b = new Bundle();
@@ -87,7 +86,7 @@ public class HomeActivity extends GenericActivity{
             b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
             b.putString(Constants.ID, Constants.Ids.COURSE_ID);
-            HomeListFragment courseFragment = new HomeListFragment();
+            HomeListFragments courseFragment = new HomeListFragments();
             courseFragment.setArguments(b);
 
             b = new Bundle();
@@ -95,7 +94,7 @@ public class HomeActivity extends GenericActivity{
             b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
             b.putString(Constants.ID, Constants.Ids.ASSESSMENT_ID);
-            HomeListFragment assessmentFragment = new HomeListFragment();
+            HomeListFragments assessmentFragment = new HomeListFragments();
             assessmentFragment.setArguments(b);
 
             b = new Bundle();
@@ -103,7 +102,7 @@ public class HomeActivity extends GenericActivity{
             b.putString(Constants.CONTENT_URI, TasksProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TASK_ID);
             b.putString(Constants.ID, Constants.Ids.TASK_ID);
-            HomeListFragment taskFragment = new HomeListFragment();
+            HomeListFragments taskFragment = new HomeListFragments();
             taskFragment.setArguments(b);
 
             b = new Bundle();
@@ -263,8 +262,8 @@ public class HomeActivity extends GenericActivity{
         Bundle b = new Bundle();
         b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
         for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
-            if (f instanceof HomeListFragment) {
-                ((HomeListFragment) f).restartLoader(b);
+            if (f instanceof HomeListFragments) {
+                ((HomeListFragments) f).restartLoader(b);
             } else if (f instanceof AlarmListFragment) {
                 ((AlarmListFragment) f).restartLoader();
             }

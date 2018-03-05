@@ -15,6 +15,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +31,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.services.AlarmClient;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
@@ -36,6 +39,7 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.Date;
+import java.util.List;
 
 public abstract class GenericActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
@@ -49,6 +53,7 @@ public abstract class GenericActivity extends AppCompatActivity
     protected ViewPager viewPager;
     protected NavMenuPojo navMenuPojo;
     private TabLayout tabLayout = null;
+    protected CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,6 @@ public abstract class GenericActivity extends AppCompatActivity
                 AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -90,6 +94,14 @@ public abstract class GenericActivity extends AppCompatActivity
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
     }
 
+    public Fragment getFragmentByTitle(String title){
+        return adapter.getFragmentByTitle(title);
+    }
+
+    public Fragment getFragmentByTitle(int id){
+        return adapter.getFragmentByTitle(getString(id));
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -115,7 +127,7 @@ public abstract class GenericActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorHeight(5);
         tabLayout.setSelectedTabIndicatorColor(Color.WHITE);
-        if(tabLayout.getTabCount()>2) {
+        if(tabLayout.getTabCount()>3) {
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         }else{
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -245,7 +257,8 @@ public abstract class GenericActivity extends AppCompatActivity
     }
 
     protected void delete(String cancelAlarmsWhere){
-        new AlarmTask(this, null, null).cancelAlarms(cancelAlarmsWhere);
+        if(cancelAlarmsWhere!=null)
+            new AlarmTask(this, null, null).cancelAlarms(cancelAlarmsWhere);
         getContentResolver().delete(currentUri,
                 Constants.ID + "=" + currentUri.getLastPathSegment(), null);
         refreshPage(0);

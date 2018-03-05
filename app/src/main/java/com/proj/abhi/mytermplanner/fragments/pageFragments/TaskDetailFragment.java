@@ -50,11 +50,15 @@ public class TaskDetailFragment extends GenericDetailFragment {
         endDate = new EditTextDatePicker(getContext(), R.id.endDate);
         startTime = new EditTextTimePicker(getContext(), R.id.startTime);
         endTime = new EditTextTimePicker(getContext(), R.id.endTime);
-        Log.d(null, "onActivityCreated: "+initializer);
+
         if(savedInstanceState==null) {
             refreshPage(getCurrentUriId());
         }else{
             task=(TaskPojo) task.initJson(savedInstanceState.getString(task.className));
+            startTime.setText(task.getStartDate());
+            endTime.setText(task.getEndDate());
+            startDate.setText(DateUtils.getUserDate(task.getStartDate()));
+            endDate.setText(DateUtils.getUserDate(task.getEndDate()));
         }
         pojo=task;
     }
