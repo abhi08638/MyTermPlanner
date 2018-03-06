@@ -128,6 +128,7 @@ public final class Constants {
         public static final String NOTIFICATION_GREEN="notification_green";
         public static final String NOTIFICATION_BLUE="notification_blue";
         public static final String NOTIFICATION_VIBRATE_PATTERN="notification_vibrate_pattern";
+        public static final String THEME = "theme";
     }
 
     public final class Sql{

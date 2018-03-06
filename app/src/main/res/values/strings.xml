@@ -62,7 +62,7 @@
     <string name="custom_date">Custom Date</string>
     <string name="default_tab">Default Tab</string>
     <string name="user_prefs_note1">Note: Negative values will show past events</string>
-    <string name="num_days">Number of Days</string>
+    <string name="num_days">Default Range in Days</string>
     <string name="num_days_range">Range: -365 to 365</string>
     <string name="error_alarm_failed">Failed to create notification</string>
     <string name="reminder_header">Select Field and Time</string>
@@ -98,4 +98,10 @@
     <string name="end_time">End Time</string>
     <string name="notification_time">Notification Time</string>
     <string name="at">at</string>
+    <string name="share">Share</string>
+    <string name="settings">Settings</string>
+    <string name="preferenceSaveFailed">Failed to save preferences</string>
+    <string name="invalidDays">Invalid number of days</string>
+    <string name="red">Red</string>
+    <string name="blue">Blue</string>
 </resources>

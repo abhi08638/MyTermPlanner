@@ -2,9 +2,11 @@ package com.proj.abhi.mytermplanner.generics;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -31,15 +33,16 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.activities.SettingsActivity;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.services.AlarmClient;
 import com.proj.abhi.mytermplanner.services.AlarmTask;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
+import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.Date;
-import java.util.List;
 
 public abstract class GenericActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
@@ -52,22 +55,24 @@ public abstract class GenericActivity extends AppCompatActivity
     protected Bundle navBundle=new Bundle();
     protected ViewPager viewPager;
     protected NavMenuPojo navMenuPojo;
-    private TabLayout tabLayout = null;
+    protected TabLayout tabLayout = null;
+    protected Toolbar toolbar = null;
     protected CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //setTheme(R.style.AppThemeRed);
+        initThemePreferences();
+        setTheme(PreferenceSingleton.getThemeId());
         AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_YES);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        /*AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        */mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +97,22 @@ public abstract class GenericActivity extends AppCompatActivity
         DateUtils.context=this;
         Utils.context=this;
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
+    }
+
+    private void initThemePreferences() {
+        //init query params
+        if(!PreferenceSingleton.isInit()){
+            SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
+
+            //init theme
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.THEME)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(Constants.SharedPreferenceKeys.THEME, Integer.toString(R.style.AppThemeBlue));
+                editor.apply();
+            }
+            PreferenceSingleton.setThemeId(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.THEME, null)));
+            PreferenceSingleton.setInit(true);
+        }
     }
 
     public Fragment getFragmentByTitle(String title){
@@ -302,7 +323,7 @@ public abstract class GenericActivity extends AppCompatActivity
         int id = item.getItemId();
         int groupId = item.getGroupId();
 
-        if (groupId == navMenuPojo.getMenuGroup()) {
+        if (navMenuPojo!=null && groupId == navMenuPojo.getMenuGroup()) {
             selectDefaultTab();
             unSelectCurrNavItem();
             item.setCheckable(true);
@@ -316,6 +337,8 @@ public abstract class GenericActivity extends AppCompatActivity
                     break;
                 }
             }
+        } else if (id == R.id.nav_settings) {
+            Utils.sendToActivity(0, SettingsActivity.class,null);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

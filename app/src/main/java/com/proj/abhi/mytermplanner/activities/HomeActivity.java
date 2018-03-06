@@ -32,6 +32,7 @@ import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
+import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 import java.util.Timer;
@@ -63,6 +64,7 @@ public class HomeActivity extends GenericActivity{
     @Override
     public void onResume(){
         super.onResume();
+        initPreferences();
         refreshPage(0);
     }
 
@@ -72,7 +74,6 @@ public class HomeActivity extends GenericActivity{
     protected void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
-            CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
             Bundle b = new Bundle();
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
             b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
@@ -273,7 +274,7 @@ public class HomeActivity extends GenericActivity{
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        doAbout(item);
+        super.onNavigationItemSelected(item);
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
         final int groupId = item.getGroupId();
