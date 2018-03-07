@@ -8,11 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.SettingsDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 
-public class SettingsActivity extends GenericActivity
+public class SettingsActivity extends GenericActivity implements ColorPickerDialogListener
 {
     private boolean didSave=false;
 
@@ -74,4 +75,14 @@ public class SettingsActivity extends GenericActivity
     protected void refreshPage(int id){
     }
 
+    @Override
+    public void onColorSelected(int dialogId, int color) {
+        SettingsDetailFragment settingsDetailFragment = (SettingsDetailFragment) getFragmentByTitle(R.string.details);
+        settingsDetailFragment.setColor(color);
+    }
+
+    @Override
+    public void onDialogDismissed(int dialogId) {
+
+    }
 }

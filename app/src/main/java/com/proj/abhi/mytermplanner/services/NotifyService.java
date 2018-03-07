@@ -21,6 +21,7 @@ import android.support.v4.app.NotificationCompat;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
+import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class NotifyService extends Service {
@@ -51,42 +52,25 @@ public class NotifyService extends Service {
     }
 
     private void initPrefs(){
-        SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_RED)){
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_RED, Integer.toString(0));
-            editor.apply();
-        }else{
-            r=Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_RED,null));
-        }
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_GREEN)){
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_GREEN, Integer.toString(0));
-            editor.apply();
-        }else{
-            g=Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_GREEN,null));
-        }
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_BLUE)){
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_BLUE, Integer.toString(255));
-            editor.apply();
-        }else{
-            b=Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_BLUE,null));
-        }
-        String patternString="";
-        if(!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN)){
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            for(long l:pattern) {
-                patternString+=Long.toString(l)+",";
-            }
-            editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, patternString.substring(0,patternString.length()-1));
-            editor.apply();
-        }else{
-            patternString=sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN,null);
-            String[] longs=patternString.split(",");
-            pattern=new long[longs.length];
-            for(int i=0;i<longs.length-1;i++){
-                pattern[i]=Long.parseLong(longs[i]);
+        if(!PreferenceSingleton.isInit()) {
+            SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
+            PreferenceSingleton.setLedColorId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
+
+            String patternString = "";
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                for (long l : pattern) {
+                    patternString += Long.toString(l) + ",";
+                }
+                editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, patternString.substring(0, patternString.length() - 1));
+                editor.apply();
+            } else {
+                patternString = sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, null);
+                String[] longs = patternString.split(",");
+                pattern = new long[longs.length];
+                for (int i = 0; i < longs.length - 1; i++) {
+                    pattern[i] = Long.parseLong(longs[i]);
+                }
             }
         }
     }
@@ -121,7 +105,7 @@ public class NotifyService extends Service {
                 // Configure the notification channel.
                 notificationChannel.setDescription("Planner Channel");
                 notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.rgb(r,g,b));
+                notificationChannel.setLightColor(PreferenceSingleton.getLedColorId());
                 notificationChannel.setVibrationPattern(pattern);
                 notificationChannel.enableVibration(true);
                 notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),att);
@@ -134,8 +118,8 @@ public class NotifyService extends Service {
                     .setContentInfo(Constants.APP_NAME)
                     .setSmallIcon(getNotificationIcon())
                     .setAutoCancel(true)
-                    .setLights(Color.rgb(r,g,b), 500, 500)
-                    .setPriority(Notification.PRIORITY_DEFAULT)
+                    .setLights(PreferenceSingleton.getLedColorId(), 500, 500)
+                    .setPriority(Notification.PRIORITY_HIGH)
                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                     .setContentIntent(pendingIntent);
             Notification notification = new Notification.BigTextStyle(builder).bigText(contextText).build();
@@ -150,10 +134,10 @@ public class NotifyService extends Service {
             mBuilder.setContentText(contextText);
             mBuilder.setContentInfo(Constants.APP_NAME);
             mBuilder.setAutoCancel(true);
+            mBuilder.setPriority(Notification.PRIORITY_HIGH);
             mBuilder.setWhen(time);
-            mBuilder.setPriority(Notification.PRIORITY_DEFAULT);
             mBuilder.setVibrate(pattern);
-            mBuilder.setLights(Color.rgb(r,g,b), 500, 500);
+            mBuilder.setLights(PreferenceSingleton.getLedColorId(), 500, 500);
             mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
             mNotificationManager.notify(id, mBuilder.build());
         }

@@ -6,9 +6,11 @@ package com.proj.abhi.mytermplanner.fragments.pageFragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
@@ -17,11 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-
+import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -30,7 +30,6 @@ import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SettingsDetailFragment extends Fragment {
     private TextView daysInput;
@@ -38,6 +37,7 @@ public class SettingsDetailFragment extends Fragment {
     private CheckBox hideToolbar, hideTabBar;
     private SharedPreferences sharedpreferences;
     private CoordinatorLayout mCoordinatorLayout;
+    private FloatingActionButton notificationColor;
     private ArrayList<SpinnerPojo> themeList = new ArrayList();
     private ArrayList<SpinnerPojo> nightModeList = new ArrayList();
 
@@ -91,6 +91,22 @@ public class SettingsDetailFragment extends Fragment {
 
         hideToolbar.setOnCheckedChangeListener(Utils.getCbListener());
         hideTabBar.setOnCheckedChangeListener(Utils.getCbListener());
+        notificationColor=getActivity().findViewById(R.id.notificationColor);
+        setColor(PreferenceSingleton.getLedColorId());
+        notificationColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    ColorPickerDialog.newBuilder().setColor(notificationColor.getBackgroundTintList().getDefaultColor()).show(getActivity());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void setColor(int color){
+        notificationColor.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
     private void initPreferences() {
@@ -132,6 +148,7 @@ public class SettingsDetailFragment extends Fragment {
 
         hideToolbar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, true));
         hideTabBar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, true));
+        setColor(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR,Color.BLUE));
     }
 
     public void save() throws Exception {
@@ -149,11 +166,13 @@ public class SettingsDetailFragment extends Fragment {
                 editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
                 editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR,hideToolbar.isChecked());
                 editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,hideTabBar.isChecked());
+                editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR,notificationColor.getBackgroundTintList().getDefaultColor());
                 editor.apply();
                 PreferenceSingleton.setThemeId(themeItem.getId());
                 PreferenceSingleton.setNightModeId(nightModeItem.getId());
                 PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());
                 PreferenceSingleton.setHideToolbar(hideToolbar.isChecked());
+                PreferenceSingleton.setLedColorId(notificationColor.getBackgroundTintList().getDefaultColor());
                 Snackbar.make(mCoordinatorLayout, getString(R.string.saved), Snackbar.LENGTH_LONG).show();
             }
         } catch (Exception e) {

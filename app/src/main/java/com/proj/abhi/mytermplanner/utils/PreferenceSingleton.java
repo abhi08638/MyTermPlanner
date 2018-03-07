@@ -20,6 +20,7 @@ public class PreferenceSingleton {
     private static boolean init=false;
     private static int themeId;
     private static int nightModeId;
+    private static int ledColorId;
     private static boolean wasNightModeChanged;
     private static Intent pageIntent;
     private static boolean hideToolbar,hideTabBar;
@@ -78,5 +79,13 @@ public class PreferenceSingleton {
 
     public static void setPageIntent(Intent pageIntent) {
         PreferenceSingleton.pageIntent = pageIntent;
+    }
+
+    public static int getLedColorId() {
+        return ledColorId;
+    }
+
+    public static void setLedColorId(int ledColorId) {
+        PreferenceSingleton.ledColorId = ledColorId;
     }
 }

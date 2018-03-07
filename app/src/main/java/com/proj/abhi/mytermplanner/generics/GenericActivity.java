@@ -224,6 +224,15 @@ public abstract class GenericActivity extends AppCompatActivity
                 editor.apply();
             }
             PreferenceSingleton.setHideTabBar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,false));
+
+            //init toolbar pref
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.LED_COLOR)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE);
+                editor.apply();
+            }
+            PreferenceSingleton.setLedColorId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
+
             PreferenceSingleton.setWasNightModeChanged(false);
             PreferenceSingleton.setInit(true);
         }

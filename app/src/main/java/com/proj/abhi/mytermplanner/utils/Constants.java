@@ -124,14 +124,12 @@ public final class Constants {
         public static final String USER_PREFS="MyPrefs";
         public static final String NUM_QUERY_DAYS="numQueryDays";
         public static final String DEFAULT_TAB="defaultTab";
-        public static final String NOTIFICATION_RED="notification_red";
-        public static final String NOTIFICATION_GREEN="notification_green";
-        public static final String NOTIFICATION_BLUE="notification_blue";
         public static final String NOTIFICATION_VIBRATE_PATTERN="notification_vibrate_pattern";
         public static final String THEME = "theme";
         public static final String HIDE_TOOLBAR = "hideToolbar";
         public static final String HIDE_TABBAR = "hideTabBar";
         public static final String NIGHT_MODE = "nightMode";
+        public static final String LED_COLOR = "ledColor";
     }
 
     public final class Sql{
