@@ -18,7 +18,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -32,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.SettingsActivity;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
@@ -43,6 +43,8 @@ import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class GenericActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>
@@ -61,18 +63,13 @@ public abstract class GenericActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initThemePreferences();
+        initSharedPreferences();
         setTheme(PreferenceSingleton.getThemeId());
-        AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_YES);
+        AppCompatDelegate.setDefaultNightMode(PreferenceSingleton.getNightModeId());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        initContentView();
 
-        /*AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        */mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -99,18 +96,68 @@ public abstract class GenericActivity extends AppCompatActivity
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
     }
 
-    private void initThemePreferences() {
+    private void initContentView(){
+        setContentView(R.layout.activity_home);
+        DrawerLayout home = findViewById(R.id.drawer_layout);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View inflatedLayout;
+        if(PreferenceSingleton.isHideTabBar() && !PreferenceSingleton.isHideToolbar()){
+            inflatedLayout= inflater.inflate(R.layout.app_bar_home_no_tab, null, false);
+        }
+        else {
+            inflatedLayout = inflater.inflate(R.layout.app_bar_home, null, false);
+        }
+        home.addView(inflatedLayout,0);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        setSupportActionBar(toolbar);
+        if(PreferenceSingleton.isHideToolbar()){
+            AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+            params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+            if(PreferenceSingleton.isHideTabBar()){
+                AppBarLayout.LayoutParams tabParams = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
+                tabParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+            }
+        }
+    }
+
+    private void initSharedPreferences() {
         //init query params
         if(!PreferenceSingleton.isInit()){
             SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
-
+            //this.getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, 0).edit().clear().commit();
             //init theme
             if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.THEME)) {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(Constants.SharedPreferenceKeys.THEME, Integer.toString(R.style.AppThemeBlue));
+                editor.putInt(Constants.SharedPreferenceKeys.THEME, R.style.AppThemeBlue);
                 editor.apply();
             }
-            PreferenceSingleton.setThemeId(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.THEME, null)));
+            PreferenceSingleton.setThemeId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.THEME, R.style.AppThemeBlue));
+
+            //init night mode
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NIGHT_MODE)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_AUTO);
+                editor.apply();
+            }
+            PreferenceSingleton.setNightModeId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_AUTO));
+
+            //init toolbar pref
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.HIDE_TOOLBAR)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, true);
+                editor.apply();
+            }
+            PreferenceSingleton.setHideToolbar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR,true));
+
+            //init toolbar pref
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.HIDE_TABBAR)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, false);
+                editor.apply();
+            }
+            PreferenceSingleton.setHideTabBar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,false));
             PreferenceSingleton.setInit(true);
         }
     }
@@ -142,9 +189,6 @@ public abstract class GenericActivity extends AppCompatActivity
     }
 
     protected void initTabs(ViewPager viewPager){
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        /*AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) tabLayout.getLayoutParams();
-        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);*/
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorHeight(5);
         tabLayout.setSelectedTabIndicatorColor(Color.WHITE);
@@ -322,7 +366,8 @@ public abstract class GenericActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         int groupId = item.getGroupId();
-
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         if (navMenuPojo!=null && groupId == navMenuPojo.getMenuGroup()) {
             selectDefaultTab();
             unSelectCurrNavItem();
@@ -338,10 +383,16 @@ public abstract class GenericActivity extends AppCompatActivity
                 }
             }
         } else if (id == R.id.nav_settings) {
-            Utils.sendToActivity(0, SettingsActivity.class,null);
+            new Timer().schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            Utils.sendToActivity(0, SettingsActivity.class,null);
+                        }
+                    },
+                    200
+            );
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

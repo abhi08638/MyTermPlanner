@@ -19,6 +19,7 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class SettingsActivity extends GenericActivity
 {
+    private boolean didSave=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class SettingsActivity extends GenericActivity
     protected void save() throws Exception{
         SettingsDetailFragment settingsDetailFragment = (SettingsDetailFragment) getFragmentByTitle(R.string.details);
         settingsDetailFragment.save();
+        didSave=true;
     }
 
     @Override
@@ -59,7 +61,15 @@ public class SettingsActivity extends GenericActivity
 
     @Override
     public void onBackPressed() {
-        Utils.sendToActivity(0,HomeActivity.class,null);
+        if(didSave){
+            Intent clearBackStack=new Intent(this,HomeActivity.class);
+            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(clearBackStack);
+        }else{
+            super.onBackPressed();
+        }
     }
 
     @Override

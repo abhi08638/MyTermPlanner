@@ -129,6 +129,9 @@ public final class Constants {
         public static final String NOTIFICATION_BLUE="notification_blue";
         public static final String NOTIFICATION_VIBRATE_PATTERN="notification_vibrate_pattern";
         public static final String THEME = "theme";
+        public static final String HIDE_TOOLBAR = "hideToolbar";
+        public static final String HIDE_TABBAR = "hideTabBar";
+        public static final String NIGHT_MODE = "nightMode";
     }
 
     public final class Sql{

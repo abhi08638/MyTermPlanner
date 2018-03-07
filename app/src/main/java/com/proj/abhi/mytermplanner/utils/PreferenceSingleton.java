@@ -19,6 +19,8 @@ import java.util.TimeZone;
 public class PreferenceSingleton {
     private static boolean init=false;
     private static int themeId;
+    private static int nightModeId;
+    private static boolean hideToolbar,hideTabBar;
 
     public static int getThemeId() {
         return themeId;
@@ -34,5 +36,29 @@ public class PreferenceSingleton {
 
     public static void setInit(boolean init) {
         PreferenceSingleton.init = init;
+    }
+
+    public static boolean isHideToolbar() {
+        return hideToolbar;
+    }
+
+    public static void setHideToolbar(boolean hideToolbar) {
+        PreferenceSingleton.hideToolbar = hideToolbar;
+    }
+
+    public static boolean isHideTabBar() {
+        return hideTabBar;
+    }
+
+    public static void setHideTabBar(boolean hideTabBar) {
+        PreferenceSingleton.hideTabBar = hideTabBar;
+    }
+
+    public static int getNightModeId() {
+        return nightModeId;
+    }
+
+    public static void setNightModeId(int nightModeId) {
+        PreferenceSingleton.nightModeId = nightModeId;
     }
 }

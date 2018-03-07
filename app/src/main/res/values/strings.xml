@@ -104,4 +104,7 @@
     <string name="invalidDays">Invalid number of days</string>
     <string name="red">Red</string>
     <string name="blue">Blue</string>
+    <string name="auto">Auto</string>
+    <string name="always">Always</string>
+    <string name="never">Never</string>
 </resources>

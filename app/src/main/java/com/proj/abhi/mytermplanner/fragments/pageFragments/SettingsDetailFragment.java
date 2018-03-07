@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
@@ -29,10 +31,12 @@ import java.util.HashMap;
 
 public class SettingsDetailFragment extends Fragment {
     private TextView daysInput;
-    private Spinner mDefTabSpinner,mThemeSpinner;
+    private Spinner mDefTabSpinner, mThemeSpinner, mNightModeSpinner;
+    private ToggleButton hideToolbar, hideTabBar;
     private SharedPreferences sharedpreferences;
     private CoordinatorLayout mCoordinatorLayout;
     private ArrayList<SpinnerPojo> themeList = new ArrayList();
+    private ArrayList<SpinnerPojo> nightModeList = new ArrayList();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
@@ -46,12 +50,12 @@ public class SettingsDetailFragment extends Fragment {
         sharedpreferences = getActivity().getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
         initHomeSettings();
         initUiSettings();
-        if(savedInstanceState==null) {
+        if (savedInstanceState == null) {
             initPreferences();
         }
     }
 
-    private void initHomeSettings(){
+    private void initHomeSettings() {
         daysInput = getActivity().findViewById(R.id.numDays);
         mDefTabSpinner = (Spinner) getActivity().findViewById(R.id.tabDropDown);
         String[] tabList = {getString(R.string.terms), getString(R.string.courses), getString(R.string.assessments), getString(R.string.tasks), getString(R.string.reminders)};
@@ -61,14 +65,26 @@ public class SettingsDetailFragment extends Fragment {
         mDefTabSpinner.setAdapter(adp);
     }
 
-    private void initUiSettings(){
+    private void initUiSettings() {
         mThemeSpinner = (Spinner) getActivity().findViewById(R.id.themeDropDown);
-        themeList.add(new SpinnerPojo(R.style.AppThemeBlue,getString(R.string.blue)));
-        themeList.add(new SpinnerPojo(R.style.AppThemeRed,getString(R.string.red)));
+        themeList.add(new SpinnerPojo(R.style.AppThemeBlue, getString(R.string.blue)));
+        themeList.add(new SpinnerPojo(R.style.AppThemeRed, getString(R.string.red)));
         final ArrayAdapter<SpinnerPojo> adp = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, themeList);
         adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mThemeSpinner.setAdapter(adp);
+
+        mNightModeSpinner = (Spinner) getActivity().findViewById(R.id.nightModeDropDown);
+        nightModeList.add(new SpinnerPojo(AppCompatDelegate.MODE_NIGHT_AUTO, getString(R.string.auto)));
+        nightModeList.add(new SpinnerPojo(AppCompatDelegate.MODE_NIGHT_YES, getString(R.string.always)));
+        nightModeList.add(new SpinnerPojo(AppCompatDelegate.MODE_NIGHT_NO, getString(R.string.never)));
+        final ArrayAdapter<SpinnerPojo> adpNight = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, nightModeList);
+        adpNight.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mNightModeSpinner.setAdapter(adpNight);
+
+        hideToolbar = getActivity().findViewById(R.id.toolbarToggle);
+        hideTabBar = getActivity().findViewById(R.id.tabBarToggle);
     }
 
     private void initPreferences() {
@@ -91,20 +107,25 @@ public class SettingsDetailFragment extends Fragment {
         }
 
         //init theme
-        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.THEME)) {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.THEME, Integer.toString(R.style.AppThemeBlue));
-            editor.apply();
-        } else {
-            int themeId=Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.THEME, null));
-            for(int i=0;i<themeList.size();i++){
-                if(themeList.get(i).getId()==themeId){
-                    mThemeSpinner.setSelection(i);
-                    break;
-                }
+        int themeId = sharedpreferences.getInt(Constants.SharedPreferenceKeys.THEME, R.style.AppThemeBlue);
+        for (int i = 0; i < themeList.size(); i++) {
+            if (themeList.get(i).getId() == themeId) {
+                mThemeSpinner.setSelection(i);
+                break;
             }
         }
 
+        //init night mode
+        int nightModeId = sharedpreferences.getInt(Constants.SharedPreferenceKeys.NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_AUTO);
+        for (int i = 0; i < nightModeList.size(); i++) {
+            if (nightModeList.get(i).getId() == nightModeId) {
+                mNightModeSpinner.setSelection(i);
+                break;
+            }
+        }
+
+        hideToolbar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, true));
+        hideTabBar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, true));
     }
 
     public void save() throws Exception {
@@ -113,13 +134,20 @@ public class SettingsDetailFragment extends Fragment {
             if (numDays > 365 || numDays < -365) {
                 throw new CustomException(getString(R.string.invalidDays));
             } else {
-                SpinnerPojo themeItem=(SpinnerPojo) mThemeSpinner.getSelectedItem();
+                SpinnerPojo themeItem = (SpinnerPojo) mThemeSpinner.getSelectedItem();
+                SpinnerPojo nightModeItem = (SpinnerPojo) mNightModeSpinner.getSelectedItem();
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numDays));
                 editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(mDefTabSpinner.getSelectedItemPosition()));
-                editor.putString(Constants.SharedPreferenceKeys.THEME, Integer.toString(themeItem.getId()));
+                editor.putInt(Constants.SharedPreferenceKeys.THEME, themeItem.getId());
+                editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
+                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR,hideToolbar.isChecked());
+                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,hideTabBar.isChecked());
                 editor.apply();
                 PreferenceSingleton.setThemeId(themeItem.getId());
+                PreferenceSingleton.setNightModeId(nightModeItem.getId());
+                PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());
+                PreferenceSingleton.setHideToolbar(hideToolbar.isChecked());
                 Snackbar.make(mCoordinatorLayout, getString(R.string.saved), Snackbar.LENGTH_LONG).show();
             }
         } catch (Exception e) {
