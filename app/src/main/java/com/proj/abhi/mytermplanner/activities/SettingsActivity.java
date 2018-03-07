@@ -3,11 +3,7 @@ package com.proj.abhi.mytermplanner.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +11,6 @@ import android.view.View;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.SettingsDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class SettingsActivity extends GenericActivity
 {
@@ -24,7 +19,6 @@ public class SettingsActivity extends GenericActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //init tabs
         initViewPager();
     }
 
@@ -74,7 +68,6 @@ public class SettingsActivity extends GenericActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
 

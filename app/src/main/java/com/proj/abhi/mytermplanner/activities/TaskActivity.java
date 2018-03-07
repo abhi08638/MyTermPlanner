@@ -38,9 +38,6 @@ public class TaskActivity extends GenericActivity {
         //init tabs
         initViewPager();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         navMenuPojo=new NavMenuPojo(Constants.MenuGroups.TASK_GROUP,getString(R.string.tasks),
                 getString(R.string.create_task),Constants.Task.TASK_TITLE);
     }

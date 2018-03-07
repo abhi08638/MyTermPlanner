@@ -56,8 +56,6 @@ public class HomeActivity extends GenericActivity{
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.hide();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
         addItemsInNavMenuDrawer();
     }
 

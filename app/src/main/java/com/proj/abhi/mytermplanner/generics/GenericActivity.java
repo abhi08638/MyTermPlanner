@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -31,8 +32,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.activities.HomeActivity;
 import com.proj.abhi.mytermplanner.activities.SettingsActivity;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
@@ -67,7 +70,9 @@ public abstract class GenericActivity extends AppCompatActivity
         setTheme(PreferenceSingleton.getThemeId());
         AppCompatDelegate.setDefaultNightMode(PreferenceSingleton.getNightModeId());
         super.onCreate(savedInstanceState);
-        initContentView();
+        setContentView(R.layout.activity_home);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        initContentView(drawer);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
@@ -83,11 +88,40 @@ public abstract class GenericActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerLayout = navigationView.getHeaderView(0);
+        ImageButton nightBtn = headerLayout.findViewById(R.id.nightBtn);
+        nightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    int currentNightMode = getResources().getConfiguration().uiMode
+                            & Configuration.UI_MODE_NIGHT_MASK;
+                    switch (currentNightMode) {
+                        case Configuration.UI_MODE_NIGHT_NO:
+                            PreferenceSingleton.setNightModeId(AppCompatDelegate.MODE_NIGHT_YES);
+                            recreate();
+                            break;
+                        case Configuration.UI_MODE_NIGHT_YES:
+                            PreferenceSingleton.setNightModeId(AppCompatDelegate.MODE_NIGHT_NO);
+                            recreate();
+                            break;
+                        case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                            PreferenceSingleton.setNightModeId(AppCompatDelegate.MODE_NIGHT_YES);
+                            recreate();
+                            break;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
 
         alarmClient = new AlarmClient(this);
         alarmClient.doBindService();
@@ -96,9 +130,17 @@ public abstract class GenericActivity extends AppCompatActivity
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
     }
 
-    private void initContentView(){
-        setContentView(R.layout.activity_home);
-        DrawerLayout home = findViewById(R.id.drawer_layout);
+    @Override
+    public void onResume(){
+        super.onResume();
+        int currentNightMode = (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK)/16;
+        if(currentNightMode!=PreferenceSingleton.getNightModeId()){
+            getDelegate().setLocalNightMode(PreferenceSingleton.getNightModeId());
+        }
+    }
+
+    private void initContentView(DrawerLayout home){
         LayoutInflater inflater = LayoutInflater.from(this);
         View inflatedLayout;
         if(PreferenceSingleton.isHideTabBar() && !PreferenceSingleton.isHideToolbar()){

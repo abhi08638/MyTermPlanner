@@ -80,9 +80,6 @@ public class ProfessorActivity extends GenericActivity
         //init tabs
         initViewPager();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         navMenuPojo=new NavMenuPojo(Constants.MenuGroups.PROF_GROUP,getString(R.string.profs),
                 getString(R.string.create_prof),Constants.Professor.TITLE,Constants.Professor.LAST_NAME);
     }
