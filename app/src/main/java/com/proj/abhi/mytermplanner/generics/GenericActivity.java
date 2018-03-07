@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -27,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,9 +95,45 @@ public abstract class GenericActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        initNavHeader(navigationView);
+
+        alarmClient = new AlarmClient(this);
+        alarmClient.doBindService();
+        DateUtils.context=this;
+        Utils.context=this;
+        navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
+    }
+
+    public int getThemeColor (int color) {
+        final TypedValue value = new TypedValue();
+        this.getTheme ().resolveAttribute (color, value, true);
+        return value.data;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        int currentNightMode = (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK)/16;
+        if(currentNightMode!=PreferenceSingleton.getNightModeId()){
+            getDelegate().setLocalNightMode(PreferenceSingleton.getNightModeId());
+        }
+    }
+
+    private void initNavHeader(NavigationView navigationView){
         View headerLayout = navigationView.getHeaderView(0);
+
+        //workaround for setting background drawable in code for api<21
+        GradientDrawable gd = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[] {getThemeColor(R.attr.colorPrimary),getThemeColor(R.attr.colorPrimary),getThemeColor(R.attr.colorPrimaryDark)});
+        gd.setCornerRadius(0f);
+        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        gd.setShape(GradientDrawable.RECTANGLE);
+        headerLayout.setBackgroundDrawable(gd);
+
         ImageButton nightBtn = headerLayout.findViewById(R.id.nightBtn);
         nightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,22 +160,6 @@ public abstract class GenericActivity extends AppCompatActivity
                 }
             }
         });
-
-        alarmClient = new AlarmClient(this);
-        alarmClient.doBindService();
-        DateUtils.context=this;
-        Utils.context=this;
-        navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        int currentNightMode = (getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK)/16;
-        if(currentNightMode!=PreferenceSingleton.getNightModeId()){
-            getDelegate().setLocalNightMode(PreferenceSingleton.getNightModeId());
-        }
     }
 
     private void initContentView(DrawerLayout home){

@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -25,6 +27,7 @@ import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
+import com.proj.abhi.mytermplanner.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +35,7 @@ import java.util.HashMap;
 public class SettingsDetailFragment extends Fragment {
     private TextView daysInput;
     private Spinner mDefTabSpinner, mThemeSpinner, mNightModeSpinner;
-    private ToggleButton hideToolbar, hideTabBar;
+    private CheckBox hideToolbar, hideTabBar;
     private SharedPreferences sharedpreferences;
     private CoordinatorLayout mCoordinatorLayout;
     private ArrayList<SpinnerPojo> themeList = new ArrayList();
@@ -83,8 +86,11 @@ public class SettingsDetailFragment extends Fragment {
         adpNight.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mNightModeSpinner.setAdapter(adpNight);
 
-        hideToolbar = getActivity().findViewById(R.id.toolbarToggle);
-        hideTabBar = getActivity().findViewById(R.id.tabBarToggle);
+        hideToolbar = getActivity().findViewById(R.id.toolbarCheckbox);
+        hideTabBar = getActivity().findViewById(R.id.tabBarCheckbox);
+
+        hideToolbar.setOnCheckedChangeListener(Utils.getCbListener());
+        hideTabBar.setOnCheckedChangeListener(Utils.getCbListener());
     }
 
     private void initPreferences() {

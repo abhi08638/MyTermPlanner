@@ -107,4 +107,6 @@
     <string name="auto">Auto</string>
     <string name="always">Always</string>
     <string name="never">Never</string>
+    <string name="off">OFF</string>
+    <string name="on">ON</string>
 </resources>

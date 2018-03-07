@@ -152,6 +152,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -161,13 +162,13 @@
                     android:gravity="center_vertical|start"
                     android:text="Hide Toolbar on Scroll" />
 
-                <ToggleButton
-                    android:id="@+id/toolbarToggle"
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                <CheckBox
+                    android:id="@+id/toolbarCheckbox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:checked="false" />
+                    android:text="OFF"
+                    android:textAllCaps="true" />
 
             </LinearLayout>
 
@@ -184,12 +185,13 @@
                     android:gravity="center_vertical|start"
                     android:text="Hide Tabs on Scroll" />
 
-                <ToggleButton
-                    android:id="@+id/tabBarToggle"
-                    style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+                <CheckBox
+                    android:id="@+id/tabBarCheckbox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:text="OFF"
+                    android:textAllCaps="true" />
 
             </LinearLayout>
 

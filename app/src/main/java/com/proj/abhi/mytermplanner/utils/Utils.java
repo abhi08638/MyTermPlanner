@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
+
+import com.proj.abhi.mytermplanner.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -207,6 +210,18 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static CompoundButton.OnCheckedChangeListener getCbListener(){
+        return new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    buttonView.setText(R.string.on);
+                else
+                    buttonView.setText(R.string.off);
+            }
+        };
     }
 
 }
