@@ -104,6 +104,7 @@ public abstract class GenericActivity extends AppCompatActivity
         DateUtils.context=this;
         Utils.context=this;
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
+        PreferenceSingleton.setPageIntent(getIntent());
     }
 
     public int getThemeColor (int color) {
@@ -115,10 +116,10 @@ public abstract class GenericActivity extends AppCompatActivity
     @Override
     public void onResume(){
         super.onResume();
-        int currentNightMode = (getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK)/16;
-        if(currentNightMode!=PreferenceSingleton.getNightModeId()){
+        if(PreferenceSingleton.wasNightModeChanged() && !getIntent().equals(PreferenceSingleton.getPageIntent())){
             getDelegate().setLocalNightMode(PreferenceSingleton.getNightModeId());
+            PreferenceSingleton.setWasNightModeChanged(false);
+            recreate();
         }
     }
 
@@ -141,6 +142,7 @@ public abstract class GenericActivity extends AppCompatActivity
                 try{
                     int currentNightMode = getResources().getConfiguration().uiMode
                             & Configuration.UI_MODE_NIGHT_MASK;
+                    PreferenceSingleton.setWasNightModeChanged(true);
                     switch (currentNightMode) {
                         case Configuration.UI_MODE_NIGHT_NO:
                             PreferenceSingleton.setNightModeId(AppCompatDelegate.MODE_NIGHT_YES);
@@ -222,6 +224,7 @@ public abstract class GenericActivity extends AppCompatActivity
                 editor.apply();
             }
             PreferenceSingleton.setHideTabBar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,false));
+            PreferenceSingleton.setWasNightModeChanged(false);
             PreferenceSingleton.setInit(true);
         }
     }

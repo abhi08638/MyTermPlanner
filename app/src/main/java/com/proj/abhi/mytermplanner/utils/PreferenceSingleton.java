@@ -20,6 +20,8 @@ public class PreferenceSingleton {
     private static boolean init=false;
     private static int themeId;
     private static int nightModeId;
+    private static boolean wasNightModeChanged;
+    private static Intent pageIntent;
     private static boolean hideToolbar,hideTabBar;
 
     public static int getThemeId() {
@@ -60,5 +62,21 @@ public class PreferenceSingleton {
 
     public static void setNightModeId(int nightModeId) {
         PreferenceSingleton.nightModeId = nightModeId;
+    }
+
+    public static boolean wasNightModeChanged() {
+        return wasNightModeChanged;
+    }
+
+    public static void setWasNightModeChanged(boolean wasNightModeChanged) {
+        PreferenceSingleton.wasNightModeChanged = wasNightModeChanged;
+    }
+
+    public static Intent getPageIntent() {
+        return pageIntent;
+    }
+
+    public static void setPageIntent(Intent pageIntent) {
+        PreferenceSingleton.pageIntent = pageIntent;
     }
 }
