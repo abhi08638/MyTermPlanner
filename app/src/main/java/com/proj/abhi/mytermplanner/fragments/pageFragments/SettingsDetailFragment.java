@@ -6,6 +6,7 @@ package com.proj.abhi.mytermplanner.fragments.pageFragments;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ import com.google.gson.Gson;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
+import com.proj.abhi.mytermplanner.services.NotifyService;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
@@ -131,24 +133,16 @@ public class SettingsDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 try {
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getActivity(),"test");
-                    mBuilder.setContentTitle("test");
-                    mBuilder.setContentText("test");
-                    mBuilder.setSmallIcon(R.mipmap.ic_stat_book);
-                    mBuilder.setContentInfo(Constants.APP_NAME);
-                    mBuilder.setAutoCancel(true);
-                    mBuilder.setWhen(System.currentTimeMillis());
-                    mBuilder.setVibrate(getLongArray());
-                    mBuilder.setLights(notificationColor.getBackgroundTintList().getDefaultColor(), 500, 500);
-                    mNotificationManager.notify(0, mBuilder.build());
+                    Bundle b = new Bundle();
+                    b.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,mReminderTypeSpinner.getSelectedItemPosition());
+                    b.putInt(Constants.SharedPreferenceKeys.LED_COLOR, notificationColor.getBackgroundTintList().getDefaultColor());
+                    b.putLongArray(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN,getLongArray());
+                    NotifyService.testNotification(getActivity(),b);
                 }catch (Exception e){
                     if (e instanceof CustomException) {
                         Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
-                    } else {
-                        Snackbar.make(mCoordinatorLayout, R.string.preferenceSaveFailed, Snackbar.LENGTH_LONG).show();
                     }
+                    e.printStackTrace();
                 }
             }
         });

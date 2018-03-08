@@ -68,6 +68,79 @@ public class NotifyService extends Service {
 
     private final IBinder mBinder = new ServiceBinder();
 
+    public static void testNotification(Context context, Bundle bundle){
+        long time = System.currentTimeMillis();
+        String contextTitle ="Test";
+        String contextText = "Test";
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent sendingIntent=new Intent("",null);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(),sendingIntent, 0);
+        int id = 0;
+        String NOTIFICATION_CHANNEL_ID = "plannerChannel";
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        boolean isAlarmType=false;
+
+        if(bundle.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)==Constants.NotifyTypes.ALARM){
+            alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            isAlarmType=true;
+            contextTitle="Test Alarm";
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
+
+                AudioAttributes att = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .build();
+                // Configure the notification channel.
+                notificationChannel.setDescription("Planner Channel");
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(bundle.getInt(Constants.SharedPreferenceKeys.LED_COLOR));
+                notificationChannel.setVibrationPattern(bundle.getLongArray(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN));
+                notificationChannel.enableVibration(true);
+                notificationChannel.setSound(alarmSound,att);
+                notificationChannel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+                mNotificationManager.createNotificationChannel(notificationChannel);
+            }
+
+            Notification.Builder builder = new Notification.Builder(context);
+            builder.setContentTitle(contextTitle)
+                    .setContentInfo(Constants.APP_NAME)
+                    .setSmallIcon(R.mipmap.ic_stat_book)
+                    .setAutoCancel(true)
+                    .setSound(alarmSound)
+                    .setWhen(time)
+                    .setVibrate(bundle.getLongArray(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN))
+                    .setLights(bundle.getInt(Constants.SharedPreferenceKeys.LED_COLOR), 500, 500)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent);
+            Notification notification = new Notification.BigTextStyle(builder).bigText(contextText).build();
+            if(isAlarmType) {
+                notification.flags = Notification.FLAG_INSISTENT;
+            }
+
+            mNotificationManager.notify(id, notification);
+        }else{
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
+            mBuilder.setContentIntent(pendingIntent);
+
+            mBuilder.setSmallIcon(R.mipmap.ic_stat_book);
+            mBuilder.setContentTitle(contextTitle);
+            mBuilder.setContentText(contextText);
+            mBuilder.setContentInfo(Constants.APP_NAME);
+            mBuilder.setAutoCancel(true);
+            mBuilder.setWhen(time);
+            mBuilder.setVibrate(bundle.getLongArray(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN));
+            mBuilder.setLights(bundle.getInt(Constants.SharedPreferenceKeys.LED_COLOR), 500, 500);
+            mBuilder.setSound(alarmSound);
+            mNotificationManager.notify(id, mBuilder.build());
+        }
+    }
+
     private void showNotification(Intent userIntent) {
         long time = System.currentTimeMillis();
         Bundle bundle=userIntent.getBundleExtra(Constants.PersistAlarm.USER_BUNDLE);
