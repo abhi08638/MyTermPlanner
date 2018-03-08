@@ -131,6 +131,7 @@ public final class Constants {
         public static final String NIGHT_MODE = "nightMode";
         public static final String LED_COLOR = "ledColor";
         public static final String NOTIFICATION_TYPE = "notifyType";
+        public static final String SCHOOL_MODE = "schoolMode";
     }
 
     public final class NotifyTypes{

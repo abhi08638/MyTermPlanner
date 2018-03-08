@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 public class SettingsDetailFragment extends Fragment {
     private TextView daysInput, vibratePattern;
     private Spinner mDefTabSpinner, mThemeSpinner, mNightModeSpinner, mReminderTypeSpinner;
-    private CheckBox hideToolbar, hideTabBar;
+    private CheckBox hideToolbar, hideTabBar,schoolMode;
     private SharedPreferences sharedpreferences;
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton notificationColor;
@@ -95,9 +96,31 @@ public class SettingsDetailFragment extends Fragment {
 
         hideToolbar = getActivity().findViewById(R.id.toolbarCheckbox);
         hideTabBar = getActivity().findViewById(R.id.tabBarCheckbox);
+        schoolMode = getActivity().findViewById(R.id.schoolModeCheckbox);
 
         hideToolbar.setOnCheckedChangeListener(Utils.getCbListener());
         hideTabBar.setOnCheckedChangeListener(Utils.getCbListener());
+        schoolMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                final ArrayAdapter<String> tabAdp;
+                if (isChecked){
+                    buttonView.setText(R.string.on);
+                    String[] tabList = {getString(R.string.terms), getString(R.string.courses), getString(R.string.assessments), getString(R.string.tasks), getString(R.string.reminders)};
+                    tabAdp = new ArrayAdapter<>(getActivity(),
+                            android.R.layout.simple_spinner_item, tabList);
+                }
+                else{
+                    buttonView.setText(R.string.off);
+                    String[] tabList = {getString(R.string.tasks), getString(R.string.reminders)};
+                    tabAdp = new ArrayAdapter<>(getActivity(),
+                            android.R.layout.simple_spinner_item, tabList);
+                }
+
+                tabAdp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mDefTabSpinner.setAdapter(tabAdp);
+            }
+        });
     }
 
     private void initNotificationSettings() {
@@ -186,7 +209,8 @@ public class SettingsDetailFragment extends Fragment {
         }
 
         hideToolbar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, true));
-        hideTabBar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, true));
+        hideTabBar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, false));
+        schoolMode.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.SCHOOL_MODE, true));
         setColor(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
         mReminderTypeSpinner.setSelection(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, 0));
 
@@ -215,6 +239,7 @@ public class SettingsDetailFragment extends Fragment {
             editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
             editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, hideToolbar.isChecked());
             editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, hideTabBar.isChecked());
+            editor.putBoolean(Constants.SharedPreferenceKeys.SCHOOL_MODE, schoolMode.isChecked());
             editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR, notificationColor.getBackgroundTintList().getDefaultColor());
             editor.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, reminderTypeItem.getId());
 
@@ -225,6 +250,7 @@ public class SettingsDetailFragment extends Fragment {
             PreferenceSingleton.setNightModeId(nightModeItem.getId());
             PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());
             PreferenceSingleton.setHideToolbar(hideToolbar.isChecked());
+            PreferenceSingleton.setSchoolMode(schoolMode.isChecked());
             PreferenceSingleton.setLedColorId(notificationColor.getBackgroundTintList().getDefaultColor());
             PreferenceSingleton.setDefaultNotifyType(reminderTypeItem.getId());
             Snackbar.make(mCoordinatorLayout, getString(R.string.saved), Snackbar.LENGTH_LONG).show();

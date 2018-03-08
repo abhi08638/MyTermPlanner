@@ -218,13 +218,21 @@ public abstract class GenericActivity extends AppCompatActivity
             }
             PreferenceSingleton.setHideToolbar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR,true));
 
-            //init toolbar pref
+            //init tabbar pref
             if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.HIDE_TABBAR)) {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, false);
                 editor.apply();
             }
             PreferenceSingleton.setHideTabBar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,false));
+
+            //init schoolMode pref
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.SCHOOL_MODE)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putBoolean(Constants.SharedPreferenceKeys.SCHOOL_MODE, true);
+                editor.apply();
+            }
+            PreferenceSingleton.setSchoolMode(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.SCHOOL_MODE,true));
 
             //init LED color
             if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.LED_COLOR)) {

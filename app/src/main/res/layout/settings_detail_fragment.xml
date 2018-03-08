@@ -35,7 +35,6 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/daysText"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
@@ -57,7 +56,6 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/defTabText"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
@@ -73,7 +71,6 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/prefNotes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="17dp"
@@ -81,7 +78,6 @@
                     android:text="@string/user_prefs_note1" />
 
                 <TextView
-                    android:id="@+id/prefsRange"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -102,7 +98,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp">
-
 
             <TextView
                 android:layout_width="match_parent"
@@ -190,6 +185,29 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/off"
+                    android:textAllCaps="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|start"
+                    android:text="@string/school_mode" />
+
+                <CheckBox
+                    android:id="@+id/schoolModeCheckbox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/on"
                     android:textAllCaps="true" />
 
             </LinearLayout>
@@ -283,6 +301,14 @@
                         android:layout_height="40dp"
                         android:layout_weight="1" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
+                    android:gravity="center"
+                    android:text="Note: Vibrate Pattern is in the format pause(ms):vibrate(ms)" />
 
                 <Button
                     android:id="@+id/notifBtn"

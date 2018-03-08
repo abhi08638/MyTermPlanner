@@ -26,6 +26,7 @@ public class PreferenceSingleton {
     private static boolean hideToolbar,hideTabBar;
     private static int defaultNotifyType;
     private static long[] vibratePattern={0, 500, 200,500 };
+    private static boolean schoolMode;
 
     public static int getThemeId() {
         return themeId;
@@ -105,5 +106,13 @@ public class PreferenceSingleton {
 
     public static void setVibratePattern(long[] vibratePattern) {
         PreferenceSingleton.vibratePattern = vibratePattern;
+    }
+
+    public static boolean isSchoolMode() {
+        return schoolMode;
+    }
+
+    public static void setSchoolMode(boolean schoolMode) {
+        PreferenceSingleton.schoolMode = schoolMode;
     }
 }

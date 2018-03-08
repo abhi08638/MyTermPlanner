@@ -73,28 +73,34 @@ public class HomeActivity extends GenericActivity{
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
             Bundle b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
-            b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
-            b.putString(Constants.ID, Constants.Ids.TERM_ID);
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
-            HomeListFragments termFragment = new HomeListFragments();
-            termFragment.setArguments(b);
+            if(PreferenceSingleton.isSchoolMode()){
+                b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
+                b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
+                b.putString(Constants.ID, Constants.Ids.TERM_ID);
+                b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.TERM_ID);
+                HomeListFragments termFragment = new HomeListFragments();
+                termFragment.setArguments(b);
 
-            b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
-            b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
-            b.putString(Constants.ID, Constants.Ids.COURSE_ID);
-            HomeListFragments courseFragment = new HomeListFragments();
-            courseFragment.setArguments(b);
+                b = new Bundle();
+                b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
+                b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
+                b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
+                b.putString(Constants.ID, Constants.Ids.COURSE_ID);
+                HomeListFragments courseFragment = new HomeListFragments();
+                courseFragment.setArguments(b);
 
-            b = new Bundle();
-            b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
-            b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
-            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
-            b.putString(Constants.ID, Constants.Ids.ASSESSMENT_ID);
-            HomeListFragments assessmentFragment = new HomeListFragments();
-            assessmentFragment.setArguments(b);
+                b = new Bundle();
+                b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
+                b.putString(Constants.CONTENT_URI, HomeAssessmentsProvider.CONTENT_URI.toString());
+                b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_ASSESSMENT_ID);
+                b.putString(Constants.ID, Constants.Ids.ASSESSMENT_ID);
+                HomeListFragments assessmentFragment = new HomeListFragments();
+                assessmentFragment.setArguments(b);
+
+                adapter.addFragment(termFragment, getString(R.string.terms));
+                adapter.addFragment(courseFragment, getString(R.string.courses));
+                adapter.addFragment(assessmentFragment, getString(R.string.assessments));
+            }
 
             b = new Bundle();
             b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
@@ -109,9 +115,6 @@ public class HomeActivity extends GenericActivity{
             AlarmListFragment reminderFragment = new AlarmListFragment();
             reminderFragment.setArguments(b);
 
-            adapter.addFragment(termFragment, getString(R.string.terms));
-            adapter.addFragment(courseFragment, getString(R.string.courses));
-            adapter.addFragment(assessmentFragment, getString(R.string.assessments));
             adapter.addFragment(taskFragment, getString(R.string.tasks));
             adapter.addFragment(reminderFragment, getString(R.string.reminders));
             viewPager.setAdapter(adapter);
@@ -166,7 +169,9 @@ public class HomeActivity extends GenericActivity{
         SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.MANAGEMENT_GROUP, 0, R.string.manage);
         submenu.setGroupCheckable(Constants.MenuGroups.MANAGEMENT_GROUP, false, true);
         submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TASK_GROUP, 0, R.string.tasks);
-        submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TERM_GROUP, 0, R.string.terms);
+        if(PreferenceSingleton.isSchoolMode()){
+            submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TERM_GROUP, 0, R.string.terms);
+        }
         submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.PROF_GROUP, 0, R.string.profs);
         navView.invalidate();
     }
@@ -179,7 +184,9 @@ public class HomeActivity extends GenericActivity{
         menu.findItem(R.id.action_delete).setVisible(false);
         menu.findItem(R.id.action_add).setVisible(false);
         menu.add(0, Constants.ActionBarIds.ADD_TASK, 0, getString(R.string.create_task));
-        menu.add(0, Constants.ActionBarIds.ADD_TERM, 0, getString(R.string.create_term));
+        if(PreferenceSingleton.isSchoolMode()){
+            menu.add(0, Constants.ActionBarIds.ADD_TERM, 0, getString(R.string.create_term));
+        }
         menu.add(0, Constants.ActionBarIds.ADD_PROF, 0, getString(R.string.create_prof));
         menu.add(0, Constants.ActionBarIds.USER_PREFS, 0, getString(R.string.user_prefs));
         return true;

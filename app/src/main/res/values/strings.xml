@@ -30,15 +30,15 @@
     <string name="first_name">First Name</string>
     <string name="middle_name">Middle Name</string>
     <string name="last_name">Last Name</string>
-    <string name="prof_editor">Professor Editor</string>
-    <string name="profs">Professors</string>
+    <string name="prof_editor">Contact Editor</string>
+    <string name="profs">Contacts</string>
     <string name="phone_type">Phone type</string>
     <string name="phone_number">Phone Number</string>
     <string name="phone_editor">Phone Editor</string>
     <string name="email_editor">Email Editor</string>
-    <string name="add_prof">Add Professor</string>
+    <string name="add_prof">Add Contact</string>
     <string name="do_delete">Do you want to delete this item?</string>
-    <string name="create_prof">Create Professor</string>
+    <string name="create_prof">Create Contact</string>
     <string name="create_term">Create Term</string>
     <string name="user_prefs">User Preferences</string>
     <string name="upcoming_active_events">Active/Upcoming Events</string>
@@ -50,7 +50,7 @@
     <string name="error_empty_phone_num">Phone Number can\'t be empty</string>
     <string name="error_empty_first_name">First Name cannot be empty</string>
     <string name="error_empty_last_name">Last Name cannot be empty</string>
-    <string name="delete_prof">Delete Professor</string>
+    <string name="delete_prof">Delete Contact</string>
     <string name="add_phone">Add Phone</string>
     <string name="add_email">Add Email</string>
     <string name="saved">Saved</string>
@@ -75,8 +75,8 @@
     <string name="error_delete_course">Cannot delete a course that has assessments</string>
     <string name="deleted_all_assessments">Deleted All Assessments</string>
     <string name="error_no_assessments">This course has no assessments</string>
-    <string name="added_prof">Added Professor to course</string>
-    <string name="deleted_prof">Deleted Professor from course</string>
+    <string name="added_prof">Added Contact to course</string>
+    <string name="deleted_prof">Deleted Contact from course</string>
     <string name="delete_all_corses">Delete All Courses</string>
     <string name="delete_term">Delete Term</string>
     <string name="add_course">Add Course</string>
@@ -126,4 +126,5 @@
     <string name="error_vibrate_pattern_length">Vibrate pattern too long</string>
     <string name="send_test_notification">Send Test Notification</string>
     <string name="general">General</string>
+    <string name="school_mode">School Mode</string>
 </resources>
