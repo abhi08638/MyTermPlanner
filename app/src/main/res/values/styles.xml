@@ -12,6 +12,10 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="coloredBtn" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="AppThemeBlue" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryBlue</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>

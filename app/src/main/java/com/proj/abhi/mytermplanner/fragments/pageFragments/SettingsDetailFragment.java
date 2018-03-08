@@ -4,6 +4,7 @@ package com.proj.abhi.mytermplanner.fragments.pageFragments;
  * Created by Abhi on 2/25/2018.
  */
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -13,14 +14,19 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
@@ -32,14 +38,16 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.ArrayList;
 
 public class SettingsDetailFragment extends Fragment {
-    private TextView daysInput;
-    private Spinner mDefTabSpinner, mThemeSpinner, mNightModeSpinner,mReminderTypeSpinner;
+    private TextView daysInput, vibratePattern;
+    private Spinner mDefTabSpinner, mThemeSpinner, mNightModeSpinner, mReminderTypeSpinner;
     private CheckBox hideToolbar, hideTabBar;
     private SharedPreferences sharedpreferences;
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton notificationColor;
     private ArrayList<SpinnerPojo> themeList = new ArrayList();
     private ArrayList<SpinnerPojo> nightModeList = new ArrayList();
+    private Button testBtn;
+    private Gson gson = new Gson();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
@@ -94,15 +102,15 @@ public class SettingsDetailFragment extends Fragment {
         hideTabBar.setOnCheckedChangeListener(Utils.getCbListener());
     }
 
-    private void initNotificationSettings(){
-        notificationColor=getActivity().findViewById(R.id.notificationColor);
+    private void initNotificationSettings() {
+        notificationColor = getActivity().findViewById(R.id.notificationColor);
         setColor(PreferenceSingleton.getLedColorId());
         notificationColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try{
+                try {
                     ColorPickerDialog.newBuilder().setColor(notificationColor.getBackgroundTintList().getDefaultColor()).show(getActivity());
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -110,15 +118,43 @@ public class SettingsDetailFragment extends Fragment {
 
         mReminderTypeSpinner = (Spinner) getActivity().findViewById(R.id.reminderTypeDropDown);
         final ArrayList<SpinnerPojo> typeList = new ArrayList();
-        typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL,getString(R.string.normal)));
-        typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM,getString(R.string.alarm)));
+        typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL, getString(R.string.normal)));
+        typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM, getString(R.string.alarm)));
         final ArrayAdapter<SpinnerPojo> typeAdp = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, typeList);
         typeAdp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mReminderTypeSpinner.setAdapter(typeAdp);
+
+        vibratePattern = getActivity().findViewById(R.id.vibratePattern);
+        testBtn = getActivity().findViewById(R.id.notifBtn);
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getActivity(),"test");
+                    mBuilder.setContentTitle("test");
+                    mBuilder.setContentText("test");
+                    mBuilder.setSmallIcon(R.mipmap.ic_stat_book);
+                    mBuilder.setContentInfo(Constants.APP_NAME);
+                    mBuilder.setAutoCancel(true);
+                    mBuilder.setWhen(System.currentTimeMillis());
+                    mBuilder.setVibrate(getLongArray());
+                    mBuilder.setLights(notificationColor.getBackgroundTintList().getDefaultColor(), 500, 500);
+                    mNotificationManager.notify(0, mBuilder.build());
+                }catch (Exception e){
+                    if (e instanceof CustomException) {
+                        Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
+                    } else {
+                        Snackbar.make(mCoordinatorLayout, R.string.preferenceSaveFailed, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
     }
 
-    public void setColor(int color){
+    public void setColor(int color) {
         notificationColor.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
@@ -161,8 +197,15 @@ public class SettingsDetailFragment extends Fragment {
 
         hideToolbar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, true));
         hideTabBar.setChecked(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, true));
-        setColor(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR,Color.BLUE));
+        setColor(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
         mReminderTypeSpinner.setSelection(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, 0));
+
+        long[] pattern = gson.fromJson(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, null), PreferenceSingleton.getVibratePattern().getClass());
+        String patternString = "";
+        for (long ms : pattern) {
+            patternString += Long.toString(ms) + ":";
+        }
+        vibratePattern.setText(patternString.substring(0, patternString.length() - 1));
     }
 
     public void save() throws Exception {
@@ -170,28 +213,31 @@ public class SettingsDetailFragment extends Fragment {
             int numDays = Integer.parseInt(daysInput.getText().toString());
             if (numDays > 365 || numDays < -365) {
                 throw new CustomException(getString(R.string.invalidDays));
-            } else {
-                SpinnerPojo themeItem = (SpinnerPojo) mThemeSpinner.getSelectedItem();
-                SpinnerPojo nightModeItem = (SpinnerPojo) mNightModeSpinner.getSelectedItem();
-                SpinnerPojo reminderTypeItem = (SpinnerPojo) mReminderTypeSpinner.getSelectedItem();
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numDays));
-                editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(mDefTabSpinner.getSelectedItemPosition()));
-                editor.putInt(Constants.SharedPreferenceKeys.THEME, themeItem.getId());
-                editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
-                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR,hideToolbar.isChecked());
-                editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,hideTabBar.isChecked());
-                editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR,notificationColor.getBackgroundTintList().getDefaultColor());
-                editor.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,reminderTypeItem.getId());
-                editor.apply();
-                PreferenceSingleton.setThemeId(themeItem.getId());
-                PreferenceSingleton.setNightModeId(nightModeItem.getId());
-                PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());
-                PreferenceSingleton.setHideToolbar(hideToolbar.isChecked());
-                PreferenceSingleton.setLedColorId(notificationColor.getBackgroundTintList().getDefaultColor());
-                PreferenceSingleton.setDefaultNotifyType(reminderTypeItem.getId());
-                Snackbar.make(mCoordinatorLayout, getString(R.string.saved), Snackbar.LENGTH_LONG).show();
             }
+            long[] pattern = getLongArray();
+            SpinnerPojo themeItem = (SpinnerPojo) mThemeSpinner.getSelectedItem();
+            SpinnerPojo nightModeItem = (SpinnerPojo) mNightModeSpinner.getSelectedItem();
+            SpinnerPojo reminderTypeItem = (SpinnerPojo) mReminderTypeSpinner.getSelectedItem();
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numDays));
+            editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(mDefTabSpinner.getSelectedItemPosition()));
+            editor.putInt(Constants.SharedPreferenceKeys.THEME, themeItem.getId());
+            editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
+            editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, hideToolbar.isChecked());
+            editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR, hideTabBar.isChecked());
+            editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR, notificationColor.getBackgroundTintList().getDefaultColor());
+            editor.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, reminderTypeItem.getId());
+
+            PreferenceSingleton.setVibratePattern(pattern);
+            editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, gson.toJson(PreferenceSingleton.getVibratePattern()));
+            editor.apply();
+            PreferenceSingleton.setThemeId(themeItem.getId());
+            PreferenceSingleton.setNightModeId(nightModeItem.getId());
+            PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());
+            PreferenceSingleton.setHideToolbar(hideToolbar.isChecked());
+            PreferenceSingleton.setLedColorId(notificationColor.getBackgroundTintList().getDefaultColor());
+            PreferenceSingleton.setDefaultNotifyType(reminderTypeItem.getId());
+            Snackbar.make(mCoordinatorLayout, getString(R.string.saved), Snackbar.LENGTH_LONG).show();
         } catch (Exception e) {
             if (e instanceof CustomException) {
                 Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
@@ -200,5 +246,20 @@ public class SettingsDetailFragment extends Fragment {
             }
             throw e;
         }
+    }
+
+    private long[] getLongArray() throws Exception{
+        String[] longs = vibratePattern.getText().toString().split(":");
+        if (longs.length > 10) {
+            throw new CustomException(getString(R.string.error_vibrate_pattern_length));
+        }
+        long[] pattern = new long[longs.length];
+        for (int i = 0; i < longs.length; i++) {
+            pattern[i] = Long.parseLong(longs[i]);
+            if (pattern[i] > 3000) {
+                throw new CustomException(getString(R.string.error_vibrate_pattern_long));
+            }
+        }
+        return pattern;
     }
 }

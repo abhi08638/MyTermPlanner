@@ -25,6 +25,7 @@ public class PreferenceSingleton {
     private static Intent pageIntent;
     private static boolean hideToolbar,hideTabBar;
     private static int defaultNotifyType;
+    private static long[] vibratePattern={0, 500, 200,500 };
 
     public static int getThemeId() {
         return themeId;
@@ -96,5 +97,13 @@ public class PreferenceSingleton {
 
     public static void setDefaultNotifyType(int defaultNotifyType) {
         PreferenceSingleton.defaultNotifyType = defaultNotifyType;
+    }
+
+    public static long[] getVibratePattern() {
+        return vibratePattern;
+    }
+
+    public static void setVibratePattern(long[] vibratePattern) {
+        PreferenceSingleton.vibratePattern = vibratePattern;
     }
 }

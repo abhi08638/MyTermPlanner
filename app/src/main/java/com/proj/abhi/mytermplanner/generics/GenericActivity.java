@@ -36,6 +36,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.google.gson.Gson;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.HomeActivity;
 import com.proj.abhi.mytermplanner.activities.SettingsActivity;
@@ -240,6 +241,15 @@ public abstract class GenericActivity extends AppCompatActivity
                 editor.apply();
             }
             PreferenceSingleton.setDefaultNotifyType(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,0));
+
+            //init default notification type
+            Gson gson = new Gson();
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, gson.toJson(PreferenceSingleton.getVibratePattern()));
+                editor.apply();
+            }
+            PreferenceSingleton.setVibratePattern(gson.fromJson(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN,null),PreferenceSingleton.getVibratePattern().getClass()));
 
             PreferenceSingleton.setWasNightModeChanged(false);
             PreferenceSingleton.setInit(true);

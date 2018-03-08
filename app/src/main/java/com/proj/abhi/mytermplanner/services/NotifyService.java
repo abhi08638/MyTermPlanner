@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import com.google.gson.Gson;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
@@ -35,7 +36,6 @@ public class NotifyService extends Service {
 
     public static final String INTENT_NOTIFY = "com.proj.abhi.mytermmanger.services.INTENT_NOTIFY";
     private NotificationManager mNM;
-    private long[] pattern = {0, 500, 200,500 };
 
     @Override
     public void onCreate() {
@@ -56,22 +56,8 @@ public class NotifyService extends Service {
             SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
             PreferenceSingleton.setLedColorId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
 
-            String patternString = "";
-            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN)) {
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                for (long l : pattern) {
-                    patternString += Long.toString(l) + ",";
-                }
-                editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, patternString.substring(0, patternString.length() - 1));
-                editor.apply();
-            } else {
-                patternString = sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, null);
-                String[] longs = patternString.split(",");
-                pattern = new long[longs.length];
-                for (int i = 0; i < longs.length - 1; i++) {
-                    pattern[i] = Long.parseLong(longs[i]);
-                }
-            }
+            Gson gson = new Gson();
+            PreferenceSingleton.setVibratePattern(gson.fromJson(sharedpreferences.getString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN,null),PreferenceSingleton.getVibratePattern().getClass()));
         }
     }
  
@@ -85,6 +71,8 @@ public class NotifyService extends Service {
     private void showNotification(Intent userIntent) {
         long time = System.currentTimeMillis();
         Bundle bundle=userIntent.getBundleExtra(Constants.PersistAlarm.USER_BUNDLE);
+        String contextTitle = Utils.getProperName(bundle.getString(Constants.PersistAlarm.USER_OBJECT))
+                +": "+bundle.get(Constants.PersistAlarm.CONTENT_TITLE);
         String contextText = bundle.getString(Constants.PersistAlarm.CONTENT_TEXT);
 
         NotificationManager mNotificationManager =
@@ -99,6 +87,8 @@ public class NotifyService extends Service {
         if(bundle.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)==Constants.NotifyTypes.ALARM){
             alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             isAlarmType=true;
+            contextTitle=Utils.getProperName(bundle.getString(Constants.PersistAlarm.USER_OBJECT))
+                    +" Alarm: "+bundle.get(Constants.PersistAlarm.CONTENT_TITLE);
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
@@ -113,19 +103,21 @@ public class NotifyService extends Service {
                 notificationChannel.setDescription("Planner Channel");
                 notificationChannel.enableLights(true);
                 notificationChannel.setLightColor(PreferenceSingleton.getLedColorId());
-                notificationChannel.setVibrationPattern(pattern);
+                notificationChannel.setVibrationPattern(PreferenceSingleton.getVibratePattern());
                 notificationChannel.enableVibration(true);
                 notificationChannel.setSound(alarmSound,att);
+                notificationChannel.setImportance(NotificationManager.IMPORTANCE_HIGH);
                 mNotificationManager.createNotificationChannel(notificationChannel);
             }
 
             Notification.Builder builder = new Notification.Builder(this);
-            builder.setContentTitle(Utils.getProperName(bundle.getString(Constants.PersistAlarm.USER_OBJECT))
-                    +": "+bundle.get(Constants.PersistAlarm.CONTENT_TITLE))
+            builder.setContentTitle(contextTitle)
                     .setContentInfo(Constants.APP_NAME)
                     .setSmallIcon(getNotificationIcon())
                     .setAutoCancel(true)
                     .setSound(alarmSound)
+                    .setWhen(time)
+                    .setVibrate(PreferenceSingleton.getVibratePattern())
                     .setLights(PreferenceSingleton.getLedColorId(), 500, 500)
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent);
@@ -140,14 +132,12 @@ public class NotifyService extends Service {
             mBuilder.setContentIntent(pendingIntent);
 
             mBuilder.setSmallIcon(getNotificationIcon());
-            mBuilder.setContentTitle(Utils.getProperName(bundle.getString(Constants.PersistAlarm.USER_OBJECT))
-                    +": "+bundle.get(Constants.PersistAlarm.CONTENT_TITLE));
+            mBuilder.setContentTitle(contextTitle);
             mBuilder.setContentText(contextText);
             mBuilder.setContentInfo(Constants.APP_NAME);
             mBuilder.setAutoCancel(true);
-            mBuilder.setPriority(Notification.PRIORITY_HIGH);
             mBuilder.setWhen(time);
-            mBuilder.setVibrate(pattern);
+            mBuilder.setVibrate(PreferenceSingleton.getVibratePattern());
             mBuilder.setLights(PreferenceSingleton.getLedColorId(), 500, 500);
             mBuilder.setSound(alarmSound);
             mNotificationManager.notify(id, mBuilder.build());

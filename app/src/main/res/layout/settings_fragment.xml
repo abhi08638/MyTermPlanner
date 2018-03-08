@@ -26,7 +26,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Home Page"
+                    android:text="@string/home_page"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
                 <LinearLayout
@@ -107,7 +107,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="User Interface"
+                android:text="@string/user_interface"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <LinearLayout
@@ -120,7 +120,7 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|start"
-                    android:text="Theme" />
+                    android:text="@string/theme" />
 
                 <Spinner
                     android:id="@+id/themeDropDown"
@@ -140,7 +140,7 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|start"
-                    android:text="Night Mode" />
+                    android:text="@string/night_mode" />
 
                 <Spinner
                     android:id="@+id/nightModeDropDown"
@@ -149,10 +149,10 @@
                     android:layout_height="40dp"
                     android:layout_weight="1" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -160,14 +160,14 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|start"
-                    android:text="Hide Toolbar on Scroll" />
+                    android:text="@string/toolbar_option" />
 
                 <CheckBox
                     android:id="@+id/toolbarCheckbox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="OFF"
+                    android:text="@string/off"
                     android:textAllCaps="true" />
 
             </LinearLayout>
@@ -175,7 +175,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <TextView
@@ -183,14 +182,14 @@
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical|start"
-                    android:text="Hide Tabs on Scroll" />
+                    android:text="@string/tab_option" />
 
                 <CheckBox
                     android:id="@+id/tabBarCheckbox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="OFF"
+                    android:text="@string/off"
                     android:textAllCaps="true" />
 
             </LinearLayout>
@@ -214,13 +213,12 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Notifications"
+                    android:text="@string/notifications"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -228,7 +226,7 @@
                         android:layout_height="40dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical|start"
-                        android:text="Notification LED Color" />
+                        android:text="@string/led_color" />
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/notificationColor"
@@ -239,7 +237,8 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         app:elevation="2dp"
-                        app:fabSize="mini" />
+                        app:fabSize="mini"
+                        android:layout_marginStart="5dp" />
 
                 </LinearLayout>
 
@@ -253,7 +252,29 @@
                         android:layout_height="40dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical|start"
-                        android:text="Default Reminder Type" />
+                        android:text="@string/vibrate_pattern" />
+
+                    <EditText
+                        android:id="@+id/vibratePattern"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="time" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|start"
+                        android:text="@string/default_reminder_type" />
 
                     <Spinner
                         android:id="@+id/reminderTypeDropDown"
@@ -262,6 +283,13 @@
                         android:layout_height="40dp"
                         android:layout_weight="1" />
                 </LinearLayout>
+
+                <Button
+                    android:id="@+id/notifBtn"
+                    style="@style/coloredBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/send_test_notification" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
