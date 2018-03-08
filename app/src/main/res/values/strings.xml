@@ -109,4 +109,7 @@
     <string name="never">Never</string>
     <string name="off">OFF</string>
     <string name="on">ON</string>
+    <string name="notification_type">Notification Type</string>
+    <string name="normal">Normal</string>
+    <string name="alarm">Alarm</string>
 </resources>

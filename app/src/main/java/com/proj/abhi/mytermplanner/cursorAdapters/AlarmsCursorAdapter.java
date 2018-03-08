@@ -35,14 +35,20 @@ public class AlarmsCursorAdapter extends CursorAdapter{
                 cursor.getColumnIndex(Constants.PersistAlarm.USER_OBJECT));
         String title = cursor.getString(
                 cursor.getColumnIndex(Constants.PersistAlarm.CONTENT_TITLE));
+        int notifyType = cursor.getInt(
+                cursor.getColumnIndex(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE));
         TextView i1 = (TextView) view.findViewById(R.id.item1);
         TextView i2 = (TextView) view.findViewById(R.id.item2);
         TextView i3 = (TextView) view.findViewById(R.id.item3);
+        TextView i4 = (TextView) view.findViewById(R.id.item4);
         i1.setTextSize(18);
         i1.setText(Utils.getProperName(type)+": "+title);
         i2.setText("Message: "+text);
         i3.setText("Trigger Time: "+ Utils.getUserDate(time)+" at "+Utils.getUserTime(time));
-        view.findViewById(R.id.item4).setVisibility(View.GONE);
+        if(notifyType==Constants.NotifyTypes.ALARM)
+            i4.setText("Notification Type: Alarm");
+        else
+            i4.setText("Notification Type: Normal");
         view.findViewById(R.id.item5).setVisibility(View.GONE);
 
     }

@@ -49,6 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     userBundle.putString(Constants.PersistAlarm.CONTENT_TITLE,c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_TITLE)));
                     userBundle.putString(Constants.PersistAlarm.CONTENT_TEXT,c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_TEXT)));
                     userBundle.putString(Constants.PersistAlarm.USER_OBJECT,c.getString(c.getColumnIndex(Constants.PersistAlarm.USER_OBJECT)));
+                    userBundle.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,c.getInt(c.getColumnIndex(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)));
 
                     String dateTime = c.getString(c.getColumnIndex(Constants.PersistAlarm.NOTIFY_DATETIME));
 

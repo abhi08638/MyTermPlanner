@@ -13,9 +13,21 @@
 
             <Spinner
                 android:id="@+id/reminderDropdown"
+                style="@style/AlertSpinnerBackground"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
-                style="@style/AlertSpinnerBackground" />
+                android:layout_height="44dp" />
+
+            <TextView
+                style="@style/InputLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notification_type" />
+            <Spinner
+                android:id="@+id/reminderType"
+                style="@style/AlertSpinnerBackground"
+                android:layout_width="match_parent"
+                android:layout_height="44dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

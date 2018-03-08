@@ -130,6 +130,12 @@ public final class Constants {
         public static final String HIDE_TABBAR = "hideTabBar";
         public static final String NIGHT_MODE = "nightMode";
         public static final String LED_COLOR = "ledColor";
+        public static final String NOTIFICATION_TYPE = "notifyType";
+    }
+
+    public final class NotifyTypes{
+        public static final int NORMAL= 0;
+        public static final int ALARM= 1;
     }
 
     public final class Sql{

@@ -225,13 +225,21 @@ public abstract class GenericActivity extends AppCompatActivity
             }
             PreferenceSingleton.setHideTabBar(sharedpreferences.getBoolean(Constants.SharedPreferenceKeys.HIDE_TABBAR,false));
 
-            //init toolbar pref
+            //init LED color
             if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.LED_COLOR)) {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE);
                 editor.apply();
             }
             PreferenceSingleton.setLedColorId(sharedpreferences.getInt(Constants.SharedPreferenceKeys.LED_COLOR, Color.BLUE));
+
+            //init default notification type
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, 0);
+                editor.apply();
+            }
+            PreferenceSingleton.setDefaultNotifyType(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,0));
 
             PreferenceSingleton.setWasNightModeChanged(false);
             PreferenceSingleton.setInit(true);

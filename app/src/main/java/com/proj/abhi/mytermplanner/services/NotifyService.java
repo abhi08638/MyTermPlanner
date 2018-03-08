@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,9 +35,8 @@ public class NotifyService extends Service {
 
     public static final String INTENT_NOTIFY = "com.proj.abhi.mytermmanger.services.INTENT_NOTIFY";
     private NotificationManager mNM;
-    private int r=0,g=0,b=255;
     private long[] pattern = {0, 500, 200,500 };
- 
+
     @Override
     public void onCreate() {
         mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -93,6 +93,13 @@ public class NotifyService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),sendingIntent, 0);
         int id = bundle.getInt(Constants.Ids.ALARM_ID);
         String NOTIFICATION_CHANNEL_ID = "plannerChannel";
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        boolean isAlarmType=false;
+
+        if(bundle.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)==Constants.NotifyTypes.ALARM){
+            alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            isAlarmType=true;
+        }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
 
@@ -108,7 +115,7 @@ public class NotifyService extends Service {
                 notificationChannel.setLightColor(PreferenceSingleton.getLedColorId());
                 notificationChannel.setVibrationPattern(pattern);
                 notificationChannel.enableVibration(true);
-                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),att);
+                notificationChannel.setSound(alarmSound,att);
                 mNotificationManager.createNotificationChannel(notificationChannel);
             }
 
@@ -118,11 +125,15 @@ public class NotifyService extends Service {
                     .setContentInfo(Constants.APP_NAME)
                     .setSmallIcon(getNotificationIcon())
                     .setAutoCancel(true)
+                    .setSound(alarmSound)
                     .setLights(PreferenceSingleton.getLedColorId(), 500, 500)
                     .setPriority(Notification.PRIORITY_HIGH)
-                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                     .setContentIntent(pendingIntent);
             Notification notification = new Notification.BigTextStyle(builder).bigText(contextText).build();
+            if(isAlarmType) {
+                notification.flags = Notification.FLAG_INSISTENT;
+            }
+
             mNotificationManager.notify(id, notification);
         }else{
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID);
@@ -138,7 +149,7 @@ public class NotifyService extends Service {
             mBuilder.setWhen(time);
             mBuilder.setVibrate(pattern);
             mBuilder.setLights(PreferenceSingleton.getLedColorId(), 500, 500);
-            mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+            mBuilder.setSound(alarmSound);
             mNotificationManager.notify(id, mBuilder.build());
         }
 

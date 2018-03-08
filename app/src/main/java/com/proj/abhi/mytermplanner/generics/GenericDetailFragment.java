@@ -26,13 +26,16 @@ import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
+import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextTimePicker;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -135,6 +138,7 @@ public abstract class GenericDetailFragment extends Fragment {
             final View promptsView = li.inflate(R.layout.reminder_alert, null);
             final TextInputLayout lbl = promptsView.findViewById(R.id.reminderDateLbl);
             final Spinner mSpinner = (Spinner) promptsView.findViewById(R.id.reminderDropdown);
+            final Spinner mSpinnerType = (Spinner) promptsView.findViewById(R.id.reminderType);
             final EditTextDatePicker customDate = new EditTextDatePicker(getActivity(), (EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
             final EditTextTimePicker timePicker = new EditTextTimePicker(getActivity(), (EditText) promptsView.findViewById(R.id.reminderTime));
@@ -184,6 +188,7 @@ public abstract class GenericDetailFragment extends Fragment {
                                         Date alarmDate = Utils.getDateFromUser(date.getText().toString());
                                         alarmDate.setHours(timePicker.getHour());
                                         alarmDate.setMinutes(timePicker.getMinute());
+                                        b.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,mSpinnerType.getSelectedItemPosition());
                                         setAlarmForDate(alarmDate, b);
                                         for (Fragment f : getActivity().getSupportFragmentManager().getFragments()) {
                                             if (f instanceof AlarmListFragment) {
@@ -209,12 +214,20 @@ public abstract class GenericDetailFragment extends Fragment {
                     .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
                     .setNegativeButton(getString(android.R.string.no), dialogClickListener);
 
+            final ArrayList<SpinnerPojo> typeList = new ArrayList();
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL,getString(R.string.normal)));
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM,getString(R.string.alarm)));
+            final ArrayAdapter<SpinnerPojo> typeAdp = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, typeList);
             final ArrayAdapter<String> adp = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_item, fields);
             adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            typeAdp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             final AlertDialog alertDialog = alertDialogBuilder.create();
             mSpinner.setAdapter(adp);
             mSpinner.setSelection(fields.length - 1);
+            mSpinnerType.setAdapter(typeAdp);
+            mSpinnerType.setSelection(PreferenceSingleton.getDefaultNotifyType());
             alertDialog.show();
             alertDialog.setCanceledOnTouchOutside(false);
         } catch (Exception e) {

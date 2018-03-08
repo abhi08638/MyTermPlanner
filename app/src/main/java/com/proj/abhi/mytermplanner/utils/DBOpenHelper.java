@@ -121,6 +121,7 @@ public class DBOpenHelper extends SQLiteOpenHelper{
                     Constants.PersistAlarm.CONTENT_URI+ " TEXT, " +
                     Constants.PersistAlarm.USER_OBJECT+ " TEXT, " +
                     Constants.PersistAlarm.NOTIFY_DATETIME + " DATETIME NOT NULL, " +
+                    Constants.SharedPreferenceKeys.NOTIFICATION_TYPE+ " INTEGER, " +
                     Constants.Ids.TERM_ID + " INTEGER, " +
                     Constants.Ids.COURSE_ID + " INTEGER, " +
                     Constants.Ids.ASSESSMENT_ID + " INTEGER, " +

@@ -24,6 +24,7 @@ public class PreferenceSingleton {
     private static boolean wasNightModeChanged;
     private static Intent pageIntent;
     private static boolean hideToolbar,hideTabBar;
+    private static int defaultNotifyType;
 
     public static int getThemeId() {
         return themeId;
@@ -87,5 +88,13 @@ public class PreferenceSingleton {
 
     public static void setLedColorId(int ledColorId) {
         PreferenceSingleton.ledColorId = ledColorId;
+    }
+
+    public static int getDefaultNotifyType() {
+        return defaultNotifyType;
+    }
+
+    public static void setDefaultNotifyType(int defaultNotifyType) {
+        PreferenceSingleton.defaultNotifyType = defaultNotifyType;
     }
 }

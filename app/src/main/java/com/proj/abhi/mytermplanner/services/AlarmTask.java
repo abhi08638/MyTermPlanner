@@ -73,6 +73,7 @@ public class AlarmTask implements Runnable{
         values.put(Constants.PersistAlarm.CONTENT_TITLE,userBundle.get(Constants.PersistAlarm.CONTENT_TITLE).toString());
         values.put(Constants.PersistAlarm.USER_OBJECT,userBundle.get(Constants.PersistAlarm.USER_OBJECT).toString());
         values.put(Constants.PersistAlarm.NOTIFY_DATETIME, Utils.getDbDateTime(date));
+        values.put(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, userBundle.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE));
         values=Utils.addTableId(values,userBundle);
         long id=database.insert(Constants.Tables.TABLE_PERSIST_ALARM,null,values);
         Long l = new Long(id);
