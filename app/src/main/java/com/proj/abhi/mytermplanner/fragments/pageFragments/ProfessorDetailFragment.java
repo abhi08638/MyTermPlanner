@@ -39,7 +39,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-        return inflater.inflate(R.layout.prof_header_fragment, container, false);
+        return inflater.inflate(R.layout.prof_detail_fragment, container, false);
     }
 
     @Override

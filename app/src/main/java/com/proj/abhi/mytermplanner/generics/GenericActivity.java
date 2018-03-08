@@ -458,7 +458,7 @@ public abstract class GenericActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         doAbout(item);
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        final int id = item.getItemId();
         int groupId = item.getGroupId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -476,12 +476,15 @@ public abstract class GenericActivity extends AppCompatActivity
                     break;
                 }
             }
-        } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings || id==R.id.home) {
             new Timer().schedule(
                     new TimerTask() {
                         @Override
                         public void run() {
-                            Utils.sendToActivity(0, SettingsActivity.class,null);
+                            if (id==R.id.nav_settings)
+                                Utils.sendToActivity(0, SettingsActivity.class,null);
+                            else
+                                Utils.sendToActivity(0, HomeActivity.class,null);
                         }
                     },
                     200

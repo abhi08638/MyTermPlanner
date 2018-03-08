@@ -125,4 +125,5 @@
     <string name="error_vibrate_pattern_long">Single vibrate has to be less than 3000ms</string>
     <string name="error_vibrate_pattern_length">Vibrate pattern too long</string>
     <string name="send_test_notification">Send Test Notification</string>
+    <string name="general">General</string>
 </resources>

@@ -160,6 +160,7 @@ public class HomeActivity extends GenericActivity{
 
         //get rid of share item
         menu.getItem(0).getSubMenu().getItem(0).setVisible(false);
+        menu.getItem(0).getSubMenu().getItem(3).setVisible(false);
 
         //add others
         SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.MANAGEMENT_GROUP, 0, R.string.manage);

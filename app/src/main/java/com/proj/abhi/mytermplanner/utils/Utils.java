@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 
 import com.proj.abhi.mytermplanner.R;
+import com.proj.abhi.mytermplanner.activities.HomeActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -195,6 +196,12 @@ public class Utils {
             Intent intent = new Intent(context, toActivity);
             Uri uri = Uri.parse(contentUri + "/" + id);
             intent.putExtra(Constants.CURRENT_URI, uri);
+            if(toActivity.equals(HomeActivity.class)){
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                ((Activity) context).startActivity(intent);
+            }
             ((Activity) context).startActivityForResult(intent, 0);
         } catch (Exception e) {
             e.printStackTrace();

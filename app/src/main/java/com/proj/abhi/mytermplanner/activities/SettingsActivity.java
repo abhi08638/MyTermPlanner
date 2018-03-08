@@ -3,15 +3,21 @@ package com.proj.abhi.mytermplanner.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.SettingsDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
+import com.proj.abhi.mytermplanner.utils.Constants;
+import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class SettingsActivity extends GenericActivity implements ColorPickerDialogListener
 {
@@ -21,6 +27,7 @@ public class SettingsActivity extends GenericActivity implements ColorPickerDial
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initViewPager();
+        addItemsInNavMenuDrawer();
     }
 
     @Override
@@ -54,14 +61,21 @@ public class SettingsActivity extends GenericActivity implements ColorPickerDial
         return true;
     }
 
+    protected void addItemsInNavMenuDrawer() {
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        Menu menu = navView.getMenu();
+
+        //get rid of share item
+        menu.getItem(0).getSubMenu().getItem(0).setVisible(false);
+        menu.getItem(0).getSubMenu().getItem(2).setVisible(false);
+
+        navView.invalidate();
+    }
+
     @Override
     public void onBackPressed() {
         if(didSave){
-            Intent clearBackStack=new Intent(this,HomeActivity.class);
-            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            clearBackStack.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(clearBackStack);
+            Utils.sendToActivity(0,HomeActivity.class,null);
         }else{
             super.onBackPressed();
         }
