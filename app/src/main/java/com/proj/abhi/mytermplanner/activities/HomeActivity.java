@@ -3,11 +3,14 @@ package com.proj.abhi.mytermplanner.activities;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -16,15 +19,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
+import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragments;
+import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ProfProvider;
@@ -32,13 +40,19 @@ import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
+import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
+import com.proj.abhi.mytermplanner.xmlObjects.EditTextTimePicker;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class HomeActivity extends GenericActivity{
+public class HomeActivity extends GenericActivity {
     private int numQueryDays = 7;
     private SharedPreferences sharedpreferences;
 
@@ -60,20 +74,21 @@ public class HomeActivity extends GenericActivity{
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         initPreferences();
         refreshPage(0);
     }
 
     @Override
-    protected void save() throws Exception {}
+    protected void save() throws Exception {
+    }
 
     protected void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {
             Bundle b = new Bundle();
-            if(PreferenceSingleton.isSchoolMode()){
+            if (PreferenceSingleton.isSchoolMode()) {
                 b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
                 b.putString(Constants.CONTENT_URI, TermsProvider.CONTENT_URI.toString());
                 b.putString(Constants.ID, Constants.Ids.TERM_ID);
@@ -169,7 +184,7 @@ public class HomeActivity extends GenericActivity{
         SubMenu submenu = menu.addSubMenu(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.MANAGEMENT_GROUP, 0, R.string.manage);
         submenu.setGroupCheckable(Constants.MenuGroups.MANAGEMENT_GROUP, false, true);
         submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TASK_GROUP, 0, R.string.tasks);
-        if(PreferenceSingleton.isSchoolMode()){
+        if (PreferenceSingleton.isSchoolMode()) {
             submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.TERM_GROUP, 0, R.string.terms);
         }
         submenu.add(Constants.MenuGroups.MANAGEMENT_GROUP, Constants.MenuGroups.PROF_GROUP, 0, R.string.profs);
@@ -184,11 +199,11 @@ public class HomeActivity extends GenericActivity{
         menu.findItem(R.id.action_delete).setVisible(false);
         menu.findItem(R.id.action_add).setVisible(false);
         menu.add(0, Constants.ActionBarIds.ADD_TASK, 0, getString(R.string.create_task));
-        if(PreferenceSingleton.isSchoolMode()){
+        if (PreferenceSingleton.isSchoolMode()) {
             menu.add(0, Constants.ActionBarIds.ADD_TERM, 0, getString(R.string.create_term));
         }
         menu.add(0, Constants.ActionBarIds.ADD_PROF, 0, getString(R.string.create_prof));
-        menu.add(0, Constants.ActionBarIds.USER_PREFS, 0, getString(R.string.user_prefs));
+        menu.add(0, Constants.ActionBarIds.ADD_REMINDER, 0, R.string.quick_reminder);
         return true;
     }
 
@@ -205,19 +220,40 @@ public class HomeActivity extends GenericActivity{
         } else if (id == Constants.ActionBarIds.ADD_TASK) {
             Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
             return true;
-        } else if (id == Constants.ActionBarIds.USER_PREFS) {
-            String[] tabList = {getString(R.string.terms), getString(R.string.courses), getString(R.string.assessments), getString(R.string.tasks), getString(R.string.reminders)};
-            LayoutInflater li = LayoutInflater.from(this);
-            final View prefsView = li.inflate(R.layout.prefs_dialog, null);
-            final TextView daysInput = prefsView.findViewById(R.id.numDays);
-            daysInput.setText(Integer.toString(numQueryDays));
+        } else if (id == Constants.ActionBarIds.ADD_REMINDER) {
+            Intent intent = new Intent(this, this.getClass());
+            intent.putExtra(Constants.CURRENT_URI, currentUri);
+            Bundle b = new Bundle();
+            b.putParcelable(Constants.CURRENT_INTENT, intent);
+            b.putInt(Constants.Ids.TASK_ID, getCurrentUriId());
+            b.putString(Constants.PersistAlarm.USER_OBJECT,getString(R.string.quick_reminder));
+            createReminder(b);
+        }
 
-            final Spinner mSpinner = (Spinner) prefsView.findViewById(R.id.tabDropDown);
-            final ArrayAdapter<String> adp = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, tabList);
-            adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mSpinner.setAdapter(adp);
-            mSpinner.setSelection(defaultTabIndex);
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void createReminder(Bundle userBundle) {
+        try {
+            final int[] ids = new int[1];
+            final String[] fields = new String[1];
+            final Bundle b = userBundle;
+            LayoutInflater li = LayoutInflater.from(this);
+            final View promptsView = li.inflate(R.layout.reminder_alert, null);
+            final TextInputLayout lbl = promptsView.findViewById(R.id.reminderDateLbl);
+            final Spinner mSpinner = (Spinner) promptsView.findViewById(R.id.reminderDropdown);
+            final Spinner mSpinnerType = (Spinner) promptsView.findViewById(R.id.reminderType);
+            final EditTextDatePicker customDate = new EditTextDatePicker(this, (EditText) promptsView.findViewById(R.id.reminderDate));
+            final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
+            final EditTextTimePicker timePicker = new EditTextTimePicker(this, (EditText) promptsView.findViewById(R.id.reminderTime));
+            fields[fields.length - 1] = getString(R.string.custom_date);
+            ids[ids.length - 1] = R.id.reminderDate;
+            Date now = new Date();
+            now.setMinutes(now.getMinutes() + 1);
+            timePicker.setText(now);
+            lbl.setVisibility(View.VISIBLE);
+            customDate.setVisibility(View.VISIBLE);
+            customDate.setText(DateUtils.getCurrentDate());
 
             DialogInterface.OnClickListener dialogClickListener =
                     new DialogInterface.OnClickListener() {
@@ -225,23 +261,23 @@ public class HomeActivity extends GenericActivity{
                         public void onClick(DialogInterface dialog, int button) {
                             if (button == DialogInterface.BUTTON_POSITIVE) {
                                 try {
-                                    int numDays = Integer.parseInt(daysInput.getText().toString());
-                                    if (numDays > 365 || numDays < -365) {
-                                        throw new CustomException("Invalid number of days");
-                                    } else {
-                                        SharedPreferences.Editor editor = sharedpreferences.edit();
-                                        editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numDays));
-                                        editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(mSpinner.getSelectedItemPosition()));
-                                        editor.apply();
-                                        numQueryDays = numDays;
-                                        setDefaultTabIndex(mSpinner.getSelectedItemPosition());
-                                        refreshPage(0);
+                                    if (!Utils.hasValue(reminderMsg.getText().toString())) {
+                                        throw new CustomException(getString(R.string.msg_required));
                                     }
+                                    b.putString(Constants.PersistAlarm.CONTENT_TITLE, reminderMsg.getText().toString());
+                                    b.putString(Constants.PersistAlarm.CONTENT_TEXT, reminderMsg.getText().toString());
+                                    Date alarmDate = DateUtils.userDateFormat.parse(customDate.getText());
+                                    alarmDate.setHours(timePicker.getHour());
+                                    alarmDate.setMinutes(timePicker.getMinute());
+                                    b.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, mSpinnerType.getSelectedItemPosition());
+                                    setAlarmForDate(alarmDate, b);
+                                    AlarmListFragment alarmListFragment = (AlarmListFragment) getFragmentByTitle(R.string.reminders);
+                                    alarmListFragment.restartLoader();
                                 } catch (Exception e) {
                                     if (e instanceof CustomException) {
                                         Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
                                     } else {
-                                        Snackbar.make(mCoordinatorLayout, "Failed to save preferences", Snackbar.LENGTH_LONG).show();
+                                        Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
                                     }
                                     e.printStackTrace();
                                 }
@@ -250,18 +286,42 @@ public class HomeActivity extends GenericActivity{
                     };
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setView(prefsView);
-            alertDialogBuilder.setTitle("User Preferences")
+            alertDialogBuilder.setView(promptsView);
+            alertDialogBuilder.setTitle(R.string.reminder_header)
                     .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
                     .setNegativeButton(getString(android.R.string.no), dialogClickListener);
 
+            final ArrayList<SpinnerPojo> typeList = new ArrayList();
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL, getString(R.string.normal)));
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM, getString(R.string.alarm)));
+            final ArrayAdapter<SpinnerPojo> typeAdp = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, typeList);
+            final ArrayAdapter<String> adp = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, fields);
+            adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            typeAdp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             final AlertDialog alertDialog = alertDialogBuilder.create();
+            mSpinner.setAdapter(adp);
+            mSpinner.setSelection(fields.length - 1);
+            mSpinnerType.setAdapter(typeAdp);
+            mSpinnerType.setSelection(PreferenceSingleton.getDefaultNotifyType());
             alertDialog.show();
             alertDialog.setCanceledOnTouchOutside(false);
-
+        } catch (Exception e) {
+            Snackbar.make(mCoordinatorLayout, R.string.error_alarm_failed, Snackbar.LENGTH_LONG).show();
+            e.printStackTrace();
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public void setAlarmForDate(Date date, Bundle userBundle) {
+        if (date.before(new Date())) {
+            Snackbar.make(mCoordinatorLayout, R.string.error_alarm_before, Snackbar.LENGTH_LONG).show();
+        } else {
+            Calendar c = Calendar.getInstance();
+            c.setTime(date);
+            setAlarmForNotification(date, userBundle);
+            Snackbar.make(mCoordinatorLayout, "Notification set for " + DateUtils.getUserDateTime(date), Snackbar.LENGTH_LONG).show();
+        }
     }
 
     protected void refreshPage(int id) {

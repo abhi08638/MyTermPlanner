@@ -67,11 +67,11 @@ public class AlarmTask implements Runnable{
     private int insertInDb(){
         ContentValues values = new ContentValues();
         Intent sendingIntent = userBundle.getParcelable(Constants.CURRENT_INTENT);
-        values.put(Constants.PersistAlarm.CONTENT_TEXT,userBundle.get(Constants.PersistAlarm.CONTENT_TEXT).toString());
-        values.put(Constants.PersistAlarm.CONTENT_URI,sendingIntent.getParcelableExtra(Constants.CURRENT_URI).toString());
+        values.put(Constants.PersistAlarm.CONTENT_TEXT,userBundle.getString(Constants.PersistAlarm.CONTENT_TEXT));
+        values.put(Constants.PersistAlarm.CONTENT_URI,sendingIntent.getParcelableExtra(Constants.CURRENT_URI)!=null? sendingIntent.getParcelableExtra(Constants.CURRENT_URI).toString():null);
         values.put(Constants.PersistAlarm.CONTENT_INTENT,sendingIntent.toUri(0));
-        values.put(Constants.PersistAlarm.CONTENT_TITLE,userBundle.get(Constants.PersistAlarm.CONTENT_TITLE).toString());
-        values.put(Constants.PersistAlarm.USER_OBJECT,userBundle.get(Constants.PersistAlarm.USER_OBJECT).toString());
+        values.put(Constants.PersistAlarm.CONTENT_TITLE,userBundle.getString(Constants.PersistAlarm.CONTENT_TITLE));
+        values.put(Constants.PersistAlarm.USER_OBJECT,userBundle.getString(Constants.PersistAlarm.USER_OBJECT));
         values.put(Constants.PersistAlarm.NOTIFY_DATETIME, Utils.getDbDateTime(date));
         values.put(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, userBundle.getInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE));
         values=Utils.addTableId(values,userBundle);

@@ -127,9 +127,9 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
 
     private void mapObject(ProfessorPojo prof){
         prof.setTitleIndex(title.getSelectedItemPosition());
-        prof.setFirstName(firstName.getText().toString());
-        prof.setMiddleName(middleName.getText().toString());
-        prof.setLastName(lastName.getText().toString());
+        prof.setFirstName(firstName.getText().toString().trim());
+        prof.setMiddleName(middleName.getText().toString().trim());
+        prof.setLastName(lastName.getText().toString().trim());
     }
 
     public Uri save() throws Exception {

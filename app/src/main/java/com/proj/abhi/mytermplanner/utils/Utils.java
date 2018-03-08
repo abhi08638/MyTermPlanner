@@ -155,16 +155,17 @@ public class Utils {
     }
 
     public static ContentValues addTableId(ContentValues values, Bundle b) {
-        if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TERM)) {
+        String userObj = b.getString(Constants.PersistAlarm.USER_OBJECT)!=null?b.getString(Constants.PersistAlarm.USER_OBJECT):"";
+        if (userObj.equals(Constants.Tables.TABLE_TERM)) {
             values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
-        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_COURSE)) {
+        } else if (userObj.equals(Constants.Tables.TABLE_COURSE)) {
             values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
             values.put(Constants.Ids.COURSE_ID, b.getInt(Constants.Ids.COURSE_ID));
-        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_ASSESSMENT)) {
+        } else if (userObj.equals(Constants.Tables.TABLE_ASSESSMENT)) {
             values.put(Constants.Ids.TERM_ID, b.getInt(Constants.Ids.TERM_ID));
             values.put(Constants.Ids.COURSE_ID, b.getInt(Constants.Ids.COURSE_ID));
             values.put(Constants.Ids.ASSESSMENT_ID, b.getInt(Constants.Ids.ASSESSMENT_ID));
-        } else if (b.get(Constants.PersistAlarm.USER_OBJECT).equals(Constants.Tables.TABLE_TASK)) {
+        } else if (userObj.equals(Constants.Tables.TABLE_TASK)) {
             values.put(Constants.Ids.TASK_ID, b.getInt(Constants.Ids.TASK_ID));
         }
         return values;
@@ -188,7 +189,7 @@ public class Utils {
         if (hasValue(word)) {
             return word.substring(0, 1).toUpperCase() + word.substring(1);
         }
-        return word;
+        return Constants.APP_NAME;
     }
 
     public static void sendToActivity(int id, Class toActivity, Uri contentUri) {
@@ -198,7 +199,7 @@ public class Utils {
             intent.putExtra(Constants.CURRENT_URI, uri);
             if(toActivity.equals(HomeActivity.class)){
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 ((Activity) context).startActivity(intent);
             }

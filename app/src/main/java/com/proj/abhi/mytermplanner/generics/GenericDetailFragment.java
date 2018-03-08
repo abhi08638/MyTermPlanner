@@ -62,15 +62,15 @@ public abstract class GenericDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         // Persist selected bundle across orientation changes.
-        initializer.putParcelable(Constants.CURRENT_URI,currentUri);
-        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE,initializer);
-        outState.putString(pojo.className,pojo.getGson());
+        initializer.putParcelable(Constants.CURRENT_URI, currentUri);
+        outState.putBundle(Constants.CURRENT_FRAGMENT_BUNDLE, initializer);
+        outState.putString(pojo.className, pojo.getGson());
     }
 
-    protected void handleRotation(Bundle savedInstanceState){
+    protected void handleRotation(Bundle savedInstanceState) {
         // Recreate state if applicable.
         if (savedInstanceState != null && savedInstanceState.containsKey(Constants.CURRENT_FRAGMENT_BUNDLE)) {
-            initializer=savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
+            initializer = savedInstanceState.getBundle(Constants.CURRENT_FRAGMENT_BUNDLE);
         }
     }
 
@@ -184,18 +184,13 @@ public abstract class GenericDetailFragment extends Fragment {
                                             b.putString(Constants.PersistAlarm.CONTENT_TEXT, mSpinner.getSelectedItem().toString());
                                         }
                                     }
-                                    if (Utils.isValidDate(date.getText().toString())) {
-                                        Date alarmDate = Utils.getDateFromUser(date.getText().toString());
-                                        alarmDate.setHours(timePicker.getHour());
-                                        alarmDate.setMinutes(timePicker.getMinute());
-                                        b.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,mSpinnerType.getSelectedItemPosition());
-                                        setAlarmForDate(alarmDate, b);
-                                        for (Fragment f : getActivity().getSupportFragmentManager().getFragments()) {
-                                            if (f instanceof AlarmListFragment) {
-                                                ((AlarmListFragment) f).restartLoader();
-                                            }
-                                        }
-                                    }
+                                    Date alarmDate = DateUtils.userDateFormat.parse(date.getText().toString());
+                                    alarmDate.setHours(timePicker.getHour());
+                                    alarmDate.setMinutes(timePicker.getMinute());
+                                    b.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE, mSpinnerType.getSelectedItemPosition());
+                                    setAlarmForDate(alarmDate, b);
+                                    AlarmListFragment alarmListFragment = (AlarmListFragment) ((GenericActivity)getActivity()).getFragmentByTitle(R.string.reminders);
+                                    alarmListFragment.restartLoader();
                                 } catch (Exception e) {
                                     if (e instanceof CustomException) {
                                         Snackbar.make(mCoordinatorLayout, e.getMessage(), Snackbar.LENGTH_LONG).show();
@@ -215,8 +210,8 @@ public abstract class GenericDetailFragment extends Fragment {
                     .setNegativeButton(getString(android.R.string.no), dialogClickListener);
 
             final ArrayList<SpinnerPojo> typeList = new ArrayList();
-            typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL,getString(R.string.normal)));
-            typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM,getString(R.string.alarm)));
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.NORMAL, getString(R.string.normal)));
+            typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM, getString(R.string.alarm)));
             final ArrayAdapter<SpinnerPojo> typeAdp = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_item, typeList);
             final ArrayAdapter<String> adp = new ArrayAdapter<>(getActivity(),

@@ -127,4 +127,6 @@
     <string name="send_test_notification">Send Test Notification</string>
     <string name="general">General</string>
     <string name="school_mode">School Mode</string>
+    <string name="quick_reminder">Quick Reminder</string>
+    <string name="msg_required">Message is required</string>
 </resources>
