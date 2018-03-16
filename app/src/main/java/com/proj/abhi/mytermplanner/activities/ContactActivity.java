@@ -1,67 +1,33 @@
 package com.proj.abhi.mytermplanner.activities;
 
-import android.app.AlertDialog;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.text.InputType;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.cursorAdapters.EmailsCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.PhonesCursorAdapter;
-import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
-import com.proj.abhi.mytermplanner.fragments.listFragments.ProfessorListFragments;
-import com.proj.abhi.mytermplanner.fragments.pageFragments.ProfessorDetailFragment;
-import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.ContactListFragments;
+import com.proj.abhi.mytermplanner.fragments.pageFragments.ContactDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericListFragment;
-import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
-import com.proj.abhi.mytermplanner.providers.ProfProvider;
-import com.proj.abhi.mytermplanner.providers.TasksProvider;
+import com.proj.abhi.mytermplanner.providers.ContactsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
-import com.proj.abhi.mytermplanner.utils.CustomException;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ProfessorActivity extends GenericActivity
+public class ContactActivity extends GenericActivity
 {
-    private EditText firstName,middleName,lastName;
-    private Spinner title;
-    private CursorAdapter phoneCursorAdapter = new PhonesCursorAdapter(this,null,0);
-    private CursorAdapter emailCursorAdapter = new EmailsCursorAdapter(this,null,0);
-    private ListView phoneList,emailList;
-    private String phoneMsg,emailMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +36,7 @@ public class ProfessorActivity extends GenericActivity
         if (intent.hasExtra(Constants.CURRENT_URI)) {
             currentUri = intent.getParcelableExtra(Constants.CURRENT_URI);
         } else {
-            currentUri = Uri.parse(ProfProvider.CONTENT_URI + "/" + 0);
+            currentUri = Uri.parse(ContactsProvider.CONTENT_URI + "/" + 0);
         }
 
         //init cursor loaders
@@ -86,7 +52,7 @@ public class ProfessorActivity extends GenericActivity
 
     @Override
     protected void save() throws Exception {
-        ProfessorDetailFragment professorDetailFragment = (ProfessorDetailFragment) getFragmentByTitle(R.string.details);
+        ContactDetailFragment professorDetailFragment = (ContactDetailFragment) getFragmentByTitle(R.string.details);
         currentUri=professorDetailFragment.save();
         refreshMenu();
     }
@@ -97,19 +63,19 @@ public class ProfessorActivity extends GenericActivity
         if (viewPager != null) {
             Bundle b = new Bundle();
             b.putParcelable(Constants.CURRENT_URI, currentUri);
-            ProfessorDetailFragment profDetailFragment = new ProfessorDetailFragment();
+            ContactDetailFragment profDetailFragment = new ContactDetailFragment();
             profDetailFragment.setArguments(b);
 
             b = new Bundle();
             b.putString(Constants.CONTENT_URI, PhonesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.PHONE_ID);
-            ProfessorListFragments phoneFragment = new ProfessorListFragments();
+            ContactListFragments phoneFragment = new ContactListFragments();
             phoneFragment.setArguments(b);
 
             b = new Bundle();
             b.putString(Constants.CONTENT_URI, EmailsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.EMAIL_ID);
-            ProfessorListFragments emailFragment = new ProfessorListFragments();
+            ContactListFragments emailFragment = new ContactListFragments();
             emailFragment.setArguments(b);
 
             adapter.addFragment(profDetailFragment, getString(R.string.details));
@@ -164,11 +130,11 @@ public class ProfessorActivity extends GenericActivity
             doAlert(dialogClickListener);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_PHONE && uriId>0) {
-            ProfessorListFragments phoneFragment = (ProfessorListFragments) getFragmentByTitle(R.string.phones);
+            ContactListFragments phoneFragment = (ContactListFragments) getFragmentByTitle(R.string.phones);
             phoneFragment.openPhoneView(0);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_EMAIL && uriId>0) {
-            ProfessorListFragments emailFragment = (ProfessorListFragments) getFragmentByTitle(R.string.emails);
+            ContactListFragments emailFragment = (ContactListFragments) getFragmentByTitle(R.string.emails);
             emailFragment.openEmailView(0);
             return true;
         }

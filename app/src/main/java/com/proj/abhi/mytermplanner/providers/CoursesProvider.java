@@ -6,14 +6,16 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.Selection;
+import android.util.Log;
 
-import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
 import com.proj.abhi.mytermplanner.utils.Constants;
+import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
 
 public class CoursesProvider extends ContentProvider{
 
-    private static final String AUTHORITY = "com.proj.abhi.coursesprovider";
-    private static final String BASE_PATH = "courses";
+    private static final String AUTHORITY = "com.proj.abhi.homecoursesprovider";
+    private static final String BASE_PATH = "coursesWithTerm";
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
 
@@ -37,17 +39,34 @@ public class CoursesProvider extends ContentProvider{
         database = helper.getWritableDatabase();
         return true;
     }
+    //query to join term
+    private static final String QUERY_COURSES=
+            "SELECT "
+                +"c."+Constants.ID+", "
+                +"c."+Constants.Course.COURSE_TITLE+" as courseTitle, "
+                +"c."+Constants.Course.COURSE_START_DATE+","
+                +"c."+Constants.Course.COURSE_END_DATE+","
+                +"t."+Constants.Term.TERM_TITLE+" as termTitle, "
+                +"c."+Constants.Ids.TERM_ID
+            +" FROM "+Constants.Tables.TABLE_COURSE+" c "
+            +" JOIN "+Constants.Tables.TABLE_TERM+" t on t."+Constants.ID+"=c."+Constants.Ids.TERM_ID+" ";
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-
-        if (uriMatcher.match(uri) == ID) {
-            selection = Constants.ID + "=" + uri.getLastPathSegment();
+        if(projection!=null){
+            if(sortOrder==null){
+                sortOrder=Constants.CREATED;
+            }
+            return database.query(Constants.Tables.TABLE_COURSE, projection,
+                    selection, null, null, null,
+                    sortOrder);
         }
-
-        return database.query(Constants.Tables.TABLE_COURSE, null,
-                selection, null, null, null,
-                Constants.CREATED);
+        else if(selection!=null){
+            return database.rawQuery(QUERY_COURSES+selection,null);
+        }else{
+            return database.rawQuery(QUERY_COURSES,null);
+        }
     }
 
     @Override

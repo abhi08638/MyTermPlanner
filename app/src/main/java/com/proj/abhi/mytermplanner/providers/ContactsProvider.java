@@ -10,10 +10,10 @@ import android.net.Uri;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
 
-public class ProfProvider extends ContentProvider{
+public class ContactsProvider extends ContentProvider{
 
-    private static final String AUTHORITY = "com.proj.abhi.profsprovider";
-    private static final String BASE_PATH = "profs";
+    private static final String AUTHORITY = "com.proj.abhi.contactsprovider";
+    private static final String BASE_PATH = "contacts";
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
 

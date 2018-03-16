@@ -194,6 +194,24 @@ public abstract class GenericActivity extends AppCompatActivity
         if(!PreferenceSingleton.isInit()){
             SharedPreferences sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
             //this.getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, 0).edit().clear().commit();
+            //init home query days
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, 7);
+                editor.apply();
+            } else {
+                PreferenceSingleton.setNumQueryDays(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, 7));
+            }
+
+            //init default tab
+            if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(Constants.SharedPreferenceKeys.DEFAULT_TAB, defaultTabIndex);
+                editor.apply();
+            } else {
+                PreferenceSingleton.setHomeDefTabIndex(sharedpreferences.getInt(Constants.SharedPreferenceKeys.DEFAULT_TAB, 0));
+            }
+
             //init theme
             if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.THEME)) {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -524,4 +542,6 @@ public abstract class GenericActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
     }
+
+    public void initActivityFromFragment(Bundle b){}
 }

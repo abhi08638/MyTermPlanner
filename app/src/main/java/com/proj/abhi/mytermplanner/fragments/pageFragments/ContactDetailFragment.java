@@ -20,11 +20,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.fragments.listFragments.ProfessorListFragments;
+import com.proj.abhi.mytermplanner.fragments.listFragments.ContactListFragments;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
-import com.proj.abhi.mytermplanner.pojos.ProfessorPojo;
-import com.proj.abhi.mytermplanner.providers.ProfProvider;
+import com.proj.abhi.mytermplanner.pojos.ContactPojo;
+import com.proj.abhi.mytermplanner.providers.ContactsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.CustomException;
 import com.proj.abhi.mytermplanner.utils.Utils;
@@ -32,14 +32,14 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfessorDetailFragment extends GenericDetailFragment {
+public class ContactDetailFragment extends GenericDetailFragment {
     private EditText firstName,middleName,lastName;
     private Spinner title;
-    private ProfessorPojo profPojo = new ProfessorPojo();
+    private ContactPojo profPojo = new ContactPojo();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance) {
-        return inflater.inflate(R.layout.prof_detail_fragment, container, false);
+        return inflater.inflate(R.layout.contact_detail_fragment, container, false);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
         if(savedInstanceState==null) {
             refreshPage(getCurrentUriId());
         }else{
-            profPojo=(ProfessorPojo) profPojo.initJson(savedInstanceState.getString(profPojo.className));
+            profPojo=(ContactPojo) profPojo.initJson(savedInstanceState.getString(profPojo.className));
         }
         pojo=profPojo;
     }
@@ -81,7 +81,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
 
     public Uri refreshPage(int i) {
         final int id = i;
-        currentUri = Uri.parse(ProfProvider.CONTENT_URI + "/" + id);
+        currentUri = Uri.parse(ContactsProvider.CONTENT_URI + "/" + id);
         Log.d(null, "handleRotation: "+currentUri);
         AsyncTask.execute(new Runnable() {
             @Override
@@ -117,7 +117,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
     }
 
     protected void emptyPage() {
-        currentUri = Uri.parse(ProfProvider.CONTENT_URI + "/" + 0);
+        currentUri = Uri.parse(ContactsProvider.CONTENT_URI + "/" + 0);
         title.setSelection(0);
         firstName.setText(null);
         middleName.setText(null);
@@ -125,7 +125,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
         profPojo.reset();
     }
 
-    private void mapObject(ProfessorPojo prof){
+    private void mapObject(ContactPojo prof){
         prof.setTitleIndex(title.getSelectedItemPosition());
         prof.setFirstName(firstName.getText().toString().trim());
         prof.setMiddleName(middleName.getText().toString().trim());
@@ -134,7 +134,7 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
 
     public Uri save() throws Exception {
         ContentValues values = new ContentValues();
-        ProfessorPojo tempPojo=new ProfessorPojo();
+        ContactPojo tempPojo=new ContactPojo();
         //all validations throw exceptions on failure to prevent saving
         try {
             mapObject(tempPojo);
@@ -171,8 +171,8 @@ public class ProfessorDetailFragment extends GenericDetailFragment {
     public void setIntentMsg() {
         intentMsg=(title.getItemAtPosition(profPojo.getTitleIndex())+" "+profPojo.getFirstName()
                 +" "+profPojo.getMiddleName()+" "+profPojo.getLastName()+"\n");
-        ProfessorListFragments phoneFragment = (ProfessorListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.phones));
-        ProfessorListFragments emailFragment = (ProfessorListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.emails));
+        ContactListFragments phoneFragment = (ContactListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.phones));
+        ContactListFragments emailFragment = (ContactListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.emails));
         intentMsg+=phoneFragment.getMsg();
         intentMsg+=emailFragment.getMsg();
 

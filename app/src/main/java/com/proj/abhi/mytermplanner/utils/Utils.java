@@ -14,6 +14,8 @@ import com.proj.abhi.mytermplanner.activities.HomeActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -192,11 +194,16 @@ public class Utils {
         return Constants.APP_NAME;
     }
 
-    public static void sendToActivity(int id, Class toActivity, Uri contentUri) {
+    public static void sendToActivity(int id, Class toActivity, Uri contentUri, LinkedHashMap<String,Integer> params) {
         try {
             Intent intent = new Intent(context, toActivity);
             Uri uri = Uri.parse(contentUri + "/" + id);
             intent.putExtra(Constants.CURRENT_URI, uri);
+            if(params!=null){
+                for(Map.Entry<String,Integer> entry: params.entrySet()){
+                    intent.putExtra(entry.getKey(),entry.getValue());
+                }
+            }
             if(toActivity.equals(HomeActivity.class)){
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -207,6 +214,10 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sendToActivity(int id, Class toActivity, Uri contentUri) {
+        sendToActivity(id, toActivity, contentUri,null);
     }
 
     public static void closeKeyboard() {

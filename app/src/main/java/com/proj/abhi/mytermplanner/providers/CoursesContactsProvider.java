@@ -6,15 +6,14 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.text.Selection;
 
 import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
 
-public class HomeCoursesProvider extends ContentProvider{
+public class CoursesContactsProvider extends ContentProvider{
 
-    private static final String AUTHORITY = "com.proj.abhi.homecoursesprovider";
-    private static final String BASE_PATH = "coursesWithTerm";
+    private static final String AUTHORITY = "com.proj.abhi.coursescontactsprovider";
+    private static final String BASE_PATH = "coursesWithContacts";
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
 
@@ -38,26 +37,14 @@ public class HomeCoursesProvider extends ContentProvider{
         database = helper.getWritableDatabase();
         return true;
     }
-    //query to join term
-    private static final String QUERY_COURSES=
-            "SELECT "
-                +"c."+Constants.ID+", "
-                +"c."+Constants.Course.COURSE_TITLE+" as courseTitle, "
-                +"c."+Constants.Course.COURSE_START_DATE+","
-                +"c."+Constants.Course.COURSE_END_DATE+","
-                +"t."+Constants.Term.TERM_TITLE+" as termTitle"
-            +" FROM "+Constants.Tables.TABLE_COURSE+" c "
-            +" JOIN "+Constants.Tables.TABLE_TERM+" t on t."+Constants.ID+"=c."+Constants.Ids.TERM_ID+" ";
-
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if(selection!=null){
-            return database.rawQuery(QUERY_COURSES+selection,null);
+            return database.rawQuery(selection,null);
         }else{
-            return database.rawQuery(QUERY_COURSES,null);
+            return null;
         }
-
     }
 
     @Override
@@ -67,16 +54,19 @@ public class HomeCoursesProvider extends ContentProvider{
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        long id = database.insert(Constants.Tables.TABLE_COURSE_PROF,
+                null, values);
+        return Uri.parse(BASE_PATH + "/" + id);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return database.delete(Constants.Tables.TABLE_COURSE, selection, selectionArgs);
+        return database.delete(Constants.Tables.TABLE_COURSE_PROF, selection, selectionArgs);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        return database.update(Constants.Tables.TABLE_COURSE_PROF,
+                values, selection, selectionArgs);
     }
 }

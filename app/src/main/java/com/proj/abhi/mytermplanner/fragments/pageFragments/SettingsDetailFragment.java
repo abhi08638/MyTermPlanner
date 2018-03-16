@@ -173,22 +173,10 @@ public class SettingsDetailFragment extends Fragment {
 
     private void initPreferences() {
         //init query params
-        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS)) {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(7));
-            editor.apply();
-        } else {
-            daysInput.setText(sharedpreferences.getString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, null));
-        }
+        daysInput.setText(Integer.toString(sharedpreferences.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, 7)));
 
         //init default tab
-        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)) {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(0));
-            editor.apply();
-        } else {
-            mDefTabSpinner.setSelection(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB, null)));
-        }
+        mDefTabSpinner.setSelection(sharedpreferences.getInt(Constants.SharedPreferenceKeys.DEFAULT_TAB, 0));
 
         //init theme
         int themeId = sharedpreferences.getInt(Constants.SharedPreferenceKeys.THEME, R.style.AppThemeBlue);
@@ -233,8 +221,8 @@ public class SettingsDetailFragment extends Fragment {
             SpinnerPojo nightModeItem = (SpinnerPojo) mNightModeSpinner.getSelectedItem();
             SpinnerPojo reminderTypeItem = (SpinnerPojo) mReminderTypeSpinner.getSelectedItem();
             SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numDays));
-            editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(mDefTabSpinner.getSelectedItemPosition()));
+            editor.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numDays);
+            editor.putInt(Constants.SharedPreferenceKeys.DEFAULT_TAB, mDefTabSpinner.getSelectedItemPosition());
             editor.putInt(Constants.SharedPreferenceKeys.THEME, themeItem.getId());
             editor.putInt(Constants.SharedPreferenceKeys.NIGHT_MODE, nightModeItem.getId());
             editor.putBoolean(Constants.SharedPreferenceKeys.HIDE_TOOLBAR, hideToolbar.isChecked());
@@ -246,6 +234,8 @@ public class SettingsDetailFragment extends Fragment {
             PreferenceSingleton.setVibratePattern(pattern);
             editor.putString(Constants.SharedPreferenceKeys.NOTIFICATION_VIBRATE_PATTERN, gson.toJson(PreferenceSingleton.getVibratePattern()));
             editor.apply();
+            PreferenceSingleton.setNumQueryDays(numDays);
+            PreferenceSingleton.setHomeDefTabIndex(mDefTabSpinner.getSelectedItemPosition());
             PreferenceSingleton.setThemeId(themeItem.getId());
             PreferenceSingleton.setNightModeId(nightModeItem.getId());
             PreferenceSingleton.setHideTabBar(hideTabBar.isChecked());

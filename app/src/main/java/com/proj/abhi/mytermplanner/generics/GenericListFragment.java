@@ -100,12 +100,22 @@ public abstract class GenericListFragment extends ListFragment implements Loader
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        restartLoader();
+    }
+
     protected void initLoader() {
         getLoaderManager().initLoader(initializer.getInt(Constants.CURSOR_LOADER_ID), initializer, this);
     }
 
     public void restartLoader() {
         getLoaderManager().restartLoader(initializer.getInt(Constants.CURSOR_LOADER_ID), initializer, this);
+    }
+
+    public void restartLoader(Bundle b) {
+        restartLoader();
     }
 
     @Override
@@ -123,6 +133,5 @@ public abstract class GenericListFragment extends ListFragment implements Loader
 
     @Override
     public void onListItemClick(ListView parent, View view, int position, long id) {}
-
 
 }

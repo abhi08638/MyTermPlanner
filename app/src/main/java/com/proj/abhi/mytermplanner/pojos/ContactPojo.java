@@ -13,11 +13,11 @@ import java.util.Date;
  * Created by Abhi on 2/19/2018.
  */
 
-public class ProfessorPojo extends GenericDetailPojo{
+public class ContactPojo extends GenericDetailPojo{
     private String firstName,middleName,lastName;
     private int titleIndex;
 
-    public ProfessorPojo() {
+    public ContactPojo() {
         className="professor";
     }
 

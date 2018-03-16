@@ -11,8 +11,8 @@ import android.widget.TextView;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.utils.Constants;
 
-public class ProfsCursorAdapter extends CursorAdapter{
-    public ProfsCursorAdapter(Context context, Cursor c, int flags) {
+public class ContactsCursorAdapter extends CursorAdapter{
+    public ContactsCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 

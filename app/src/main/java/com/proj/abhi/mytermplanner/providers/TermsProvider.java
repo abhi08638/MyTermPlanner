@@ -43,9 +43,6 @@ public class TermsProvider extends ContentProvider{
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        if (uriMatcher.match(uri) == ID) {
-            selection = Constants.ID + "=" + uri.getLastPathSegment();
-        }
         if(sortOrder==null){
             sortOrder=Constants.CREATED;
         }

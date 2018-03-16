@@ -29,16 +29,12 @@
                 android:layout_marginTop="10dp">
 
                 <EditText
-                    android:id="@+id/taskTitle"
+                    android:id="@+id/title"
                     style="@style/InputMarginTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/task_title"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.512"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:hint="@string/task_title" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -46,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="3" android:baselineAligned="false">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="0dp"
@@ -61,11 +57,7 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="false"
-                        android:hint="@string/start_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.512"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/taskTitle" />
+                        android:hint="@string/start_date"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -81,9 +73,7 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="false"
-                        android:hint="@string/start_time"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.512" />
+                        android:hint="@string/start_time"/>
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
@@ -91,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="3" android:baselineAligned="false">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="0dp"
@@ -106,11 +96,7 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="false"
-                        android:hint="@string/end_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.512"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/startDate" />
+                        android:hint="@string/end_date"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -126,9 +112,7 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="false"
-                        android:hint="@string/end_time"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.512" />
+                        android:hint="@string/end_time" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </LinearLayout>

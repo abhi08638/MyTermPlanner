@@ -26,7 +26,7 @@
                 android:value=".activities.HomeActivity" />
         </activity>
         <activity
-            android:name=".activities.ProfessorActivity"
+            android:name=".activities.ContactActivity"
             android:label="@string/prof_editor">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -62,7 +62,7 @@
         </activity>
         <provider
             android:authorities="com.proj.abhi.homecoursesprovider"
-            android:name=".providers.HomeCoursesProvider"
+            android:name=".providers.CoursesProvider"
             android:exported="false" />
         <provider
             android:authorities="com.proj.abhi.homeassessmentsprovider"
@@ -74,15 +74,15 @@
             android:exported="false" />
         <provider
             android:authorities="com.proj.abhi.coursesprovider"
-            android:name=".providers.CoursesProvider"
+            android:name=".providers.CoursesProviderOld"
             android:exported="false" />
         <provider
             android:authorities="com.proj.abhi.assessmentsprovider"
             android:name=".providers.AssessmentsProvider"
             android:exported="false" />
         <provider
-            android:authorities="com.proj.abhi.profsprovider"
-            android:name=".providers.ProfProvider"
+            android:authorities="com.proj.abhi.contactsprovider"
+            android:name=".providers.ContactsProvider"
             android:exported="false" />
         <provider
             android:authorities="com.proj.abhi.phonesprovider"
@@ -93,8 +93,8 @@
             android:name=".providers.EmailsProvider"
             android:exported="false" />
         <provider
-            android:authorities="com.proj.abhi.coursesprofsprovider"
-            android:name=".providers.CoursesProfsProvider"
+            android:authorities="com.proj.abhi.coursescontactsprovider"
+            android:name=".providers.CoursesContactsProvider"
             android:exported="false" />
         <provider
             android:authorities="com.proj.abhi.tasksprovider"

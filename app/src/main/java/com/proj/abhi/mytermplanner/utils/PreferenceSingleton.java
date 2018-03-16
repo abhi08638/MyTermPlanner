@@ -18,6 +18,8 @@ import java.util.TimeZone;
 
 public class PreferenceSingleton {
     private static boolean init=false;
+    private static int numQueryDays;
+    private static int homeDefTabIndex;
     private static int themeId;
     private static int nightModeId;
     private static int ledColorId;
@@ -114,5 +116,21 @@ public class PreferenceSingleton {
 
     public static void setSchoolMode(boolean schoolMode) {
         PreferenceSingleton.schoolMode = schoolMode;
+    }
+
+    public static int getNumQueryDays() {
+        return numQueryDays;
+    }
+
+    public static void setNumQueryDays(int numQueryDays) {
+        PreferenceSingleton.numQueryDays = numQueryDays;
+    }
+
+    public static int getHomeDefTabIndex() {
+        return homeDefTabIndex;
+    }
+
+    public static void setHomeDefTabIndex(int homeDefTabIndex) {
+        PreferenceSingleton.homeDefTabIndex = homeDefTabIndex;
     }
 }

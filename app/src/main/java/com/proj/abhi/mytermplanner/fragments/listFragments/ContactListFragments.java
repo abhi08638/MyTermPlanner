@@ -15,7 +15,6 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,7 +31,7 @@ import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 
-public class ProfessorListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
+public class ContactListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
 
     private String msg;
 
@@ -57,7 +56,7 @@ public class ProfessorListFragments extends GenericListFragment implements Loade
         final int phoneId = id;
         String[] list = {"Home", "Work", "Cell"};
         LayoutInflater li = LayoutInflater.from(getActivity());
-        final View dialogView = li.inflate(R.layout.prof_info_dialog, null);
+        final View dialogView = li.inflate(R.layout.contact_info_dialog, null);
         final TextView phoneLbl = dialogView.findViewById(R.id.inputText);
         final TextView typeLbl = dialogView.findViewById(R.id.spinnerText);
         final TextView phoneNum = dialogView.findViewById(R.id.input);
@@ -125,7 +124,7 @@ public class ProfessorListFragments extends GenericListFragment implements Loade
         final int emailId = id;
         String[] list = {"Personal", "Work"};
         LayoutInflater li = LayoutInflater.from(getActivity());
-        final View dialogView = li.inflate(R.layout.prof_info_dialog, null);
+        final View dialogView = li.inflate(R.layout.contact_info_dialog, null);
         final TextView emailLbl = dialogView.findViewById(R.id.inputText);
         final TextView typeLbl = dialogView.findViewById(R.id.spinnerText);
         final TextView email = dialogView.findViewById(R.id.input);

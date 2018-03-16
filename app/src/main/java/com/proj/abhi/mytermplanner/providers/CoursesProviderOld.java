@@ -7,13 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DBOpenHelper;
+import com.proj.abhi.mytermplanner.utils.Constants;
 
-public class CoursesProfsProvider extends ContentProvider{
+public class CoursesProviderOld extends ContentProvider{
 
-    private static final String AUTHORITY = "com.proj.abhi.coursesprofsprovider";
-    private static final String BASE_PATH = "coursesWithProfs";
+    private static final String AUTHORITY = "com.proj.abhi.coursesprovider";
+    private static final String BASE_PATH = "courses";
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH );
 
@@ -40,11 +40,14 @@ public class CoursesProfsProvider extends ContentProvider{
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        if(selection!=null){
-            return database.rawQuery(selection,null);
-        }else{
-            return null;
+
+        if (uriMatcher.match(uri) == ID) {
+            selection = Constants.ID + "=" + uri.getLastPathSegment();
         }
+
+        return database.query(Constants.Tables.TABLE_COURSE, null,
+                selection, null, null, null,
+                Constants.CREATED);
     }
 
     @Override
@@ -54,19 +57,19 @@ public class CoursesProfsProvider extends ContentProvider{
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        long id = database.insert(Constants.Tables.TABLE_COURSE_PROF,
+        long id = database.insert(Constants.Tables.TABLE_COURSE,
                 null, values);
         return Uri.parse(BASE_PATH + "/" + id);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return database.delete(Constants.Tables.TABLE_COURSE_PROF, selection, selectionArgs);
+        return database.delete(Constants.Tables.TABLE_COURSE, selection, selectionArgs);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return database.update(Constants.Tables.TABLE_COURSE_PROF,
+        return database.update(Constants.Tables.TABLE_COURSE,
                 values, selection, selectionArgs);
     }
 }

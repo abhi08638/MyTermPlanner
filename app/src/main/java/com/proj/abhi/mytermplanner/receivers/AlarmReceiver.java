@@ -42,8 +42,10 @@ public class AlarmReceiver extends BroadcastReceiver {
             while(c.moveToNext()){
                 try {
                     sendingIntent = Intent.parseUri(c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_INTENT)),0);
-                    uri = Uri.parse(c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_URI)));
-                    sendingIntent.putExtra(Constants.CURRENT_URI,uri);
+                    if(c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_URI))!=null){
+                        uri = Uri.parse(c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_URI)));
+                        sendingIntent.putExtra(Constants.CURRENT_URI,uri);
+                    }
                     userBundle.putParcelable(Constants.CURRENT_INTENT,sendingIntent);
                     userBundle.putInt(Constants.Ids.ALARM_ID,c.getInt(c.getColumnIndex(Constants.ID)));
                     userBundle.putString(Constants.PersistAlarm.CONTENT_TITLE,c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_TITLE)));

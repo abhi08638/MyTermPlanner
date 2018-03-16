@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -19,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,15 +25,12 @@ import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
-import com.proj.abhi.mytermplanner.fragments.pageFragments.TaskDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
-import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
-import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragments;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
-import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
-import com.proj.abhi.mytermplanner.providers.ProfProvider;
+import com.proj.abhi.mytermplanner.providers.CoursesProvider;
+import com.proj.abhi.mytermplanner.providers.ContactsProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -54,14 +49,15 @@ import java.util.TimerTask;
 
 public class HomeActivity extends GenericActivity {
     private int numQueryDays = 7;
-    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //init user prefs
-        initPreferences();
+        numQueryDays=PreferenceSingleton.getNumQueryDays();
+        defaultTabIndex=PreferenceSingleton.getHomeDefTabIndex();
+        setTitle();
 
         //init tabs
         initViewPager();
@@ -71,13 +67,6 @@ public class HomeActivity extends GenericActivity {
         fab.hide();
 
         addItemsInNavMenuDrawer();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        initPreferences();
-        refreshPage(0);
     }
 
     @Override
@@ -98,7 +87,7 @@ public class HomeActivity extends GenericActivity {
 
                 b = new Bundle();
                 b.putInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, numQueryDays);
-                b.putString(Constants.CONTENT_URI, HomeCoursesProvider.CONTENT_URI.toString());
+                b.putString(Constants.CONTENT_URI, CoursesProvider.CONTENT_URI.toString());
                 b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
                 b.putString(Constants.ID, Constants.Ids.COURSE_ID);
                 HomeListFragments courseFragment = new HomeListFragments();
@@ -149,29 +138,6 @@ public class HomeActivity extends GenericActivity {
         }
     }
 
-    private void initPreferences() {
-        //init query params
-        sharedpreferences = getSharedPreferences(Constants.SharedPreferenceKeys.USER_PREFS, Context.MODE_PRIVATE);
-        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS)) {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, Integer.toString(numQueryDays));
-            editor.apply();
-        } else {
-            numQueryDays = Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS, null));
-        }
-        setTitle();
-
-        //init default tab
-        if (!sharedpreferences.contains(Constants.SharedPreferenceKeys.DEFAULT_TAB)) {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            editor.putString(Constants.SharedPreferenceKeys.DEFAULT_TAB, Integer.toString(defaultTabIndex));
-            editor.apply();
-        } else {
-            setDefaultTabIndex(Integer.parseInt(sharedpreferences.getString(Constants.SharedPreferenceKeys.DEFAULT_TAB, null)));
-        }
-
-    }
-
     protected void addItemsInNavMenuDrawer() {
         NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navView.getMenu();
@@ -215,7 +181,7 @@ public class HomeActivity extends GenericActivity {
             Utils.sendToActivity(0, TermActivity.class, TermsProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.ADD_PROF) {
-            Utils.sendToActivity(0, ProfessorActivity.class, ProfProvider.CONTENT_URI);
+            Utils.sendToActivity(0, ContactActivity.class, ContactsProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.ADD_TASK) {
             Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
@@ -354,7 +320,7 @@ public class HomeActivity extends GenericActivity {
                             if (id == Constants.MenuGroups.TERM_GROUP) {
                                 Utils.sendToActivity(0, TermActivity.class, TermsProvider.CONTENT_URI);
                             } else if (id == Constants.MenuGroups.PROF_GROUP) {
-                                Utils.sendToActivity(0, ProfessorActivity.class, ProfProvider.CONTENT_URI);
+                                Utils.sendToActivity(0, ContactActivity.class, ContactsProvider.CONTENT_URI);
                             } else if (id == Constants.MenuGroups.TASK_GROUP) {
                                 Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
                             }

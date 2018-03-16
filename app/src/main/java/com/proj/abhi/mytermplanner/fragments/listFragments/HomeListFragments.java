@@ -24,7 +24,7 @@ import com.proj.abhi.mytermplanner.cursorAdapters.HomeTasksCursorAdapter;
 import com.proj.abhi.mytermplanner.cursorAdapters.HomeTermsCursorAdapter;
 import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
-import com.proj.abhi.mytermplanner.providers.HomeCoursesProvider;
+import com.proj.abhi.mytermplanner.providers.CoursesProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -100,7 +100,7 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
                     where = Constants.Term.TERM_END_DATE + getWhereClause();
                 }
                 order = Constants.Term.TERM_START_DATE + " " + sortOrder + "," + Constants.Term.TERM_END_DATE + " " + sortOrder;
-            } else if (uri.equals(HomeCoursesProvider.CONTENT_URI)) {
+            } else if (uri.equals(CoursesProvider.CONTENT_URI)) {
                 //raw query
                 if (numQueryDays >= 0) {
                     where = "WHERE c." + Constants.Course.COURSE_START_DATE + getWhereClause() +
@@ -140,7 +140,7 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
                     Utils.sendToActivity(l.intValue(), TermActivity.class, TermsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_COURSE_ID:
-                    Utils.sendToActivity(l.intValue(), CourseActivity.class, HomeCoursesProvider.CONTENT_URI);
+                    Utils.sendToActivity(l.intValue(), CourseActivity.class, CoursesProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
                     Utils.sendToActivity(l.intValue(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);
