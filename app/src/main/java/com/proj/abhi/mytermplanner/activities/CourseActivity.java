@@ -10,11 +10,13 @@ import android.view.MenuItem;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.ContactListFragment;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.CourseDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
+import com.proj.abhi.mytermplanner.providers.CoursesContactsProvider;
 import com.proj.abhi.mytermplanner.providers.CoursesProvider;
 import com.proj.abhi.mytermplanner.providers.CoursesProviderOld;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -57,6 +59,13 @@ public class CourseActivity extends GenericActivity {
             courseDetailFragment.setArguments(b);
 
             b = new Bundle();
+            b.putString(Constants.CONTENT_URI, CoursesContactsProvider.CONTENT_URI.toString());
+            b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.COURSE_PROF_ID_INCLUDE);
+            b.putInt(Constants.Ids.COURSE_ID, getCurrentUriId());
+            ContactListFragment contactFragment = new ContactListFragment();
+            contactFragment.setArguments(b);
+
+            b = new Bundle();
             b.putString(Constants.Sql.WHERE, Constants.SqlSelect.QUERY_ALARMS +
                     "WHERE " + Constants.Ids.COURSE_ID + "=" + getCurrentUriId() +
                     " ORDER BY " + Constants.PersistAlarm.NOTIFY_DATETIME);
@@ -64,6 +73,7 @@ public class CourseActivity extends GenericActivity {
             reminderFragment.setArguments(b);
 
             adapter.addFragment(courseDetailFragment, getString(R.string.details));
+            adapter.addFragment(contactFragment, getString(R.string.contacts));
             adapter.addFragment(reminderFragment, getString(R.string.reminders));
             viewPager.setAdapter(adapter);
             viewPager.setOffscreenPageLimit(adapter.getCount());
@@ -81,10 +91,11 @@ public class CourseActivity extends GenericActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu);
-        menu.findItem(R.id.action_delete_all).setVisible(false);
+        menu.findItem(R.id.action_delete_all).setTitle(R.string.delete_all_assessments);
         menu.findItem(R.id.action_delete).setTitle(R.string.delete_course);
-        menu.findItem(R.id.action_add).setTitle(R.string.add_course);
+        menu.findItem(R.id.action_add).setTitle(R.string.add_assessment);
         menu.add(0,Constants.ActionBarIds.ADD_REMINDER,0,R.string.add_reminder);
+        menu.add(0,Constants.ActionBarIds.ADD_PROF,0, R.string.add_contact);
         return true;
     }
 
@@ -112,9 +123,17 @@ public class CourseActivity extends GenericActivity {
             CourseDetailFragment courseDetailFragment = (CourseDetailFragment) getFragmentByTitle(R.string.details);
             courseDetailFragment.doReminder(this,CourseActivity.class);
         } else if (id == R.id.action_add && uriId>0) {
-            if(getCurrentUriId()>0){
+            /*if(getCurrentUriId()>0){
                 Uri uri = Uri.parse(CoursesProvider.CONTENT_URI + "/" + 0);
                 Utils.sendToActivity(0,CourseActivityOld.class,uri,null);
+            }*/
+        }else if (id == Constants.ActionBarIds.ADD_PROF && uriId>0){
+            if(uriId>0){
+                ContactListFragment contactListFragment = (ContactListFragment) getFragmentByTitle(R.string.contacts);
+                Bundle b = new Bundle();
+                b.putInt(Constants.Ids.COURSE_ID, getCurrentUriId());
+                b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.COURSE_PROF_ID_EXCLUDE);
+                contactListFragment.restartLoader(b);
             }
         }
 
@@ -122,12 +141,14 @@ public class CourseActivity extends GenericActivity {
     }
 
     protected void refreshPage(int id) {
+        Bundle b = new Bundle();
+        b.putInt(Constants.Ids.COURSE_ID, id);
         //handles switching tasks from nav bar
         for (android.support.v4.app.Fragment f : getSupportFragmentManager().getFragments()) {
             if (f instanceof GenericDetailFragment) {
                 currentUri = ((GenericDetailFragment) f).refreshPage(id);
             }else if (f instanceof GenericListFragment) {
-                ((GenericListFragment) f).restartLoader();
+                ((GenericListFragment) f).restartLoader(b);
             }
         }
     }

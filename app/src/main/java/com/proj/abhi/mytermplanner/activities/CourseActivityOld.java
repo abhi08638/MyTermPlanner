@@ -347,7 +347,7 @@ public class CourseActivityOld extends GenericActivityOld
     private void openProfView(Cursor c){
         LayoutInflater li = LayoutInflater.from(this);
         final View dialogView = li.inflate(R.layout.add_contact_dialog, null);
-        final Spinner prof= (Spinner) dialogView.findViewById(R.id.profDropDown);
+        final Spinner prof= (Spinner) dialogView.findViewById(R.id.contactDropDown);
         SimpleCursorAdapter mAdapter;
         if(c.getCount()>0){
             ArrayList<ProfPojo> addProfList = new ArrayList<>();

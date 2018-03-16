@@ -20,7 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.fragments.listFragments.ContactListFragments;
+import com.proj.abhi.mytermplanner.fragments.listFragments.PhoneEmailListFragments;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.pojos.ContactPojo;
@@ -82,7 +82,6 @@ public class ContactDetailFragment extends GenericDetailFragment {
     public Uri refreshPage(int i) {
         final int id = i;
         currentUri = Uri.parse(ContactsProvider.CONTENT_URI + "/" + id);
-        Log.d(null, "handleRotation: "+currentUri);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -171,8 +170,8 @@ public class ContactDetailFragment extends GenericDetailFragment {
     public void setIntentMsg() {
         intentMsg=(title.getItemAtPosition(profPojo.getTitleIndex())+" "+profPojo.getFirstName()
                 +" "+profPojo.getMiddleName()+" "+profPojo.getLastName()+"\n");
-        ContactListFragments phoneFragment = (ContactListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.phones));
-        ContactListFragments emailFragment = (ContactListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.emails));
+        PhoneEmailListFragments phoneFragment = (PhoneEmailListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.phones));
+        PhoneEmailListFragments emailFragment = (PhoneEmailListFragments) ((GenericActivity)getActivity()).getFragmentByTitle(getActivity().getString(R.string.emails));
         intentMsg+=phoneFragment.getMsg();
         intentMsg+=emailFragment.getMsg();
 

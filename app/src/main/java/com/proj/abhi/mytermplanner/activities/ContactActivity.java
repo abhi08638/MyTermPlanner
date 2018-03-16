@@ -7,15 +7,9 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CursorAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.cursorAdapters.EmailsCursorAdapter;
-import com.proj.abhi.mytermplanner.cursorAdapters.PhonesCursorAdapter;
-import com.proj.abhi.mytermplanner.fragments.listFragments.ContactListFragments;
+import com.proj.abhi.mytermplanner.fragments.listFragments.PhoneEmailListFragments;
 import com.proj.abhi.mytermplanner.fragments.pageFragments.ContactDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
@@ -69,13 +63,13 @@ public class ContactActivity extends GenericActivity
             b = new Bundle();
             b.putString(Constants.CONTENT_URI, PhonesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.PHONE_ID);
-            ContactListFragments phoneFragment = new ContactListFragments();
+            PhoneEmailListFragments phoneFragment = new PhoneEmailListFragments();
             phoneFragment.setArguments(b);
 
             b = new Bundle();
             b.putString(Constants.CONTENT_URI, EmailsProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.EMAIL_ID);
-            ContactListFragments emailFragment = new ContactListFragments();
+            PhoneEmailListFragments emailFragment = new PhoneEmailListFragments();
             emailFragment.setArguments(b);
 
             adapter.addFragment(profDetailFragment, getString(R.string.details));
@@ -130,11 +124,11 @@ public class ContactActivity extends GenericActivity
             doAlert(dialogClickListener);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_PHONE && uriId>0) {
-            ContactListFragments phoneFragment = (ContactListFragments) getFragmentByTitle(R.string.phones);
+            PhoneEmailListFragments phoneFragment = (PhoneEmailListFragments) getFragmentByTitle(R.string.phones);
             phoneFragment.openPhoneView(0);
             return true;
         }else if (id == Constants.ActionBarIds.ADD_EMAIL && uriId>0) {
-            ContactListFragments emailFragment = (ContactListFragments) getFragmentByTitle(R.string.emails);
+            PhoneEmailListFragments emailFragment = (PhoneEmailListFragments) getFragmentByTitle(R.string.emails);
             emailFragment.openEmailView(0);
             return true;
         }

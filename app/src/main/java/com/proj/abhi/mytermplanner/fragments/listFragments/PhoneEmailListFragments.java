@@ -31,7 +31,7 @@ import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 
-public class ContactListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
+public class PhoneEmailListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
 
     private String msg;
 

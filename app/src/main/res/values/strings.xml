@@ -77,7 +77,7 @@
     <string name="error_no_assessments">This course has no assessments</string>
     <string name="added_prof">Added Contact to course</string>
     <string name="deleted_prof">Deleted Contact from course</string>
-    <string name="delete_all_corses">Delete All Courses</string>
+    <string name="delete_all_courses">Delete All Courses</string>
     <string name="delete_term">Delete Term</string>
     <string name="add_course">Add Course</string>
     <string name="error_delete_term">Cannot delete a term that has courses</string>
@@ -129,4 +129,6 @@
     <string name="school_mode">School Mode</string>
     <string name="quick_reminder">Quick Reminder</string>
     <string name="msg_required">Message is required</string>
+    <string name="contacts">Contacts</string>
+    <string name="add_contact">Add Contact</string>
 </resources>

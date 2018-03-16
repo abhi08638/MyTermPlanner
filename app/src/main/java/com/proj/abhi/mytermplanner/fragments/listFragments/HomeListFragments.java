@@ -39,6 +39,7 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        restartAll=true;
         numQueryDays = initializer.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
         switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
             case Constants.CursorLoaderIds.TERM_ID:

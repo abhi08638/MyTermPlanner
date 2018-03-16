@@ -58,7 +58,6 @@ public class TermActivity extends GenericActivity {
             b = new Bundle();
             b.putString(Constants.CONTENT_URI, CoursesProvider.CONTENT_URI.toString());
             b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.HOME_COURSE_ID);
-            b.putString(Constants.ID, Constants.Ids.COURSE_ID);
             b.putInt(Constants.Ids.TERM_ID, getCurrentUriId());
             CourseListFragment courseFragment = new CourseListFragment();
             courseFragment.setArguments(b);

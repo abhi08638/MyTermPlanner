@@ -29,7 +29,7 @@ public abstract class GenericListFragment extends ListFragment implements Loader
     protected CursorAdapter cursorAdapter;
     protected CoordinatorLayout mCoordinatorLayout;
     protected Bundle initializer = null;
-    protected boolean restartAll = true;
+    protected boolean restartAll = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

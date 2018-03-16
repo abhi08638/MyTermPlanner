@@ -160,7 +160,7 @@ public class TermActivityOld extends GenericActivityOld
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu);
-        menu.findItem(R.id.action_delete_all).setTitle(R.string.delete_all_corses);
+        menu.findItem(R.id.action_delete_all).setTitle(R.string.delete_all_courses);
         menu.findItem(R.id.action_delete).setTitle(R.string.delete_term);
         menu.findItem(R.id.action_add).setTitle(R.string.add_course);
         menu.add(0,Constants.ActionBarIds.ADD_REMINDER,0,R.string.add_reminder);
