@@ -14,9 +14,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatDelegate;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -84,6 +86,17 @@ public class SettingsDetailFragment extends Fragment {
                 android.R.layout.simple_spinner_item, themeList);
         adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mThemeSpinner.setAdapter(adp);
+        mThemeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                SpinnerPojo sp = (SpinnerPojo) mThemeSpinner.getSelectedItem();
+                setColor(Utils.getThemeColor(sp.getId(),R.attr.colorPrimaryDark));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         mNightModeSpinner = (Spinner) getActivity().findViewById(R.id.nightModeDropDown);
         nightModeList.add(new SpinnerPojo(AppCompatDelegate.MODE_NIGHT_AUTO, getString(R.string.auto)));

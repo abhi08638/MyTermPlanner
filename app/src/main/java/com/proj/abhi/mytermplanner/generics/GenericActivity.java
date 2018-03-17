@@ -69,6 +69,8 @@ public abstract class GenericActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DateUtils.context=this;
+        Utils.context=this;
         initSharedPreferences();
         setTheme(PreferenceSingleton.getThemeId());
         AppCompatDelegate.setDefaultNightMode(PreferenceSingleton.getNightModeId());
@@ -102,16 +104,8 @@ public abstract class GenericActivity extends AppCompatActivity
 
         alarmClient = new AlarmClient(this);
         alarmClient.doBindService();
-        DateUtils.context=this;
-        Utils.context=this;
         navBundle.putInt(Constants.CURSOR_LOADER_ID,Constants.CursorLoaderIds.NONE);
         PreferenceSingleton.setPageIntent(getIntent());
-    }
-
-    public int getThemeColor (int color) {
-        final TypedValue value = new TypedValue();
-        this.getTheme ().resolveAttribute (color, value, true);
-        return value.data;
     }
 
     @Override
@@ -130,7 +124,7 @@ public abstract class GenericActivity extends AppCompatActivity
         //workaround for setting background drawable in code for api<21
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {getThemeColor(R.attr.colorPrimary),getThemeColor(R.attr.colorPrimary),getThemeColor(R.attr.colorPrimaryDark)});
+                new int[] {Utils.getThemeColor(R.attr.colorPrimary),Utils.getThemeColor(R.attr.colorPrimary),Utils.getThemeColor(R.attr.colorPrimaryDark)});
         gd.setCornerRadius(0f);
         gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         gd.setShape(GradientDrawable.RECTANGLE);

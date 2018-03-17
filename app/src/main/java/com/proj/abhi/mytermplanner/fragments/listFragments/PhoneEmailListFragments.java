@@ -7,10 +7,13 @@ package com.proj.abhi.mytermplanner.fragments.listFragments;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -57,10 +60,10 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
         String[] list = {"Home", "Work", "Cell"};
         LayoutInflater li = LayoutInflater.from(getActivity());
         final View dialogView = li.inflate(R.layout.contact_info_dialog, null);
-        final TextView phoneLbl = dialogView.findViewById(R.id.inputText);
         final TextView typeLbl = dialogView.findViewById(R.id.spinnerText);
         final TextView phoneNum = dialogView.findViewById(R.id.input);
-        phoneLbl.setText(R.string.phone_number);
+        final TextInputLayout lbl = dialogView.findViewById(R.id.inputText);
+        lbl.setHint(getString(R.string.phone_number));
         typeLbl.setText(R.string.phone_type);
         phoneNum.setInputType(InputType.TYPE_CLASS_PHONE);
 
@@ -92,7 +95,7 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
                         if (button == DialogInterface.BUTTON_POSITIVE) {
                             if (phoneNum.getText() != null && !phoneNum.getText().toString().trim().equals("")) {
                                 ContentValues values = new ContentValues();
-                                values.put(Constants.Professor.PHONE, phoneNum.getText().toString());
+                                values.put(Constants.Professor.PHONE, phoneNum.getText().toString().trim());
                                 values.put(Constants.Professor.PHONE_TYPE, type.getSelectedItem().toString());
                                 if (phoneId > 0) {
                                     getActivity().getContentResolver().update(PhonesProvider.CONTENT_URI, values, Constants.ID + "=" + phoneId, null);
@@ -105,6 +108,14 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
                             } else {
                                 Snackbar.make(mCoordinatorLayout, R.string.error_empty_phone_num, Snackbar.LENGTH_LONG).show();
                             }
+                        }else if(button == DialogInterface.BUTTON_NEUTRAL){
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent dialingIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNum.getText().toString()));
+                                    startActivity(dialingIntent);
+                                }
+                            });
                         }
                     }
                 };
@@ -113,7 +124,8 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
         alertDialogBuilder.setView(dialogView);
         alertDialogBuilder.setTitle(R.string.phone_editor)
                 .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+                .setNeutralButton(getString(R.string.dial),dialogClickListener);
 
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
@@ -125,10 +137,10 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
         String[] list = {"Personal", "Work"};
         LayoutInflater li = LayoutInflater.from(getActivity());
         final View dialogView = li.inflate(R.layout.contact_info_dialog, null);
-        final TextView emailLbl = dialogView.findViewById(R.id.inputText);
         final TextView typeLbl = dialogView.findViewById(R.id.spinnerText);
         final TextView email = dialogView.findViewById(R.id.input);
-        emailLbl.setText(R.string.email_address);
+        final TextInputLayout lbl = dialogView.findViewById(R.id.inputText);
+        lbl.setHint(getString(R.string.email_address));
         typeLbl.setText(R.string.email_type);
         email.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
@@ -160,7 +172,7 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
                         if (button == DialogInterface.BUTTON_POSITIVE) {
                             if (email.getText() != null && !email.getText().toString().trim().equals("")) {
                                 ContentValues values = new ContentValues();
-                                values.put(Constants.Professor.EMAIL, email.getText().toString());
+                                values.put(Constants.Professor.EMAIL, email.getText().toString().trim());
                                 values.put(Constants.Professor.EMAIL_TYPE, type.getSelectedItem().toString());
                                 if (emailId > 0) {
                                     getActivity().getContentResolver().update(EmailsProvider.CONTENT_URI, values, Constants.ID + "=" + emailId, null);
@@ -173,6 +185,16 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
                             } else {
                                 Snackbar.make(mCoordinatorLayout, R.string.error_empty_email, Snackbar.LENGTH_LONG).show();
                             }
+                        }else if(button == DialogInterface.BUTTON_NEUTRAL){
+                            AsyncTask.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + email.getText().toString()));
+                                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Regarding...");
+                                    emailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nSent From "+Constants.APP_NAME);
+                                    startActivity(Intent.createChooser(emailIntent, "Sending Email..."));
+                                }
+                            });
                         }
                     }
                 };
@@ -181,7 +203,8 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
         alertDialogBuilder.setView(dialogView);
         alertDialogBuilder.setTitle(R.string.email_editor)
                 .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener);
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+                .setNeutralButton(getString(R.string.send_email),dialogClickListener);
 
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();

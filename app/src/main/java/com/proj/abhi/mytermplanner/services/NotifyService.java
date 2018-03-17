@@ -151,6 +151,8 @@ public class NotifyService extends Service {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent sendingIntent=bundle.getParcelable(Constants.CURRENT_INTENT);
+        sendingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        sendingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),sendingIntent, 0);
         int id = bundle.getInt(Constants.Ids.ALARM_ID);
         String NOTIFICATION_CHANNEL_ID = "plannerChannel";

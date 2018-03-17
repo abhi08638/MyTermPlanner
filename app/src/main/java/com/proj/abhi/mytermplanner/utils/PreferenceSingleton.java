@@ -27,7 +27,7 @@ public class PreferenceSingleton {
     private static Intent pageIntent;
     private static boolean hideToolbar,hideTabBar;
     private static int defaultNotifyType;
-    private static long[] vibratePattern={0, 500, 200,500 };
+    private static long[] vibratePattern={0, 500, 200, 500, 200};
     private static boolean schoolMode;
 
     public static int getThemeId() {

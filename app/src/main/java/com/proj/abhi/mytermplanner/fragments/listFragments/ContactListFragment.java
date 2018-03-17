@@ -24,6 +24,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.ContactActivity;
@@ -102,6 +103,7 @@ public class ContactListFragment extends GenericListFragment implements LoaderCa
         LayoutInflater li = LayoutInflater.from(getActivity());
         final View dialogView = li.inflate(R.layout.add_contact_dialog, null);
         final Spinner contact= (Spinner) dialogView.findViewById(R.id.contactDropDown);
+        final TextView label = dialogView.findViewById(R.id.addContactTv);
         if(c.getCount()>0){
             ArrayList<SpinnerPojo> addProfList = new ArrayList<>();
             if(c.getCount()>=1){
@@ -112,6 +114,10 @@ public class ContactListFragment extends GenericListFragment implements LoaderCa
             ArrayAdapter<SpinnerPojo> adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_spinner_item,addProfList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             contact.setAdapter(adapter);
+        }else{
+            contact.setVisibility(View.GONE);
+            label.setText(R.string.no_contacts);
+            label.setVisibility(View.VISIBLE);
         }
 
         DialogInterface.OnClickListener dialogClickListener =
@@ -119,13 +125,15 @@ public class ContactListFragment extends GenericListFragment implements LoaderCa
                     @Override
                     public void onClick(DialogInterface dialog, int button) {
                         if (button == DialogInterface.BUTTON_POSITIVE) {
-                            SpinnerPojo sp = (SpinnerPojo) contact.getSelectedItem();
-                            ContentValues values = new ContentValues();
-                            values.put(Constants.Ids.PROF_ID,sp.getId());
-                            values.put(Constants.Ids.COURSE_ID,initializer.getInt(Constants.Ids.COURSE_ID));
-                            getActivity().getContentResolver().insert(CoursesContactsProvider.CONTENT_URI,values);
-                            restartLoader();
-                            Snackbar.make(mCoordinatorLayout, R.string.added_prof, Snackbar.LENGTH_LONG).show();
+                            if(contact.getCount()>0) {
+                                SpinnerPojo sp = (SpinnerPojo) contact.getSelectedItem();
+                                ContentValues values = new ContentValues();
+                                values.put(Constants.Ids.PROF_ID, sp.getId());
+                                values.put(Constants.Ids.COURSE_ID, initializer.getInt(Constants.Ids.COURSE_ID));
+                                getActivity().getContentResolver().insert(CoursesContactsProvider.CONTENT_URI, values);
+                                restartLoader();
+                                Snackbar.make(mCoordinatorLayout, R.string.added_prof, Snackbar.LENGTH_LONG).show();
+                            }
                         }else if(button == DialogInterface.BUTTON_NEUTRAL){
                             Utils.sendToActivity(0,ContactActivity.class,ContactsProvider.CONTENT_URI);
                         }

@@ -131,4 +131,7 @@
     <string name="msg_required">Message is required</string>
     <string name="contacts">Contacts</string>
     <string name="add_contact">Add Contact</string>
+    <string name="no_contacts">No Contacts Available</string>
+    <string name="send_email">Send Email</string>
+    <string name="dial">Dial</string>
 </resources>

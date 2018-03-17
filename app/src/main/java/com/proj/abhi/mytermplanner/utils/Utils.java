@@ -4,8 +4,13 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 
@@ -241,6 +246,24 @@ public class Utils {
                     buttonView.setText(R.string.off);
             }
         };
+    }
+
+    public static int getThemeColor(int color) {
+        return getThemeColor(color,0);
+    }
+
+    public static int getThemeColor(int style,int color) {
+        if(style!=0){
+            int[] attrs={R.attr.colorPrimaryDark};
+            TypedArray ta=context.obtainStyledAttributes(style,attrs);
+            int value = ta.getColor(0, Color.BLUE);
+            ta.recycle();
+            return value;
+        }else{
+            TypedValue value = new TypedValue();
+            context.getTheme ().resolveAttribute (color, value, true);
+            return value.data;
+        }
     }
 
 }

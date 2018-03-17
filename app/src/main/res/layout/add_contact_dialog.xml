@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:padding="4dp">
+    android:padding="4dp" android:orientation="vertical">
 
     <Spinner
         android:id="@+id/contactDropDown"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentTop="true"
         style="@style/AlertSpinnerBackground" />
-</RelativeLayout>
+
+    <TextView
+        android:id="@+id/addContactTv"
+        style="@style/AlertSpinnerBackground"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:visibility="gone" />
+</LinearLayout>
