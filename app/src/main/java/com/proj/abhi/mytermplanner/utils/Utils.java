@@ -204,6 +204,7 @@ public class Utils {
             Intent intent = new Intent(context, toActivity);
             Uri uri = Uri.parse(contentUri + "/" + id);
             intent.putExtra(Constants.CURRENT_URI, uri);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             if(params!=null){
                 for(Map.Entry<String,Integer> entry: params.entrySet()){
                     intent.putExtra(entry.getKey(),entry.getValue());
@@ -211,7 +212,6 @@ public class Utils {
             }
             if(toActivity.equals(HomeActivity.class)){
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 ((Activity) context).startActivity(intent);
             }

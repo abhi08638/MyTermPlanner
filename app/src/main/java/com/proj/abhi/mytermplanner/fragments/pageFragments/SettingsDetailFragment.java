@@ -81,6 +81,7 @@ public class SettingsDetailFragment extends Fragment {
     private void initUiSettings() {
         mThemeSpinner = (Spinner) getActivity().findViewById(R.id.themeDropDown);
         themeList.add(new SpinnerPojo(R.style.AppThemeBlue, getString(R.string.blue)));
+        themeList.add(new SpinnerPojo(R.style.AppThemeGreen, getString(R.string.green)));
         themeList.add(new SpinnerPojo(R.style.AppThemeRed, getString(R.string.red)));
         final ArrayAdapter<SpinnerPojo> adp = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, themeList);

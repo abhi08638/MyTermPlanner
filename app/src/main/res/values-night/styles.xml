@@ -3,6 +3,13 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="AppThemeGreen" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryGreen</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGreen</item>
+        <item name="colorAccent">@color/colorAccentGreen</item>
+        <item name="android:windowBackground">@color/darkBackground</item>
+    </style>
+
     <style name="AppThemeBlue" parent="AppTheme">
         <item name="colorPrimary">@color/colorPrimaryBlue</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDarkBlue</item>

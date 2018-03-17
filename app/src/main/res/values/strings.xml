@@ -10,7 +10,7 @@
     <string name="start_date">Start Date</string>
     <string name="end_date">End Date</string>
     <string name="wgu_c196">WGU C196</string>
-    <string name="are_you_sure">Are you Sure?</string>
+    <string name="are_you_sure">Are you sure you want to delete?</string>
     <string name="course_title">Course Title</string>
     <string name="assessments">Assessments</string>
     <string name="courses">Courses</string>
@@ -134,4 +134,5 @@
     <string name="no_contacts">No Contacts Available</string>
     <string name="send_email">Send Email</string>
     <string name="dial">Dial</string>
+    <string name="green">Green</string>
 </resources>

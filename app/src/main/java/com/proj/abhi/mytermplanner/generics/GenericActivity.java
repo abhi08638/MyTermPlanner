@@ -1,5 +1,6 @@
 package com.proj.abhi.mytermplanner.generics;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -73,6 +75,10 @@ public abstract class GenericActivity extends AppCompatActivity
         Utils.context=this;
         initSharedPreferences();
         setTheme(PreferenceSingleton.getThemeId());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription(Constants.APP_NAME, null, Utils.getThemeColor(R.attr.colorPrimaryDark));
+            this.setTaskDescription(tDesc);
+        }
         AppCompatDelegate.setDefaultNightMode(PreferenceSingleton.getNightModeId());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
@@ -111,6 +117,10 @@ public abstract class GenericActivity extends AppCompatActivity
     @Override
     public void onResume(){
         super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityManager.TaskDescription tDesc = new ActivityManager.TaskDescription(Constants.APP_NAME, null, Utils.getThemeColor(R.attr.colorPrimaryDark));
+            this.setTaskDescription(tDesc);
+        }
         if(PreferenceSingleton.wasNightModeChanged() && !getIntent().equals(PreferenceSingleton.getPageIntent())){
             getDelegate().setLocalNightMode(PreferenceSingleton.getNightModeId());
             PreferenceSingleton.setWasNightModeChanged(false);
