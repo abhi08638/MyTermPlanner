@@ -134,7 +134,7 @@ public abstract class GenericActivity extends AppCompatActivity
         //workaround for setting background drawable in code for api<21
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[] {Utils.getThemeColor(R.attr.colorPrimary),Utils.getThemeColor(R.attr.colorPrimary),Utils.getThemeColor(R.attr.colorPrimaryDark)});
+                new int[] {Utils.getThemeColor(R.attr.colorPrimary),Utils.getThemeColor(R.attr.colorPrimaryDark)});
         gd.setCornerRadius(0f);
         gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         gd.setShape(GradientDrawable.RECTANGLE);

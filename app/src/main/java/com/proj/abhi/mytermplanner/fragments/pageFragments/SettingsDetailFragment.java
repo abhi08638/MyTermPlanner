@@ -90,8 +90,12 @@ public class SettingsDetailFragment extends Fragment {
         mThemeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                SpinnerPojo sp = (SpinnerPojo) mThemeSpinner.getSelectedItem();
-                setColor(Utils.getThemeColor(sp.getId(),R.attr.colorPrimaryDark));
+                if(notificationColor.isEnabled()) {
+                    SpinnerPojo sp = (SpinnerPojo) mThemeSpinner.getSelectedItem();
+                    setColor(Utils.getThemeColor(sp.getId(), R.attr.colorPrimaryDark));
+                }else{
+                    notificationColor.setEnabled(true);
+                }
             }
 
             @Override
@@ -139,6 +143,7 @@ public class SettingsDetailFragment extends Fragment {
 
     private void initNotificationSettings() {
         notificationColor = getActivity().findViewById(R.id.notificationColor);
+        notificationColor.setEnabled(false);
         setColor(PreferenceSingleton.getLedColorId());
         notificationColor.setOnClickListener(new View.OnClickListener() {
             @Override

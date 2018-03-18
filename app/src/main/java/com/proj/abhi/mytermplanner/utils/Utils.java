@@ -244,7 +244,7 @@ public class Utils {
     }
 
     public static int getThemeColor(int color) {
-        return getThemeColor(color,0);
+        return getThemeColor(0,color);
     }
 
     public static int getThemeColor(int style,int color) {
