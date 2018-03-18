@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.proj.abhi.mytermplanner">
 
     <application
@@ -12,8 +13,7 @@
         android:hardwareAccelerated="true">
         <activity
             android:name=".activities.HomeActivity"
-            android:label="@string/app_name"
-            android:allowTaskReparenting="true">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,35 +21,45 @@
         </activity>
         <activity
             android:name=".activities.TermActivity"
-            android:label="@string/term_editor">
+            android:label="@string/term_editor"
+            android:parentActivityName=".activities.HomeActivity"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.ContactActivity"
-            android:label="@string/prof_editor">
+            android:label="@string/prof_editor"
+            android:parentActivityName=".activities.HomeActivity"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.CourseActivity"
-            android:label="@string/course_editor">
+            android:label="@string/course_editor"
+            android:parentActivityName=".activities.HomeActivity"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.TermActivity" />
         </activity>
         <activity
             android:name=".activities.AssessmentActivity"
-            android:label="@string/assessment_editor">
+            android:label="@string/assessment_editor"
+            android:parentActivityName=".activities.HomeActivity"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.CourseActivity" />
         </activity>
         <activity
             android:name=".activities.TaskActivity"
-            android:label="@string/task_editor">
+            android:label="@string/task_editor"
+            android:parentActivityName=".activities.HomeActivity"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.HomeActivity" />

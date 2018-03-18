@@ -210,11 +210,6 @@ public class Utils {
                     intent.putExtra(entry.getKey(),entry.getValue());
                 }
             }
-            if(toActivity.equals(HomeActivity.class)){
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                ((Activity) context).startActivity(intent);
-            }
             ((Activity) context).startActivityForResult(intent, 0);
         } catch (Exception e) {
             e.printStackTrace();

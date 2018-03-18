@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.google.gson.Gson;
 import com.proj.abhi.mytermplanner.R;
@@ -151,9 +152,13 @@ public class NotifyService extends Service {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent sendingIntent=bundle.getParcelable(Constants.CURRENT_INTENT);
-        sendingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        sendingIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(),sendingIntent, 0);
+
+        //create a new back stack for notification
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(sendingIntent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT);
+
         int id = bundle.getInt(Constants.Ids.ALARM_ID);
         String NOTIFICATION_CHANNEL_ID = "plannerChannel";
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

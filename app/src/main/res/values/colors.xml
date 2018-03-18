@@ -8,9 +8,9 @@
     <color name="colorPrimaryDarkBlue">#282d93</color>
     <color name="colorAccentBlue">#448aff</color>
 
-    <color name="colorPrimaryGreen">#43a047</color>
+    <color name="colorPrimaryGreen">#388e3c</color>
     <color name="colorPrimaryDarkGreen">#00701a</color>
-    <color name="colorAccentGreen">#76d275</color>
+    <color name="colorAccentGreen">#388e3c</color>
 
     <color name="lightBackground">#f1f1f1</color>
     <color name="darkBackground">#212121</color>
