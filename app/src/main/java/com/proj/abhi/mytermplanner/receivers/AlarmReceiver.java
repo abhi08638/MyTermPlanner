@@ -56,7 +56,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                     userBundle.putInt(Constants.Ids.COURSE_ID, c.getInt(c.getColumnIndex(Constants.Ids.COURSE_ID)));
                     userBundle.putInt(Constants.Ids.ASSESSMENT_ID, c.getInt(c.getColumnIndex(Constants.Ids.ASSESSMENT_ID)));
                     userBundle.putInt(Constants.Ids.TASK_ID, c.getInt(c.getColumnIndex(Constants.Ids.TASK_ID)));
-                    userBundle.putInt(Constants.Ids.ALARM_ID, c.getInt(c.getColumnIndex(Constants.Ids.ALARM_ID)));
                     String dateTime = c.getString(c.getColumnIndex(Constants.PersistAlarm.NOTIFY_DATETIME));
 
                     AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

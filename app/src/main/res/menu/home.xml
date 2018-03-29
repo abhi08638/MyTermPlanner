@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/home_calendar"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_calendar"
+        android:title="@string/calendar"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_add"
         android:orderInCategory="100"
         android:title=""

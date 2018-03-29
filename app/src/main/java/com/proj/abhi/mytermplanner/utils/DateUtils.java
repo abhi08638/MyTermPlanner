@@ -15,7 +15,7 @@ import java.util.TimeZone;
 public class DateUtils {
 
     public static Context context;
-    public static String userDatePattern = "MMM dd, yyyy";
+    public static String userDatePattern = "MMMM dd, yyyy";
     public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
     public static String userDateTimePattern = userDatePattern+" "+userTimePattern;

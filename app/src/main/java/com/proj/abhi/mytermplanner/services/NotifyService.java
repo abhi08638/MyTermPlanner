@@ -154,6 +154,7 @@ public class NotifyService extends Service {
         Intent sendingIntent=bundle.getParcelable(Constants.CURRENT_INTENT);
         sendingIntent.putExtra(Constants.Ids.TERM_ID,bundle.getInt(Constants.Ids.TERM_ID));
         sendingIntent.putExtra(Constants.Ids.COURSE_ID,bundle.getInt(Constants.Ids.COURSE_ID));
+        sendingIntent.putExtra(Constants.Ids.ASSESSMENT_ID,bundle.getInt(Constants.Ids.ASSESSMENT_ID));
         sendingIntent.putExtra(Constants.Ids.TASK_ID,bundle.getInt(Constants.Ids.TASK_ID));
 
         //create a new back stack for notification

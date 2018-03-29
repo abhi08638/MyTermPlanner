@@ -9,8 +9,8 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
-import com.proj.abhi.mytermplanner.utils.Constants;
-import com.proj.abhi.mytermplanner.utils.Utils;
+import com.proj.abhi.mytermplanner.pojos.CoursePojo;
+import com.proj.abhi.mytermplanner.utils.DateUtils;
 
 public class HomeCoursesCursorAdapter extends CursorAdapter{
     public HomeCoursesCursorAdapter(Context context, Cursor c, int flags) {
@@ -26,23 +26,19 @@ public class HomeCoursesCursorAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-
-        String courseTitle = cursor.getString(
-                cursor.getColumnIndex("courseTitle"));
-        String startDate = Utils.getUserDate(cursor.getString(
-                cursor.getColumnIndex(Constants.Course.COURSE_START_DATE)));
-        String endDate = Utils.getUserDate(cursor.getString(
-                cursor.getColumnIndex(Constants.Course.COURSE_END_DATE)));
+        CoursePojo course = new CoursePojo();
+        course.initPojo(cursor);
         String termTitle = cursor.getString(
                 cursor.getColumnIndex("termTitle"));
-        TextView ct = (TextView) view.findViewById(R.id.item1);
-        TextView sd = (TextView) view.findViewById(R.id.item2);
-        TextView ed = (TextView) view.findViewById(R.id.item3);
-        TextView tt = (TextView) view.findViewById(R.id.item4);
-        ct.setText(courseTitle);
-        sd.setText("Start Date: "+startDate);
-        ed.setText("End Date: "+endDate);
-        tt.setText("Term: "+termTitle);
+        TextView i1 = (TextView) view.findViewById(R.id.item1);
+        TextView i2 = (TextView) view.findViewById(R.id.item2);
+        TextView i3 = (TextView) view.findViewById(R.id.item3);
+        TextView i4 = (TextView) view.findViewById(R.id.item4);
+        i1.setText(course.getTitle());
+        i1.setTextSize(18);
+        i2.setText("Start Date: "+ DateUtils.getUserDate(course.getStartDate()));
+        i3.setText("End Date: "+DateUtils.getUserDate(course.getEndDate()));
+        i4.setText("Term: "+termTitle);
 
         view.findViewById(R.id.item5).setVisibility(View.GONE);
     }

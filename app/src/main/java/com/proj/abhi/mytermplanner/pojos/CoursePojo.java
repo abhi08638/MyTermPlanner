@@ -1,6 +1,7 @@
 package com.proj.abhi.mytermplanner.pojos;
 
 import android.database.Cursor;
+import android.util.Log;
 
 import com.proj.abhi.mytermplanner.generics.GenericDetailPojo;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -33,11 +34,15 @@ public class CoursePojo extends GenericDetailPojo{
     }
 
     public void initPojo(Cursor c){
-        title=c.getString(c.getColumnIndex(Constants.Course.COURSE_TITLE));
-        notes=c.getString(c.getColumnIndex(Constants.Course.NOTES));
+        try{
+            title=c.getString(c.getColumnIndex(Constants.Course.COURSE_TITLE));
+            notes=c.getString(c.getColumnIndex(Constants.Course.NOTES));
+            status=c.getString(c.getColumnIndex(Constants.Course.STATUS));
+        }catch (Exception e){
+            title=c.getString(c.getColumnIndex("courseTitle"));
+        }
         startDate= DateUtils.getDateTimeFromDb(c.getString(c.getColumnIndex(Constants.Course.COURSE_START_DATE)));
         endDate= DateUtils.getDateTimeFromDb(c.getString(c.getColumnIndex(Constants.Course.COURSE_END_DATE)));
-        status=c.getString(c.getColumnIndex(Constants.Course.STATUS));
         termId=c.getInt(c.getColumnIndex(Constants.Ids.TERM_ID));
     }
 

@@ -1,10 +1,9 @@
 package com.proj.abhi.mytermplanner.activities;
 
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -19,18 +18,19 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
-import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragments;
+import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.pojos.SpinnerPojo;
-import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
-import com.proj.abhi.mytermplanner.providers.CoursesProvider;
 import com.proj.abhi.mytermplanner.providers.ContactsProvider;
+import com.proj.abhi.mytermplanner.providers.CoursesProvider;
+import com.proj.abhi.mytermplanner.providers.HomeAssessmentsProvider;
 import com.proj.abhi.mytermplanner.providers.TasksProvider;
 import com.proj.abhi.mytermplanner.providers.TermsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
@@ -46,17 +46,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
-public class HomeActivity extends GenericActivity {
+public class HomeActivity extends GenericActivity implements DatePickerDialog.OnDateSetListener{
     private int numQueryDays = 7;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //init user prefs
         numQueryDays=PreferenceSingleton.getNumQueryDays();
         defaultTabIndex=PreferenceSingleton.getHomeDefTabIndex();
+        calendar=Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR,numQueryDays);
         setTitle();
 
         //init tabs
@@ -129,10 +132,8 @@ public class HomeActivity extends GenericActivity {
     }
 
     protected void setTitle() {
-        if (numQueryDays > 0) {
-            this.setTitle(getString(R.string.active_future_events) + ": " + numQueryDays + " Day(s)");
-        } else if (numQueryDays < 0) {
-            this.setTitle(getString(R.string.past_events) + ": " + numQueryDays + " Day(s)");
+        if (numQueryDays != 0) {
+            this.setTitle(DateUtils.getUserDate(calendar.getTime()));
         } else {
             this.setTitle(getString(R.string.todays_events));
         }
@@ -170,6 +171,9 @@ public class HomeActivity extends GenericActivity {
         }
         menu.add(0, Constants.ActionBarIds.ADD_PROF, 0, getString(R.string.create_prof));
         menu.add(0, Constants.ActionBarIds.ADD_REMINDER, 0, R.string.quick_reminder);
+
+        MenuItem calendar = menu.findItem(R.id.home_calendar);
+        calendar.setVisible(true);
         return true;
     }
 
@@ -194,6 +198,11 @@ public class HomeActivity extends GenericActivity {
             b.putInt(Constants.Ids.TASK_ID, getCurrentUriId());
             b.putString(Constants.PersistAlarm.USER_OBJECT,getString(R.string.quick_reminder));
             createReminder(b);
+        } else if (id == R.id.home_calendar){
+            DatePickerDialog dialog = new DatePickerDialog(this, this,
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH));
+            dialog.show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -323,5 +332,15 @@ public class HomeActivity extends GenericActivity {
         );
 
         return true;
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        Long minutes =TimeUnit.MINUTES.convert(calendar.getTime().getTime() - new Date().getTime(), TimeUnit.MILLISECONDS);
+        numQueryDays=(int) Math.ceil(minutes/60.0/24.0);
+        refreshPage(0);
     }
 }
