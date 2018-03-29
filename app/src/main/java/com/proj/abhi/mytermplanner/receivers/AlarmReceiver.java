@@ -52,7 +52,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                     userBundle.putString(Constants.PersistAlarm.CONTENT_TEXT,c.getString(c.getColumnIndex(Constants.PersistAlarm.CONTENT_TEXT)));
                     userBundle.putString(Constants.PersistAlarm.USER_OBJECT,c.getString(c.getColumnIndex(Constants.PersistAlarm.USER_OBJECT)));
                     userBundle.putInt(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE,c.getInt(c.getColumnIndex(Constants.SharedPreferenceKeys.NOTIFICATION_TYPE)));
-
+                    userBundle.putInt(Constants.Ids.TERM_ID, c.getInt(c.getColumnIndex(Constants.Ids.TERM_ID)));
+                    userBundle.putInt(Constants.Ids.COURSE_ID, c.getInt(c.getColumnIndex(Constants.Ids.COURSE_ID)));
+                    userBundle.putInt(Constants.Ids.ASSESSMENT_ID, c.getInt(c.getColumnIndex(Constants.Ids.ASSESSMENT_ID)));
+                    userBundle.putInt(Constants.Ids.TASK_ID, c.getInt(c.getColumnIndex(Constants.Ids.TASK_ID)));
+                    userBundle.putInt(Constants.Ids.ALARM_ID, c.getInt(c.getColumnIndex(Constants.Ids.ALARM_ID)));
                     String dateTime = c.getString(c.getColumnIndex(Constants.PersistAlarm.NOTIFY_DATETIME));
 
                     AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

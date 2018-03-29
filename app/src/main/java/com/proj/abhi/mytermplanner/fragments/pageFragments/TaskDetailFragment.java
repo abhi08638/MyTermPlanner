@@ -27,6 +27,8 @@ import com.proj.abhi.mytermplanner.utils.Utils;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextTimePicker;
 
+import java.util.Date;
+
 public class TaskDetailFragment extends GenericDetailFragment {
     private EditText title, notes;
     private EditTextDatePicker startDate, endDate;
@@ -113,10 +115,13 @@ public class TaskDetailFragment extends GenericDetailFragment {
     protected void emptyPage() {
         currentUri = Uri.parse(TasksProvider.CONTENT_URI + "/" + 0);
         title.setText(null);
-        startDate.setText(null);
-        startTime.setText(null);
-        endTime.setText(null);
-        endDate.setText(null);
+        startDate.setText(DateUtils.getUserDate(new Date()));
+        startTime.setText(new Date());
+        Date endTimeVal=new Date();
+        endTimeVal.setHours(23);
+        endTimeVal.setMinutes(59);
+        endTime.setText(endTimeVal);
+        endDate.setText(DateUtils.getUserDate(new Date()));
         notes.setText(null);
         task.reset();
     }

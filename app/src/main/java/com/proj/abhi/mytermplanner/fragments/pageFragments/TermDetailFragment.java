@@ -26,6 +26,8 @@ import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 import com.proj.abhi.mytermplanner.xmlObjects.EditTextDatePicker;
 
+import java.util.Date;
+
 public class TermDetailFragment extends GenericDetailFragment {
     private EditText title;
     private EditTextDatePicker startDate, endDate;
@@ -103,7 +105,7 @@ public class TermDetailFragment extends GenericDetailFragment {
     protected void emptyPage() {
         currentUri = Uri.parse(TermsProvider.CONTENT_URI + "/" + 0);
         title.setText(null);
-        startDate.setText(null);
+        startDate.setText(DateUtils.getUserDate(new Date()));
         endDate.setText(null);
         term.reset();
     }

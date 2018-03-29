@@ -91,11 +91,11 @@ public class CourseActivity extends GenericActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         super.onCreateOptionsMenu(menu);
-        menu.findItem(R.id.action_delete_all).setTitle(R.string.delete_all_assessments);
-        menu.findItem(R.id.action_delete).setTitle(R.string.delete_course);
-        menu.findItem(R.id.action_add).setTitle(R.string.add_assessment);
         menu.add(0,Constants.ActionBarIds.ADD_REMINDER,0,R.string.add_reminder);
         menu.add(0,Constants.ActionBarIds.ADD_PROF,0, R.string.add_contact);
+        menu.findItem(R.id.action_add).setTitle(R.string.add_assessment);
+        menu.findItem(R.id.action_delete_all).setVisible(false);
+        menu.findItem(R.id.action_delete).setTitle(R.string.delete_course);
         return true;
     }
 

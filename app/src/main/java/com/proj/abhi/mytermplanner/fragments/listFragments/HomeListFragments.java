@@ -31,6 +31,8 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.Utils;
 
+import java.util.LinkedHashMap;
+
 public class HomeListFragments extends GenericListFragment implements LoaderCallbacks<Cursor> {
 
     private String sortOrder;
@@ -141,7 +143,12 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
                     Utils.sendToActivity(l.intValue(), TermActivity.class, TermsProvider.CONTENT_URI);
                     break;
                 case Constants.CursorLoaderIds.HOME_COURSE_ID:
-                    Utils.sendToActivity(l.intValue(), CourseActivity.class, CoursesProvider.CONTENT_URI);
+                    Cursor c = ((HomeCoursesCursorAdapter)parent.getAdapter()).getCursor();
+                    c.moveToPosition(position);
+                    LinkedHashMap<String,Integer> params = new LinkedHashMap<>();
+                    params.put(Constants.Ids.TERM_ID,c.getInt(c.getColumnIndex(Constants.Ids.TERM_ID)));
+                    c.close();
+                    Utils.sendToActivity(l.intValue(), CourseActivity.class, CoursesProvider.CONTENT_URI,params);
                     break;
                 case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
                     Utils.sendToActivity(l.intValue(), AssessmentActivity.class, HomeAssessmentsProvider.CONTENT_URI);

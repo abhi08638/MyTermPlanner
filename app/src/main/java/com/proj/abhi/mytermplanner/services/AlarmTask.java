@@ -62,6 +62,7 @@ public class AlarmTask implements Runnable{
             }
         }
         c.close();
+        database.execSQL("DELETE FROM "+Constants.Tables.TABLE_PERSIST_ALARM+" "+where);
         database.close();
     }
     private int insertInDb(){

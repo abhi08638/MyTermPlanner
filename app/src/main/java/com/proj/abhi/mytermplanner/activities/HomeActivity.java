@@ -201,8 +201,6 @@ public class HomeActivity extends GenericActivity {
 
     public void createReminder(Bundle userBundle) {
         try {
-            final int[] ids = new int[1];
-            final String[] fields = new String[1];
             final Bundle b = userBundle;
             LayoutInflater li = LayoutInflater.from(this);
             final View promptsView = li.inflate(R.layout.reminder_alert, null);
@@ -212,8 +210,7 @@ public class HomeActivity extends GenericActivity {
             final EditTextDatePicker customDate = new EditTextDatePicker(this, (EditText) promptsView.findViewById(R.id.reminderDate));
             final TextView reminderMsg = (TextView) promptsView.findViewById(R.id.reminderMsg);
             final EditTextTimePicker timePicker = new EditTextTimePicker(this, (EditText) promptsView.findViewById(R.id.reminderTime));
-            fields[fields.length - 1] = getString(R.string.custom_date);
-            ids[ids.length - 1] = R.id.reminderDate;
+            mSpinner.setVisibility(View.GONE);
             Date now = new Date();
             now.setMinutes(now.getMinutes() + 1);
             timePicker.setText(now);
@@ -262,13 +259,8 @@ public class HomeActivity extends GenericActivity {
             typeList.add(new SpinnerPojo(Constants.NotifyTypes.ALARM, getString(R.string.alarm)));
             final ArrayAdapter<SpinnerPojo> typeAdp = new ArrayAdapter<>(this,
                     android.R.layout.simple_spinner_item, typeList);
-            final ArrayAdapter<String> adp = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, fields);
-            adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             typeAdp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             final AlertDialog alertDialog = alertDialogBuilder.create();
-            mSpinner.setAdapter(adp);
-            mSpinner.setSelection(fields.length - 1);
             mSpinnerType.setAdapter(typeAdp);
             mSpinnerType.setSelection(PreferenceSingleton.getDefaultNotifyType());
             alertDialog.show();
