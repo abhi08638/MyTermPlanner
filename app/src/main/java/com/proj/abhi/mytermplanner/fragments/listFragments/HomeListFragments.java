@@ -67,7 +67,10 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
     }
 
     public int getType(){
-        return initializer.getInt(Constants.CURSOR_LOADER_ID);
+        if(initializer!=null){
+            return initializer.getInt(Constants.CURSOR_LOADER_ID);
+        }
+        return 0;
     }
 
     public void restartLoader(Bundle b) {
