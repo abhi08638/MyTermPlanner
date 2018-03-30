@@ -268,4 +268,15 @@ public class PhoneEmailListFragments extends GenericListFragment implements Load
             }
         }
     }
+
+    public void doFabAction(){
+        switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
+            case Constants.CursorLoaderIds.PHONE_ID:
+                openPhoneView(0);
+                break;
+            case Constants.CursorLoaderIds.EMAIL_ID:
+                openEmailView(0);
+                break;
+        }
+    }
 }

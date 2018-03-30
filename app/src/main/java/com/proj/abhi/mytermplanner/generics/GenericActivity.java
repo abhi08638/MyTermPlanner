@@ -29,19 +29,25 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
 import android.widget.ImageButton;
 
 import com.google.gson.Gson;
 import com.proj.abhi.mytermplanner.R;
 import com.proj.abhi.mytermplanner.activities.HomeActivity;
 import com.proj.abhi.mytermplanner.activities.SettingsActivity;
+import com.proj.abhi.mytermplanner.cursorAdapters.HomeCoursesCursorAdapter;
+import com.proj.abhi.mytermplanner.fragments.listFragments.AlarmListFragment;
+import com.proj.abhi.mytermplanner.fragments.listFragments.HomeListFragments;
 import com.proj.abhi.mytermplanner.pageAdapters.CustomPageAdapter;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.services.AlarmClient;
@@ -50,6 +56,7 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 import com.proj.abhi.mytermplanner.utils.DateUtils;
 import com.proj.abhi.mytermplanner.utils.PreferenceSingleton;
 import com.proj.abhi.mytermplanner.utils.Utils;
+
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -65,9 +72,12 @@ public abstract class GenericActivity extends AppCompatActivity
     protected Bundle navBundle=new Bundle();
     protected ViewPager viewPager;
     protected NavMenuPojo navMenuPojo;
-    protected TabLayout tabLayout = null;
-    protected Toolbar toolbar = null;
+    protected TabLayout tabLayout;
+    protected Toolbar toolbar;
+    protected FloatingActionButton fab;
     protected CustomPageAdapter adapter = new CustomPageAdapter(getSupportFragmentManager());
+
+    protected abstract Class getChildClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +97,7 @@ public abstract class GenericActivity extends AppCompatActivity
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -303,6 +313,7 @@ public abstract class GenericActivity extends AppCompatActivity
     }
 
     protected void handleRotation(Bundle savedInstanceState){
+        //DateUtils.setUserDateFormatPattern(getResources().getConfiguration().orientation);
         // Recreate state if applicable.
         if (savedInstanceState != null) {
             // Get selected uri from saved state.
@@ -333,6 +344,143 @@ public abstract class GenericActivity extends AppCompatActivity
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                    final Fragment f =adapter.getFragmentByIndex(position);
+                    if (f instanceof GenericDetailFragment) {
+                        animateFabChange(android.R.drawable.ic_menu_save);
+                        fab.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try {
+                                     save();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else if (f instanceof AlarmListFragment){
+                        animateFabChange(R.drawable.ic_add_alarm);
+                        fab.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(getChildClass().equals(HomeActivity.class)){
+                                    createReminder(prepareReminder());
+                                }else{
+                                    if(getCurrentUriId()>0) {
+                                        GenericDetailFragment detailFragment = (GenericDetailFragment) getFragmentByTitle(R.string.details);
+                                        detailFragment.doReminder(GenericActivity.this, getChildClass());
+                                    }
+                                }
+                            }
+                        });
+
+                    } else if (f instanceof GenericListFragment){
+                        if(getChildClass().equals(HomeActivity.class)){
+                            switch (((HomeListFragments) f).getType()) {
+                                case Constants.CursorLoaderIds.TERM_ID:
+                                    animateFabChange(R.drawable.ic_add);
+                                    fab.setVisibility(View.VISIBLE);
+                                    break;
+                                case Constants.CursorLoaderIds.HOME_COURSE_ID:
+                                    fab.setVisibility(View.GONE);
+                                    break;
+                                case Constants.CursorLoaderIds.HOME_ASSESSMENT_ID:
+                                    fab.setVisibility(View.GONE);
+                                    break;
+                                case Constants.CursorLoaderIds.TASK_ID:
+                                    animateFabChange(R.drawable.ic_add);
+                                    fab.setVisibility(View.VISIBLE);
+                                    break;
+                            }
+                        }else{
+                            animateFabChange(R.drawable.ic_add);
+                        }
+                        fab.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try {
+                                    if(!getChildClass().equals(HomeActivity.class)) {
+                                        if (getCurrentUriId() > 0)
+                                            ((GenericListFragment) f).doFabAction();
+                                    }else{
+                                        ((GenericListFragment) f).doFabAction();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+    }
+
+    public Bundle prepareReminder() {
+        //used to access home page methods
+       return null;
+    }
+
+    public void createReminder(Bundle userBundle) {
+        //used to access home page methods
+    }
+
+    public void animateFabChange(final int iconId){
+        ScaleAnimation btnAnim =  new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        btnAnim.setDuration(250);
+        btnAnim.setInterpolator(new AccelerateInterpolator());
+        btnAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                ScaleAnimation expand =  new ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                expand.setDuration(100);
+                expand.setInterpolator(new DecelerateInterpolator());
+                fab.startAnimation(expand);
+            }
+        });
+
+        ScaleAnimation iconAnim =  new ScaleAnimation(1f, 0f, 1f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        iconAnim.setDuration(100);
+        iconAnim.setInterpolator(new AccelerateInterpolator());
+        iconAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                fab.setImageResource(iconId);
+                Animation expand = new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        fab.setScaleX(interpolatedTime);
+                        fab.setScaleY(interpolatedTime);
+                        fab.setRotation(-20f + interpolatedTime * 20);
+                    }
+                };
+                expand.setStartOffset(135);
+                expand.setDuration(215);
+                expand.setInterpolator(new DecelerateInterpolator());
+                fab.startAnimation(expand);
+            }
+        });
+
+        fab.startAnimation(btnAnim);
+        fab.startAnimation(iconAnim);
     }
 
     public int getCurrentUriId(){

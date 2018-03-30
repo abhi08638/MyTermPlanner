@@ -136,4 +136,6 @@
     <string name="dial">Dial</string>
     <string name="green">Green</string>
     <string name="calendar">Calendar</string>
+    <string name="title_prefix">Today to</string>
+    <string name="title_suffix">to Today</string>
 </resources>

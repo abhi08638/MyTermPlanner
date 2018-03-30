@@ -22,6 +22,11 @@ import com.proj.abhi.mytermplanner.utils.Constants;
 public class TaskActivity extends GenericActivity {
 
     @Override
+    protected Class getChildClass() {
+        return TaskActivity.class;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();

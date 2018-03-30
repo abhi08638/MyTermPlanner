@@ -27,6 +27,11 @@ import java.util.LinkedHashMap;
 public class TermActivity extends GenericActivity {
 
     @Override
+    protected Class getChildClass() {
+        return TermActivity.class;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();

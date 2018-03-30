@@ -69,4 +69,10 @@ public class CourseListFragment extends GenericListFragment implements LoaderCal
             Utils.sendToActivity(l.intValue(), CourseActivity.class, CoursesProvider.CONTENT_URI,params);
         }
     }
+
+    public void doFabAction(){
+        LinkedHashMap<String,Integer> params = new LinkedHashMap<>();
+        params.put(Constants.Ids.TERM_ID,initializer.getInt(Constants.Ids.TERM_ID));
+        Utils.sendToActivity(0, CourseActivity.class, CoursesProvider.CONTENT_URI,params);
+    }
 }

@@ -134,4 +134,5 @@ public abstract class GenericListFragment extends ListFragment implements Loader
     @Override
     public void onListItemClick(ListView parent, View view, int position, long id) {}
 
+    public void doFabAction(){};
 }

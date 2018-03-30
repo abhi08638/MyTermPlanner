@@ -1,6 +1,8 @@
 package com.proj.abhi.mytermplanner.utils;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.view.OrientationEventListener;
 
 import com.proj.abhi.mytermplanner.R;
 
@@ -15,14 +17,23 @@ import java.util.TimeZone;
 public class DateUtils {
 
     public static Context context;
-    public static String userDatePattern = "MMMM dd, yyyy";
+    public static String userDatePatternLong = "MMMM dd, yyyy";
+    public static String userDatePatternShort = "MMM dd, yyyy";
     public static String userTimePattern = "HH:mm";
     public static String dbDateTimePattern = "yyyy-MM-dd HH:mm:ss";
-    public static String userDateTimePattern = userDatePattern+" "+userTimePattern;
+    public static String userDateTimePattern = userDatePatternShort+" "+userTimePattern;
     public static SimpleDateFormat userTimeFormat = new SimpleDateFormat(userTimePattern);
-    public static SimpleDateFormat userDateFormat = new SimpleDateFormat(userDatePattern);
+    public static SimpleDateFormat userDateFormat = new SimpleDateFormat(userDatePatternShort);
     public static SimpleDateFormat dbDateTimeFormat = new SimpleDateFormat(dbDateTimePattern);
     public static SimpleDateFormat userDateTimeFormat = new SimpleDateFormat(userDateTimePattern);
+
+    public static void setUserDateFormatPattern(int orientation){
+        if(orientation== Configuration.ORIENTATION_PORTRAIT){
+            userDateFormat = new SimpleDateFormat(userDatePatternShort);
+        }else{
+            userDateFormat = new SimpleDateFormat(userDatePatternLong);
+        }
+    }
 
     public static Date getDateTimeFromDb(String date){
         try{

@@ -18,13 +18,16 @@ import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
 import com.proj.abhi.mytermplanner.providers.CoursesContactsProvider;
 import com.proj.abhi.mytermplanner.providers.CoursesProvider;
-import com.proj.abhi.mytermplanner.providers.CoursesProviderOld;
 import com.proj.abhi.mytermplanner.utils.Constants;
-import com.proj.abhi.mytermplanner.utils.Utils;
 
 public class CourseActivity extends GenericActivity {
 
     private int termId;
+
+    @Override
+    protected Class getChildClass() {
+        return CourseActivity.class;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

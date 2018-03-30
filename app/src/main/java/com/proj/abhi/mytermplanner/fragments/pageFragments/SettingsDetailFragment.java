@@ -275,7 +275,7 @@ public class SettingsDetailFragment extends Fragment {
 
     private long[] getLongArray() throws Exception{
         String[] longs = vibratePattern.getText().toString().split(":");
-        if (longs.length > 10) {
+        if (longs.length > 50) {
             throw new CustomException(getString(R.string.error_vibrate_pattern_length));
         }
         long[] pattern = new long[longs.length];

@@ -66,6 +66,10 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
             initLoader();
     }
 
+    public int getType(){
+        return initializer.getInt(Constants.CURSOR_LOADER_ID);
+    }
+
     public void restartLoader(Bundle b) {
         if (b != null)
             numQueryDays = b.getInt(Constants.SharedPreferenceKeys.NUM_QUERY_DAYS);
@@ -159,6 +163,18 @@ public class HomeListFragments extends GenericListFragment implements LoaderCall
                 default:
                     break;
             }
+        }
+    }
+
+    @Override
+    public void doFabAction() {
+        switch (initializer.getInt(Constants.CURSOR_LOADER_ID)) {
+            case Constants.CursorLoaderIds.TERM_ID:
+                Utils.sendToActivity(0, TermActivity.class, TermsProvider.CONTENT_URI);
+                break;
+            case Constants.CursorLoaderIds.TASK_ID:
+                Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
+                break;
         }
     }
 }

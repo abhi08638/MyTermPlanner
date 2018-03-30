@@ -15,13 +15,18 @@ import com.proj.abhi.mytermplanner.generics.GenericActivity;
 import com.proj.abhi.mytermplanner.generics.GenericDetailFragment;
 import com.proj.abhi.mytermplanner.generics.GenericListFragment;
 import com.proj.abhi.mytermplanner.pojos.NavMenuPojo;
+import com.proj.abhi.mytermplanner.providers.ContactsProvider;
 import com.proj.abhi.mytermplanner.providers.EmailsProvider;
 import com.proj.abhi.mytermplanner.providers.PhonesProvider;
-import com.proj.abhi.mytermplanner.providers.ContactsProvider;
 import com.proj.abhi.mytermplanner.utils.Constants;
 
 public class ContactActivity extends GenericActivity
 {
+
+    @Override
+    protected Class getChildClass() {
+        return ContactActivity.class;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

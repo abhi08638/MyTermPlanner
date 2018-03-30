@@ -53,6 +53,11 @@ public class HomeActivity extends GenericActivity implements DatePickerDialog.On
     private Calendar calendar;
 
     @Override
+    protected Class getChildClass() {
+        return HomeActivity.class;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //init user prefs
@@ -64,10 +69,6 @@ public class HomeActivity extends GenericActivity implements DatePickerDialog.On
 
         //init tabs
         initViewPager();
-
-        //hide fab from generic view
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.hide();
 
         addItemsInNavMenuDrawer();
     }
@@ -132,8 +133,10 @@ public class HomeActivity extends GenericActivity implements DatePickerDialog.On
     }
 
     protected void setTitle() {
-        if (numQueryDays != 0) {
-            this.setTitle(DateUtils.getUserDate(calendar.getTime()));
+        if (numQueryDays > 0) {
+            this.setTitle(getString(R.string.title_prefix)+" "+DateUtils.getUserDate(calendar.getTime()));
+        }else if (numQueryDays < 0) {
+            this.setTitle(DateUtils.getUserDate(calendar.getTime())+" "+getString(R.string.title_suffix));
         } else {
             this.setTitle(getString(R.string.todays_events));
         }
@@ -191,13 +194,7 @@ public class HomeActivity extends GenericActivity implements DatePickerDialog.On
             Utils.sendToActivity(0, TaskActivity.class, TasksProvider.CONTENT_URI);
             return true;
         } else if (id == Constants.ActionBarIds.ADD_REMINDER) {
-            Intent intent = new Intent(this, this.getClass());
-            intent.putExtra(Constants.CURRENT_URI, currentUri);
-            Bundle b = new Bundle();
-            b.putParcelable(Constants.CURRENT_INTENT, intent);
-            b.putInt(Constants.Ids.TASK_ID, getCurrentUriId());
-            b.putString(Constants.PersistAlarm.USER_OBJECT,getString(R.string.quick_reminder));
-            createReminder(b);
+            createReminder(prepareReminder());
         } else if (id == R.id.home_calendar){
             DatePickerDialog dialog = new DatePickerDialog(this, this,
                     calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
@@ -206,6 +203,16 @@ public class HomeActivity extends GenericActivity implements DatePickerDialog.On
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public Bundle prepareReminder() {
+        Intent intent = new Intent(this, this.getClass());
+        intent.putExtra(Constants.CURRENT_URI, currentUri);
+        Bundle b = new Bundle();
+        b.putParcelable(Constants.CURRENT_INTENT, intent);
+        b.putInt(Constants.Ids.TASK_ID, getCurrentUriId());
+        b.putString(Constants.PersistAlarm.USER_OBJECT,getString(R.string.quick_reminder));
+        return b;
     }
 
     public void createReminder(Bundle userBundle) {

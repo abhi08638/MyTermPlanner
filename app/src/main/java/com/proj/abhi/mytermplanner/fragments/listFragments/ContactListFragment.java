@@ -198,4 +198,11 @@ public class ContactListFragment extends GenericListFragment implements LoaderCa
             Utils.sendToActivity(l.intValue(), ContactActivity.class, ContactsProvider.CONTENT_URI);
         }
     }
+
+    public void doFabAction(){
+        Bundle b = new Bundle();
+        b.putInt(Constants.Ids.COURSE_ID, initializer.getInt(Constants.Ids.COURSE_ID));
+        b.putInt(Constants.CURSOR_LOADER_ID, Constants.CursorLoaderIds.COURSE_PROF_ID_EXCLUDE);
+        restartLoader(b);
+    }
 }

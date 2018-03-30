@@ -42,6 +42,10 @@ public class CustomPageAdapter extends FragmentPagerAdapter {
         return mFragments.get(index);
     }
 
+    public Fragment getFragmentByIndex(int index){
+        return mFragments.get(index);
+    }
+
     @Override
     public Fragment getItem(int position) {
         return mFragments.get(position);
